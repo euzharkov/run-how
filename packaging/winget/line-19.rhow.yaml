@@ -1,0 +1,27 @@
+# WinGet manifest sketch (multi-file manifests are generated with `wingetcreate` at release time).
+PackageIdentifier: line-19.rhow
+PackageVersion: 0.1.0
+PackageName: rhow
+Publisher: line-19
+License: MIT
+ShortDescription: Discover how to run and operate any repository
+PackageUrl: https://github.com/line-19/rhow
+Installers:
+  - Architecture: x64
+    InstallerType: zip
+    InstallerUrl: https://github.com/line-19/rhow/releases/download/v0.1.0/rhow-0.1.0-x86_64-pc-windows-msvc.zip
+    InstallerSha256: REPLACE_WITH_SHA256
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: rhow-0.1.0-x86_64-pc-windows-msvc\rhow.exe
+        PortableCommandAlias: rhow
+  - Architecture: arm64
+    InstallerType: zip
+    InstallerUrl: https://github.com/line-19/rhow/releases/download/v0.1.0/rhow-0.1.0-aarch64-pc-windows-msvc.zip
+    InstallerSha256: REPLACE_WITH_SHA256
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: rhow-0.1.0-aarch64-pc-windows-msvc\rhow.exe
+        PortableCommandAlias: rhow
+ManifestType: singleton
+ManifestVersion: 1.6.0
