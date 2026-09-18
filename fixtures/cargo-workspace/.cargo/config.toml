@@ -1,0 +1,3 @@
+[alias]
+xt = "test --workspace --all-features"
+lint = ["clippy", "--workspace", "--", "-D", "warnings"]

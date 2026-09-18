@@ -1,0 +1,1 @@
+{ "name": "@acme/api", "scripts": { "dev": "tsx watch src/index.ts", "build": "tsup", "test": "vitest run", "db:migrate": "drizzle-kit migrate" } }

@@ -1,0 +1,12 @@
+[project]
+name = "lib"
+version = "0.1.0"
+
+[tool.pdm.scripts]
+start = "flask run"
+test = "pytest -x"
+lint = { composite = ["ruff check .", "mypy ."], help = "Run all linters" }
+
+[tool.poe.tasks]
+serve = "uvicorn app:app --reload"
+docs = { cmd = "mkdocs build", help = "Build the documentation site" }

@@ -1,0 +1,1 @@
+{ "name": "@shop/config", "scripts": { "lint": "eslint ." } }

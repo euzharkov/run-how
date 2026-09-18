@@ -1,0 +1,1 @@
+{ "name": "@acme/ui", "scripts": { "build": "tsup src/index.ts --dts", "storybook": "storybook dev -p 6006", "test": "vitest run" } }

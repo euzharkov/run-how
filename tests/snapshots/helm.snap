@@ -1,0 +1,9 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [helm] Root tools=kubernetes
+k8s:render               Infrastructure inferred high   safe        .          helm template shop charts/app :: Render the shop Helm chart
+k8s:lint                 Quality        inferred high   safe        .          helm lint charts/app :: Validate the shop Helm chart
+k8s:install              Release        inferred medium external    .          helm upgrade --install shop charts/app :: Install or upgrade the shop Helm release
+k8s:uninstall            Infrastructure inferred low    destructive .          helm uninstall shop :: Uninstall the shop Helm release

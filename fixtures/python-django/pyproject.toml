@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "site"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest-django = "^4"
+black = "^24"
+flake8 = "^7"

@@ -1,0 +1,16 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [make] Make tools=make
+all                      Testing        declared exact  safe        .          make all :: Build and test
+build                    Build          declared exact  safe        .          make build :: Build the application binary
+test                     Testing        declared exact  safe        .          make test :: Run the test suite
+lint                     Quality        declared exact  safe        .          make lint :: Lint Go source with golangci-lint
+deps                     Other          declared low    safe        .          make deps :: Download Go module dependencies
+clean                    Build          declared exact  safe        .          make clean :: Remove build artifacts
+docker-up                Infrastructure declared exact  safe        .          make docker-up :: Start local services
+docker-down              Infrastructure declared exact  destructive .          make docker-down :: Stop Docker services and delete their volumes
+deploy                   Release        declared exact  external    .          make deploy :: Apply Kubernetes resources
+_internal                Other          declared exact  safe        hidden .          make _internal :: Print a message
+help                     Other          declared exact  safe        .          make help :: Run grep

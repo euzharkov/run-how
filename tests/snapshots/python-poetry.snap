@@ -1,0 +1,10 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [python-poetry] Python tools=pdm,poe
+lint                     Quality        declared exact  safe        .          pdm run lint :: Run all linters
+start                    Development    declared exact  safe        .          pdm run start :: Start the Flask development server
+test                     Testing        declared exact  safe        .          pdm run test :: Run Python tests
+docs                     Build          declared exact  safe        .          pdm run poe docs :: Build the documentation site
+serve                    Development    declared exact  safe        .          pdm run poe serve :: Start app:app with Uvicorn and auto-reload

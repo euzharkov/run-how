@@ -1,0 +1,11 @@
+{
+  "name": "acme",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces",
+    "test": "npm test --workspaces --if-present",
+    "lint": "eslint ."
+  }
+}

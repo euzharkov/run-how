@@ -1,0 +1,1 @@
+{ "name": "mobile", "scripts": { "start": "expo start", "ios": "expo run:ios", "android": "expo run:android", "test": "jest" } }

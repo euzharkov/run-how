@@ -1,0 +1,7 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [kubernetes] Root tools=kubernetes
+k8s:dev                  Infrastructure inferred medium external    .          skaffold dev :: Build and deploy to the cluster on change
+k8s:skaffold:render      Infrastructure inferred high   safe        .          skaffold render :: Render manifests with Skaffold

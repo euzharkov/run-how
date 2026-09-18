@@ -1,0 +1,1 @@
+{ "name": "ui", "scripts": { "build": "tsup", "test": "vitest run", "lint": "eslint ." } }

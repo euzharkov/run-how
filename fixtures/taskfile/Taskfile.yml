@@ -1,0 +1,46 @@
+version: '3'
+
+includes:
+  docs: ./docs
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  build:
+    desc: Build the Go binary
+    cmds:
+      - go build -o bin/app .
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - go test ./...
+
+  lint:
+    cmds:
+      - golangci-lint run
+
+  deploy:
+    desc: Deploy to production
+    deps: [build]
+    cmds:
+      - fly deploy
+
+  migrate:
+    cmds:
+      - goose -dir migrations postgres "$DB_URL" up
+
+  _hidden:
+    cmds:
+      - echo nope
+
+  internal-task:
+    internal: true
+    cmds:
+      - echo secret
+
+  services:
+    summary: Bring up local infrastructure
+    cmd: docker compose up -d

@@ -1,0 +1,19 @@
+services:
+  api:
+    build: .
+    ports: ["8080:8080"]
+  postgres:
+    image: postgres:16
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+  mailpit:
+    image: axllent/mailpit
+  grafana:
+    image: grafana/grafana:latest
+volumes:
+  pgdata:

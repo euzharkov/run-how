@@ -1,0 +1,14 @@
+{
+  "name": "shop",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "check": "pnpm -r run typecheck",
+    "release": "changeset publish",
+    "changeset": "changeset"
+  }
+}

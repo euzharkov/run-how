@@ -1,0 +1,14 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [python-uv] Python tools=uv,nox,pre-commit
+svc                      Development    declared exact  safe        .          uv run svc :: Run the svc command (svc.cli)
+test                     Testing        inferred high   safe        .          uv run pytest :: Run Python tests
+nox:lint                 Testing        inferred high   safe        .          uv run nox -s lint :: Run linters
+nox:tests                Testing        inferred high   safe        .          uv run nox -s tests :: Run the tests nox session
+lint                     Quality        inferred high   safe        .          uv run ruff check . :: Check Python source code with Ruff
+format                   Quality        inferred high   safe        .          uv run ruff format . :: Format Python code with Ruff
+typecheck                Quality        inferred high   safe        .          uv run mypy . :: Run static type checking with mypy
+pre-commit               Quality        inferred medium safe        .          uv run pre-commit run --all-files :: Run pre-commit hooks on all files
+dev                      Development    inferred medium safe        .          uv run uvicorn main:app --reload :: Start main:app with Uvicorn and auto-reload

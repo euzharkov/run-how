@@ -1,0 +1,1 @@
+{ "name": "@yarn/core", "scripts": { "build": "tsc -b", "test": "node --test", "docs": "typedoc src/index.ts" } }

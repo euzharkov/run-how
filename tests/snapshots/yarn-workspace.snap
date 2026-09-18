@@ -1,0 +1,12 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [yarn-workspace] JavaScript tools=yarn
+build                    Build          declared exact  safe        .          yarn build :: Run build in all workspace packages
+test                     Testing        declared exact  safe        .          yarn test :: Run test in all workspace packages
+publish:all              Release        declared exact  external    .          yarn publish:all :: Publish the package to npm
+## packages/core [@yarn/core] JavaScript tools=yarn
+core:build               Build          declared exact  safe        .          yarn workspace @yarn/core build :: Build TypeScript project references
+core:test                Testing        declared exact  safe        .          yarn workspace @yarn/core test :: Run Node.js tests
+core:docs                Build          declared exact  safe        .          yarn workspace @yarn/core docs :: Generate API docs with TypeDoc

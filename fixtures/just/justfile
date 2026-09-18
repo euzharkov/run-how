@@ -1,0 +1,37 @@
+set dotenv-load
+
+alias t := test
+
+# Default: list recipes
+default:
+    @just --list
+
+# Run the full test suite
+test *ARGS:
+    cargo test {{ARGS}}
+
+# Check formatting and lints
+check:
+    cargo fmt --check
+    cargo clippy -- -D warnings
+
+[group('build')]
+build:
+    cargo build --release
+
+[doc("Publish to crates.io")]
+publish: check test
+    cargo publish
+
+[private]
+_setup:
+    rustup component add clippy
+
+# Reset the local database
+db-reset:
+    docker compose down -v
+    docker compose up -d postgres
+    sqlx database reset -y
+
+watch:
+    cargo watch -x run

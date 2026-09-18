@@ -1,0 +1,22 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [tricky] JavaScript tools=npm,make
+build                    Build          declared exact  safe        .          npm run build :: Bundle with webpack
+test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests with coverage and run Vitest tests
+test:unit                Testing        declared exact  safe        .          npm run test:unit :: Run Jest tests with coverage
+test:int                 Testing        declared exact  safe        .          npm run test:int :: Run Vitest tests
+loop                     Other          declared exact  safe        .          npm run loop :: Run the loop script
+win                      Other          declared exact  safe        .          npm run win :: Run scripts\build.js
+all                      Testing        declared exact  safe        .          npm run all :: Run linting and tests
+lint                     Quality        declared exact  safe        .          npm run lint :: Check source code with ESLint
+long                     Build          declared exact  safe        .          npm run long :: Build the app with Vite (+3 more steps)
+sh                       Infrastructure declared exact  destructive .          npm run sh :: Stop Docker services and delete their volumes
+q                        Other          declared exact  external    .          npm run q :: Send a POST request to hooks.example.com
+ci                       Quality        declared exact  safe        .          npm run ci :: Run linting and tests
+generate                 Build          declared exact  safe        .          npm run generate :: Generate GraphQL types, then generate the Prisma client
+empty                    Other          declared exact  safe        .          npm run empty :: Run the empty script
+make:test                Testing        declared exact  safe        .          make test :: Run Jest tests with coverage and run Vitest tests
+make:build               Build          declared exact  safe        .          make build :: Bundle with webpack
+up                       Infrastructure declared exact  safe        .          make up :: Start Docker services in the background

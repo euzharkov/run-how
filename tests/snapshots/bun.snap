@@ -1,0 +1,11 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [bun] JavaScript tools=bun
+dev                      Development    declared exact  safe        .          bun run dev :: Run src/index.ts with Bun and auto-reload
+start                    Development    declared exact  safe        .          bun run start :: Run src/index.ts with Bun
+test                     Testing        declared exact  safe        .          bun run test :: Run tests with Bun
+build                    Build          declared exact  safe        .          bun run build :: Bundle with Bun
+lint                     Quality        declared exact  safe        .          bun run lint :: Check lint and formatting with Biome
+format                   Quality        declared exact  safe        .          bun run format :: Format source code with Biome

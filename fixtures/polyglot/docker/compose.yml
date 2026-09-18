@@ -1,0 +1,7 @@
+services:
+  postgres:
+    image: postgres:16
+  kafka:
+    image: bitnami/kafka:3.7
+volumes:
+  pg: {}

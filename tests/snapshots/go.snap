@@ -1,0 +1,14 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [go] Go tools=go
+build                    Build          inferred high   safe        .          go build ./... :: Build Go packages
+test                     Testing        inferred high   safe        .          go test ./... :: Run Go tests
+vet                      Quality        inferred high   safe        .          go vet ./... :: Check Go source with go vet
+fmt                      Quality        inferred high   safe        .          go fmt ./... :: Format Go source
+lint                     Quality        inferred high   safe        .          golangci-lint run :: Lint Go source with golangci-lint
+tidy                     Other          inferred low    safe        .          go mod tidy :: Tidy Go module dependencies
+run:migrate              Development    inferred high   safe        .          go run ./cmd/migrate :: Run the migrate command
+run:worker               Development    inferred high   safe        .          go run ./cmd/worker :: Run the worker command
+generate                 Build          inferred high   safe        .          go generate ./... :: Run go:generate directives

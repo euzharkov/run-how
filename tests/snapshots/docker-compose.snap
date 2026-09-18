@@ -1,0 +1,18 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [docker-compose] Root tools=docker,compose
+image                    Build          inferred high   safe        .          docker build -t docker-compose . :: Build the Docker image
+services                 Infrastructure inferred high   safe        .          docker compose up -d :: Start all Docker services
+api                      Infrastructure inferred high   safe        .          docker compose up -d api :: Start the api service (built from source)
+postgres                 Infrastructure inferred high   safe        .          docker compose up -d postgres :: Start PostgreSQL
+redis                    Infrastructure inferred high   safe        .          docker compose up -d redis :: Start Redis
+kafka                    Infrastructure inferred high   safe        .          docker compose up -d kafka :: Start local Kafka broker
+zookeeper                Infrastructure inferred high   safe        .          docker compose up -d zookeeper :: Start ZooKeeper
+mailpit                  Infrastructure inferred high   safe        .          docker compose up -d mailpit :: Start Mailpit (test mail server)
+grafana                  Infrastructure inferred high   safe        .          docker compose up -d grafana :: Start Grafana
+logs                     Infrastructure inferred high   safe        .          docker compose logs -f :: Follow Docker service logs
+services:build           Infrastructure inferred high   safe        .          docker compose build :: Build Docker service images
+services:down            Infrastructure inferred high   safe        .          docker compose down :: Stop and remove Docker services
+services:reset           Infrastructure inferred low    destructive .          docker compose down -v :: Stop Docker services and delete their volumes

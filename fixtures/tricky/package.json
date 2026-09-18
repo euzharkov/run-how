@@ -1,0 +1,16 @@
+{ "name": "tricky", "scripts": {
+  "build": "cross-env NODE_ENV=production webpack --config \"config/webpack.prod.js\" > build.log 2>&1",
+  "test": "npm run test:unit && npm run test:int",
+  "test:unit": "jest --coverage",
+  "test:int": "dotenv -e .env.test -- vitest run tests/integration",
+  "loop": "npm run loop",
+  "win": "node .\\scripts\\build.js --out \"C:\\out dir\"",
+  "all": "npm-run-all lint test",
+  "lint": "eslint 'src/**/*.{js,ts}'",
+  "long": "rm -rf dist && tsc && vite build && node scripts/copy-assets.mjs && echo done",
+  "sh": "sh -c 'docker compose down -v'",
+  "q": "curl -X POST https://hooks.example.com/deploy -d '{\"ref\":\"main\"}'",
+  "ci": "pnpm lint && pnpm test",
+  "generate": "yarn graphql-codegen && yarn prisma generate",
+  "empty": ""
+} }

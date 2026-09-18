@@ -1,0 +1,15 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [python-django] Python tools=django,poetry
+dev                      Development    inferred high   safe        .          poetry run python manage.py runserver :: Start the Django development server
+migrate                  Database       inferred high   safe        .          poetry run python manage.py migrate :: Apply Django database migrations
+makemigrations           Database       inferred high   safe        .          poetry run python manage.py makemigrations :: Create Django migrations from model changes
+shell                    Development    inferred medium safe        .          poetry run python manage.py shell :: Open the Django shell
+collectstatic            Build          inferred low    safe        .          poetry run python manage.py collectstatic --noinput :: Collect Django static files
+createsuperuser          Database       inferred low    safe        .          poetry run python manage.py createsuperuser :: Create a Django admin user
+test                     Testing        inferred high   safe        .          poetry run pytest :: Run Python tests
+django:test              Testing        inferred low    safe        .          poetry run python manage.py test :: Run Django tests
+lint                     Quality        inferred high   safe        .          poetry run flake8 :: Check Python source code with Flake8
+format                   Quality        inferred high   safe        .          poetry run black . :: Format Python code with Black

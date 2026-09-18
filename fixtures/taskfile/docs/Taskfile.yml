@@ -1,0 +1,9 @@
+version: '3'
+tasks:
+  serve:
+    desc: Serve the docs site
+    cmds:
+      - mkdocs serve
+  build:
+    cmds:
+      - mkdocs build
