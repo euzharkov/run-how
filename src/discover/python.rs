@@ -322,6 +322,76 @@ impl Discoverer for Python {
                 out.actions.push(a);
             }
         }
+        if let Some(envs) = py
+            .as_ref()
+            .and_then(|p| p.get("tool"))
+            .and_then(|t| t.get("hatch"))
+            .and_then(|h| h.get("envs"))
+            .and_then(|e| e.as_table())
+        {
+            for (env, cfg) in envs {
+                let Some(scripts) = cfg.get("scripts").and_then(|s| s.as_table()) else {
+                    continue;
+                };
+                for (name, v) in scripts {
+                    let (body, _) = script_body(v);
+                    let id = if env == "default" {
+                        name.clone()
+                    } else {
+                        format!("{env}:{name}")
+                    };
+                    out.script("hatch", &id, &body);
+                    let cmd = if env == "default" {
+                        format!("hatch run {name}")
+                    } else {
+                        format!("hatch run {env}:{name}")
+                    };
+                    out.actions
+                        .push(Action::new(id, cmd).tool("hatch").raw(body));
+                }
+            }
+        }
+        if let Some(tasks) = base.read("tasks.py") {
+            // invoke: `@task` followed by `def name(c, ...)` with a docstring.
+            let lines: Vec<&str> = tasks.lines().collect();
+            for (i, l) in lines.iter().enumerate() {
+                if !l.trim().starts_with("@task") {
+                    continue;
+                }
+                let Some(def) = lines.get(i + 1).map(|d| d.trim()) else {
+                    continue;
+                };
+                let Some(rest) = def.strip_prefix("def ") else {
+                    continue;
+                };
+                let name = rest
+                    .split('(')
+                    .next()
+                    .unwrap_or("")
+                    .trim()
+                    .replace('_', "-");
+                if name.is_empty() || name.starts_with('-') {
+                    continue;
+                }
+                let doc = lines
+                    .get(i + 2)
+                    .map(|d| d.trim())
+                    .and_then(|d| d.strip_prefix("\"\"\"").or_else(|| d.strip_prefix("'''")))
+                    .map(|d| {
+                        d.trim_end_matches("\"\"\"")
+                            .trim_end_matches("'''")
+                            .trim()
+                            .to_string()
+                    })
+                    .filter(|d| !d.is_empty());
+                let mut a = Action::new(&name, python(&format!("invoke {name}"))).tool("invoke");
+                match doc {
+                    Some(d) => a = a.desc(d),
+                    None => a = a.inferred_desc(format!("Run the {name} invoke task")),
+                }
+                out.actions.push(a);
+            }
+        }
         let declared: Vec<String> = out.actions.iter().map(|a| a.name.clone()).collect();
         let free = |n: &str| !declared.iter().any(|d| d == n);
 

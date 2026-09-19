@@ -273,6 +273,187 @@ impl Discoverer for Js {
                 .map(|s| s.to_string())
         };
 
+        let dep_names: Vec<String> = ["dependencies", "devDependencies"]
+            .iter()
+            .filter_map(|k| pkg.get(k).and_then(|d| d.as_object()))
+            .flat_map(|o| o.keys().cloned())
+            .collect();
+        let dep = |n: &str| dep_names.iter().any(|d| d == n);
+        let script_names: Vec<String> = pkg
+            .get("scripts")
+            .and_then(|s| s.as_object())
+            .map(|o| o.keys().cloned().collect())
+            .unwrap_or_default();
+        let free = |n: &str| !script_names.iter().any(|s| s == n);
+        let runner = match pm {
+            Pm::Npm => "npx",
+            Pm::Pnpm => "pnpm exec",
+            Pm::Yarn => "yarn",
+            Pm::Bun => "bunx",
+        };
+        if dep("expo") {
+            let x = |c: &str| format!("{runner} expo {c}");
+            if free("start") && free("dev") {
+                out.actions.push(
+                    Action::new("start", x("start"))
+                        .tool("expo")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if free("ios") {
+                out.actions.push(
+                    Action::new("ios", x("run:ios"))
+                        .tool("expo")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if free("android") {
+                out.actions.push(
+                    Action::new("android", x("run:android"))
+                        .tool("expo")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if free("web") && dep("react-native-web") {
+                out.actions.push(
+                    Action::new("web", x("start --web"))
+                        .tool("expo")
+                        .inferred(Confidence::Medium)
+                        .inferred_desc("Start the Expo app in the browser")
+                        .cat(Category::Development),
+                );
+            }
+            out.actions.push(
+                Action::new("prebuild", x("prebuild"))
+                    .tool("expo")
+                    .inferred(Confidence::Low)
+                    .cat(Category::Build),
+            );
+            out.actions.push(
+                Action::new("doctor", format!("{runner} expo-doctor"))
+                    .tool("expo")
+                    .inferred(Confidence::Low)
+                    .inferred_desc("Check the Expo project for common issues")
+                    .cat(Category::Quality),
+            );
+            if base.has("eas.json") {
+                let e = |c: &str| format!("{runner} eas {c}");
+                out.actions.push(
+                    Action::new("eas:build", e("build"))
+                        .tool("eas")
+                        .inferred(Confidence::High)
+                        .inferred_desc("Build the app with EAS Build")
+                        .cat(Category::Build)
+                        .risk(Risk::External),
+                );
+                out.actions.push(
+                    Action::new("eas:build:local", e("build --local"))
+                        .tool("eas")
+                        .inferred(Confidence::Low)
+                        .inferred_desc("Build the app locally with EAS")
+                        .cat(Category::Build),
+                );
+                out.actions.push(
+                    Action::new("eas:update", e("update"))
+                        .tool("eas")
+                        .inferred(Confidence::Medium)
+                        .inferred_desc("Publish an over-the-air update with EAS")
+                        .cat(Category::Release)
+                        .risk(Risk::External),
+                );
+                out.actions.push(
+                    Action::new("eas:submit", e("submit"))
+                        .tool("eas")
+                        .inferred(Confidence::Medium)
+                        .inferred_desc("Submit the app to the app stores")
+                        .cat(Category::Release)
+                        .risk(Risk::External),
+                );
+            }
+        } else if dep("react-native") {
+            let rn = |c: &str| format!("{runner} react-native {c}");
+            if free("start") {
+                out.actions.push(
+                    Action::new("start", rn("start"))
+                        .tool("react-native")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if free("ios") && base.has_dir("ios") {
+                out.actions.push(
+                    Action::new("ios", rn("run-ios"))
+                        .tool("react-native")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if free("android") && base.has_dir("android") {
+                out.actions.push(
+                    Action::new("android", rn("run-android"))
+                        .tool("react-native")
+                        .inferred(Confidence::High)
+                        .cat(Category::Development),
+                );
+            }
+            if base.has_dir("ios") && base.path.join("ios/Podfile").is_file() {
+                out.actions.push(
+                    Action::new("pods", "pod install --project-directory=ios")
+                        .tool("cocoapods")
+                        .inferred(Confidence::Medium)
+                        .inferred_desc("Install iOS CocoaPods dependencies")
+                        .cat(Category::Other),
+                );
+            }
+        }
+        if (dep("detox")
+            || base.has_any(&[
+                ".detoxrc.js",
+                ".detoxrc.json",
+                ".detoxrc.ts",
+                "detox.config.js",
+            ]))
+            && free("test:e2e")
+            && free("e2e")
+        {
+            out.actions.push(
+                Action::new("test:e2e", format!("{runner} detox test"))
+                    .tool("detox")
+                    .inferred(Confidence::High)
+                    .cat(Category::Testing),
+            );
+        }
+        if dep("@playwright/test")
+            && free("test:e2e")
+            && free("e2e")
+            && base
+                .files
+                .iter()
+                .any(|f| f.starts_with("playwright.config"))
+        {
+            out.actions.push(
+                Action::new("test:e2e", format!("{runner} playwright test"))
+                    .tool("playwright")
+                    .inferred(Confidence::High)
+                    .cat(Category::Testing),
+            );
+        }
+        if dep("cypress")
+            && free("test:e2e")
+            && free("e2e")
+            && free("cypress")
+            && base.files.iter().any(|f| f.starts_with("cypress.config"))
+        {
+            out.actions.push(
+                Action::new("test:e2e", format!("{runner} cypress run"))
+                    .tool("cypress")
+                    .inferred(Confidence::High)
+                    .cat(Category::Testing),
+            );
+        }
         if base.has_dir(".maestro") || base.has_dir("maestro") {
             let dir = if base.has_dir(".maestro") {
                 ".maestro"
@@ -293,6 +474,16 @@ impl Discoverer for Js {
         let names: Vec<&str> = scripts.keys().map(|k| k.as_str()).collect();
         for (name, val) in scripts {
             let Some(body) = val.as_str() else { continue };
+            let wire: Option<String> = if body.trim() == "wireit" {
+                pkg.get("wireit")
+                    .and_then(|w| w.get(name))
+                    .and_then(|w| w.get("command"))
+                    .and_then(|c| c.as_str())
+                    .map(|s| s.to_string())
+            } else {
+                None
+            };
+            let body: &str = wire.as_deref().unwrap_or(body);
             out.script("js", name, body);
             let command = script_command(
                 pm,
