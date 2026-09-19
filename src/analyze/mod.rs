@@ -276,7 +276,11 @@ fn norm_program(p: &str) -> String {
     {
         return format!("bin/{b}");
     }
-    if p.contains("node_modules/.bin") || !p.contains('/') || p.starts_with("./node_modules") {
+    if p.contains("node_modules/.bin")
+        || p.contains("vendor/bin")
+        || !p.contains('/')
+        || p.starts_with("./node_modules")
+    {
         b.to_string()
     } else {
         // keep relative paths for scripts like ./scripts/foo.sh
@@ -502,6 +506,25 @@ fn peel(inv: &Invocation) -> Peeled {
                     Some(i) if i < args.len() => {
                         prog = norm_program(&args[i]);
                         args = args[i + 1..].to_vec();
+                    }
+                    _ => {
+                        return Peeled::Tool(Invocation {
+                            env: vec![],
+                            program: prog,
+                            args,
+                        })
+                    }
+                }
+            }
+            "php" => {
+                // Composer scripts commonly call a vendor tool through the PHP interpreter
+                // (`@php vendor/bin/pint --test`). Peel to the tool itself so it hits the
+                // knowledge table; leave `php artisan ...` and plain `php script.php` alone,
+                // since those already have their own well-known handling.
+                match split_at_first_positional(&args, &[]) {
+                    Some((p, rest)) if p.contains("vendor/bin/") || p.contains("vendor\\bin\\") => {
+                        prog = norm_program(&p);
+                        args = rest;
                     }
                     _ => {
                         return Peeled::Tool(Invocation {

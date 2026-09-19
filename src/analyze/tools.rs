@@ -2787,6 +2787,68 @@ pub fn summarize(program: &str, args: &[String]) -> Option<Summary> {
             Some(x) => s("composer", format!("Run composer {x}"), Other, Safe),
         },
         "phpunit" | "pest" => s(program, "Run PHP tests", Test, Safe),
+        "pint" => s(
+            "pint",
+            if a.has("--test") {
+                "Check PHP code style with Pint"
+            } else {
+                "Format PHP code with Pint"
+            },
+            if a.has("--test") { Lint } else { Format },
+            Safe,
+        ),
+        "phpstan" => {
+            // PHPStan's rule strictness is its numeric level (0 loosest, 9 strictest, "max" is
+            // an alias for the highest); surface it when the command passes it explicitly.
+            match a.value("-l").or_else(|| a.value("--level")) {
+                Some(level) => s(
+                    "phpstan",
+                    format!("Analyse PHP code with PHPStan (level {level})"),
+                    Lint,
+                    Safe,
+                ),
+                None => s("phpstan", "Analyse PHP code with PHPStan", Lint, Safe),
+            }
+        }
+        "psalm" => s("psalm", "Analyse PHP code with Psalm", Lint, Safe),
+        "php-cs-fixer" => s(
+            "php-cs-fixer",
+            if a.has("--dry-run") {
+                "Check PHP code style with PHP CS Fixer"
+            } else {
+                "Format PHP code with PHP CS Fixer"
+            },
+            Format,
+            Safe,
+        ),
+        "phpcs" => s(
+            "phpcs",
+            "Check PHP code style with PHP_CodeSniffer",
+            Lint,
+            Safe,
+        ),
+        "phpcbf" => s(
+            "phpcbf",
+            "Fix PHP code style with PHP_CodeSniffer",
+            Format,
+            Safe,
+        ),
+        "rector" => s(
+            "rector",
+            if a.has("--dry-run") {
+                "Preview Rector refactorings"
+            } else {
+                "Apply Rector refactorings"
+            },
+            Other,
+            Safe,
+        ),
+        "infection" => s(
+            "infection",
+            "Run PHP mutation tests with Infection",
+            Test,
+            Safe,
+        ),
         "php" => match sub {
             Some("artisan") => match a.positionals().get(1).copied() {
                 Some("serve") => s("artisan", "Start the Laravel development server", Dev, Safe),
