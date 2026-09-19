@@ -1,0 +1,12 @@
+require_relative "config/application"
+Rails.application.load_tasks
+
+desc "Import the product catalogue from CSV"
+task import: :environment do
+end
+
+namespace :reports do
+  desc "Send the weekly sales report"
+  task weekly: :environment do
+  end
+end

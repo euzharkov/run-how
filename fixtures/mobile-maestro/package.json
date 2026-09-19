@@ -1,0 +1,1 @@
+{ "name": "mobile", "scripts": { "start": "expo start", "test": "jest", "e2e": "maestro test .maestro/", "e2e:cloud": "maestro cloud --apiKey $KEY app.apk .maestro/", "e2e:detox": "detox test -c ios.sim.debug" } }

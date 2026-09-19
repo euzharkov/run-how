@@ -56,6 +56,8 @@ fixture_tests!(
     polyglot,
     tricky,
     empty,
+    ruby_rails,
+    mobile_maestro,
 );
 
 #[test]
