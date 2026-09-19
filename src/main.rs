@@ -17,7 +17,8 @@ Examples:
   rhow --json          Emit the normalised model as JSON
   rhow test            Run the `test` action with its native tool
   rhow api:test -- -v  Pass extra arguments to the underlying command
-  rhow why db:reset    Show where an action comes from and why it is flagged")]
+  rhow why db:reset    Show where an action comes from and why it is flagged
+  rhow support         Show which tool versions this build has been verified against")]
 struct Cli {
     /// Action to run (see `rhow` for the list), or `why <action>`.
     action: Option<String>,
@@ -93,6 +94,14 @@ fn main() -> ExitCode {
                     "{}",
                     ui::render(&repo, &style, &RenderOptions { all: cli.all })
                 );
+            }
+            ExitCode::SUCCESS
+        }
+        Some("support") => {
+            if cli.json {
+                println!("{}", ui::support::render_json(Some(&repo)));
+            } else {
+                print!("{}", ui::support::render(Some(&repo), &style));
             }
             ExitCode::SUCCESS
         }

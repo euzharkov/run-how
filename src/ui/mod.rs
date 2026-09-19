@@ -2,6 +2,7 @@
 //! ANSI colour only when stdout is a TTY, `NO_COLOR` is unset and `--color` allows it.
 
 pub mod json;
+pub mod support;
 
 use crate::model::*;
 use std::io::IsTerminal;
