@@ -255,6 +255,27 @@ fn norm_program(p: &str) -> String {
         .strip_suffix(".exe")
         .or_else(|| b.strip_suffix(".cmd"))
         .unwrap_or(b);
+    let bin_stub = p
+        .trim_start_matches("./")
+        .strip_prefix("bin/")
+        .map(|r| !r.contains('/'))
+        .unwrap_or(false);
+    if bin_stub
+        && matches!(
+            b,
+            "rails"
+                | "rake"
+                | "rspec"
+                | "rubocop"
+                | "bundle"
+                | "dev"
+                | "setup"
+                | "jobs"
+                | "importmap"
+        )
+    {
+        return format!("bin/{b}");
+    }
     if p.contains("node_modules/.bin") || !p.contains('/') || p.starts_with("./node_modules") {
         b.to_string()
     } else {
@@ -1114,6 +1135,24 @@ fn peel(inv: &Invocation) -> Peeled {
                     program: prog,
                     args,
                 });
+            }
+            "bin/rails" | "bin/rake" | "bin/rspec" | "bin/rubocop" | "bin/bundle" => {
+                prog = prog.trim_start_matches("bin/").to_string();
+            }
+            "bundle" if args.first().map(String::as_str) == Some("exec") => {
+                match split_at_first_positional(&args[1..], &[]) {
+                    Some((p, r)) => {
+                        prog = norm_program(&p);
+                        args = r;
+                    }
+                    None => {
+                        return Peeled::Tool(Invocation {
+                            env: vec![],
+                            program: prog,
+                            args,
+                        })
+                    }
+                }
             }
             "cargo" => {
                 // cargo <alias> → resolvable by the cargo family; the resolver decides.

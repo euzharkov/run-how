@@ -2685,6 +2685,101 @@ pub fn summarize(program: &str, args: &[String]) -> Option<Summary> {
             Some(x) => s("rails", format!("Run rails {x}"), Other, Safe),
             None => s("rails", "Run Rails", Other, Safe),
         },
+        "rspec" => s(
+            "rspec",
+            match a.positionals().first() {
+                Some(p) => format!("Run RSpec tests in {}", clean_path(p)),
+                None => "Run RSpec tests".into(),
+            },
+            Test,
+            Safe,
+        ),
+        "bin/dev" => s(
+            "rails",
+            "Start the Rails app and its dev processes",
+            Dev,
+            Safe,
+        ),
+        "bin/setup" => s("rails", "Set up the app (bin/setup)", Install, Safe),
+        "foreman" | "overmind" | "hivemind" => {
+            s(program, "Start the processes from the Procfile", Dev, Safe)
+        }
+        "puma" => s("puma", "Start the Puma web server", Dev, Safe),
+        "sidekiq" => s("sidekiq", "Start a Sidekiq worker", Dev, Safe),
+        "brakeman" => s("brakeman", "Scan the Rails app with Brakeman", Lint, Safe),
+        "erb_lint" | "erblint" => s("erb_lint", "Check ERB templates", Lint, Safe),
+        "standardrb" => s("standardrb", "Check Ruby source with Standard", Lint, Safe),
+        "srb" => s(
+            "sorbet",
+            "Run static type checking with Sorbet",
+            TypeCheck,
+            Safe,
+        ),
+        "steep" => s(
+            "steep",
+            "Run static type checking with Steep",
+            TypeCheck,
+            Safe,
+        ),
+        "gem" => match sub {
+            Some("build") => s("gem", "Build the gem", Build, Safe),
+            Some("push") => s("gem", "Push the gem to RubyGems", Publish, External),
+            Some("install") => s("gem", "Install Ruby gems", Install, Safe),
+            Some(x) => s("gem", format!("Run gem {x}"), Other, Safe),
+            None => s("gem", "Run gem", Other, Safe),
+        },
+        "maestro" => match sub {
+            Some("test") => s(
+                "maestro",
+                format!(
+                    "Run Maestro mobile end-to-end flows{}",
+                    a.positionals()
+                        .get(1)
+                        .map(|p| format!(" in {}", clean_path(p)))
+                        .unwrap_or_default()
+                ),
+                E2e,
+                Safe,
+            ),
+            Some("studio") => s("maestro", "Open Maestro Studio", E2e, Safe),
+            Some("record") => s("maestro", "Record a Maestro flow video", E2e, Safe),
+            Some("cloud") => s(
+                "maestro",
+                "Run Maestro flows in Maestro Cloud",
+                E2e,
+                External,
+            ),
+            Some(x) => s("maestro", format!("Run maestro {x}"), E2e, Safe),
+            None => s("maestro", "Run Maestro", E2e, Safe),
+        },
+        "appium" => s("appium", "Start the Appium server", E2e, Safe),
+        "nightwatch" => s("nightwatch", "Run Nightwatch end-to-end tests", E2e, Safe),
+        "testcafe" => s("testcafe", "Run TestCafe end-to-end tests", E2e, Safe),
+        "codeceptjs" => s("codeceptjs", "Run CodeceptJS end-to-end tests", E2e, Safe),
+        "web-test-runner" | "wtr" => s(
+            "web-test-runner",
+            "Run browser tests with Web Test Runner",
+            Test,
+            Safe,
+        ),
+        "qunit" => s("qunit", "Run QUnit tests", Test, Safe),
+        "chromatic" => s(
+            "chromatic",
+            "Publish Storybook to Chromatic",
+            Publish,
+            External,
+        ),
+        "test-storybook" => s("storybook", "Run Storybook interaction tests", Test, Safe),
+        "backstop" => s(
+            "backstop",
+            "Run BackstopJS visual regression tests",
+            E2e,
+            Safe,
+        ),
+        "pa11y" | "pa11y-ci" | "axe" => s(program, "Run accessibility checks", Test, Safe),
+        "k6" => s("k6", "Run k6 load tests", Test, Safe),
+        "artillery" => s("artillery", "Run Artillery load tests", Test, Safe),
+        "stryker" => s("stryker", "Run Stryker mutation tests", Test, Safe),
         "rubocop" => s("rubocop", "Check Ruby source with RuboCop", Lint, Safe),
         "composer" => match sub {
             Some("install") | None => s("composer", "Install PHP dependencies", Install, Safe),
