@@ -273,6 +273,20 @@ impl Discoverer for Js {
                 .map(|s| s.to_string())
         };
 
+        if base.has_dir(".maestro") || base.has_dir("maestro") {
+            let dir = if base.has_dir(".maestro") {
+                ".maestro"
+            } else {
+                "maestro"
+            };
+            out.actions.push(
+                Action::new("test:maestro", format!("maestro test {dir}"))
+                    .tool("maestro")
+                    .inferred(Confidence::High)
+                    .inferred_desc("Run Maestro mobile end-to-end flows")
+                    .cat(Category::Testing),
+            );
+        }
         let Some(scripts) = pkg.get("scripts").and_then(|s| s.as_object()) else {
             return out;
         };
