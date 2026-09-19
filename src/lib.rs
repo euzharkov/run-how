@@ -22,6 +22,7 @@ pub mod model;
 pub mod repo;
 pub mod risk;
 pub mod runtime;
+pub mod support;
 pub mod ui;
 
 pub use discover::{discover, Options};
