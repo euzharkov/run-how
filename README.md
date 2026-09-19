@@ -90,6 +90,7 @@ rhow test             # run the `test` action with its native tool
 rhow api:test -- -v   # append arguments to the underlying command
 rhow --dry-run deploy # print what would run
 rhow why db:reset     # where an action comes from and why it is flagged
+rhow support          # which tool versions this build has been verified against
 rhow -C path/to/repo  # inspect another directory
 ```
 
@@ -141,6 +142,42 @@ stays honest: `Run scripts/foo.mjs`.
 
 The classifier prefers a missing warning over a wrong one when confidence is low.
 
+## Version support
+
+```bash
+rhow support         # what this build has been verified against, and how the repo compares
+rhow support --json  # the same, as data
+```
+
+Ecosystems change: a new Rust edition, a new Taskfile schema, a .NET target framework or a
+Terraform major version can all show up in a repository before `rhow` has been checked against
+it. `rhow support` reads the same declared versions the normal discovery pass already sees — a
+Cargo edition, a `go.mod` directive, `engines.node`, a `packageManager` pin, `required_version`,
+a Gradle wrapper, `.bazelversion`, `.ruby-version`, `require.php` — compares each one against a
+static baseline, and flags anything past it as "newer than verified" instead of silently
+explaining it as if nothing had changed. This is static and read-only like everything else in
+`rhow`: no version check ever runs a subprocess or contacts a registry.
+
+```text
+$ rhow support
+
+Toolsets this build of rhow has been verified against
+  Rust / Cargo  editions 2015-2021; 2024 not yet verified
+  Go            up to Go 1.23
+  .NET          net5.0-net9.0 (net48 and netstandard* recognised but not version-checked)
+  ...
+
+Detected in shop
+  Rust / Cargo  2024    crates/api/Cargo.toml  ⚠ newer than verified
+  Go            1.22    go.mod
+```
+
+**Maintaining this**: when you've verified `rhow` against a newer version of a tool, bump that
+tool's baseline in [`src/support/mod.rs`](src/support/mod.rs)'s `REGISTRY` — that one line is
+the entire support matrix. A value the comparator can't safely reduce to a number (a compound
+range like `>=3.9,<4`, a pre-release tag) is reported as "unclear" rather than guessed at, the
+same false-negative-over-false-positive preference the risk classifier uses.
+
 ## Architecture
 
 ```text
@@ -151,6 +188,7 @@ src/
   explain/    deterministic descriptions: explicit → analysis → name heuristics → fallback
   risk/       destructive / external classification
   runtime/    local runtime suggestions (Colima, OrbStack, Podman, Docker Desktop)
+  support/    the version-support registry `rhow support` checks a repo against
   exec/       running an action through its native tool
   ui/         terminal and JSON rendering
 ```
