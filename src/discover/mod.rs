@@ -3,14 +3,22 @@
 //! Each adapter implements [`Discoverer`]. Detection is purely file-based; adapters never run
 //! subprocesses. Actions are normalised into [`Action`] before leaving this module.
 
+pub mod bazel;
 pub mod cargo;
+pub mod deno;
 pub mod docker;
 pub mod dotnet;
 pub mod golang;
+pub mod iac;
 pub mod js;
 pub mod just;
+pub mod jvm;
 pub mod kubernetes;
 pub mod make;
+pub mod misc;
+pub mod mobile;
+pub mod mono;
+pub mod php;
 pub mod python;
 pub mod ruby;
 pub mod scripts;
@@ -150,12 +158,23 @@ pub fn all() -> Vec<Box<dyn Discoverer>> {
         Box::new(cargo::Cargo),
         Box::new(golang::Go),
         Box::new(python::Python),
+        // Mobile's markers (Xcode projects/workspaces, Package.swift, pubspec.yaml, a
+        // fastlane/Fastfile) are specific; it must win over Ruby, whose only marker for an
+        // iOS project is often just a Gemfile pulled in for Bundler/Fastlane.
+        Box::new(mobile::Mobile),
         Box::new(ruby::Ruby),
+        Box::new(jvm::Jvm),
+        Box::new(php::Php),
+        Box::new(deno::Deno),
+        Box::new(mono::Mono),
+        Box::new(bazel::Bazel),
+        Box::new(misc::Misc),
         Box::new(make::Make),
         Box::new(just::Just),
         Box::new(taskfile::Taskfile),
         Box::new(docker::Docker),
         Box::new(kubernetes::Kubernetes),
+        Box::new(iac::Iac),
         Box::new(scripts::Scripts),
     ]
 }
