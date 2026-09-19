@@ -94,6 +94,7 @@ pub enum ProjectKind {
     Python,
     Go,
     Rust,
+    Ruby,
     DotNetSolution,
     DotNet,
     Make,

@@ -12,6 +12,7 @@ pub mod just;
 pub mod kubernetes;
 pub mod make;
 pub mod python;
+pub mod ruby;
 pub mod scripts;
 pub mod taskfile;
 
@@ -149,6 +150,7 @@ pub fn all() -> Vec<Box<dyn Discoverer>> {
         Box::new(cargo::Cargo),
         Box::new(golang::Go),
         Box::new(python::Python),
+        Box::new(ruby::Ruby),
         Box::new(make::Make),
         Box::new(just::Just),
         Box::new(taskfile::Taskfile),
