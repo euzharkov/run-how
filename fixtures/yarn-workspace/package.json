@@ -10,5 +10,6 @@
     "build": "yarn workspaces foreach -A run build",
     "test": "yarn workspaces foreach -A run test",
     "publish:all": "yarn workspaces foreach -A npm publish"
-  }
+  },
+  "packageManager": "yarn@4.1.0"
 }

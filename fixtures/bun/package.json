@@ -7,5 +7,6 @@
     "build": "bun build src/index.ts --outdir dist",
     "lint": "biome check .",
     "format": "biome format --write ."
-  }
+  },
+  "packageManager": "bun@1.1.0"
 }
