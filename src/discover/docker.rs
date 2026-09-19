@@ -272,6 +272,30 @@ impl Discoverer for Docker {
                     );
                 }
             }
+            let mut profiles: Vec<String> = Vec::new();
+            if let Some(m) = services {
+                for v in m.values() {
+                    if let Some(ps) = v.get("profiles").and_then(|p| p.as_sequence()) {
+                        for p in ps.iter().filter_map(|p| p.as_str()) {
+                            if !profiles.iter().any(|x| x == p) {
+                                profiles.push(p.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+            for p in &profiles {
+                out.actions.push(
+                    Action::new(
+                        format!("{pre}services:{p}"),
+                        dc(&format!("--profile {p} up -d")),
+                    )
+                    .tool("compose")
+                    .inferred(conf)
+                    .inferred_desc(format!("Start Docker services in the {p} profile"))
+                    .cat(Category::Infrastructure),
+                );
+            }
             out.actions.push(
                 Action::new(format!("{pre}logs"), dc("logs -f"))
                     .tool("compose")

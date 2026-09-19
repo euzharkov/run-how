@@ -121,6 +121,7 @@ impl Discoverer for Kubernetes {
             || is_kustomize(dir)
             || has_manifests(dir)
             || dir.has("skaffold.yaml")
+            || dir.has_any(&["helmfile.yaml", "helmfile.yml", "helmfile.yaml.gotmpl"])
             || dir.has("Tiltfile")
     }
     fn attachable(&self) -> bool {
@@ -153,10 +154,57 @@ impl Discoverer for Kubernetes {
             };
 
             if dir.has("skaffold.yaml") {
+                let sk = dir.read("skaffold.yaml").unwrap_or_default();
                 out.actions.push(
                     a(format!("{pre}:dev"), "skaffold dev".into())
                         .risk(Risk::External)
                         .confidence(Confidence::Medium),
+                );
+                out.actions.push(
+                    a(format!("{pre}:skaffold:render"), "skaffold render".into())
+                        .inferred_desc("Render manifests with Skaffold"),
+                );
+                if let Some(pi) = sk.find("\nprofiles:") {
+                    for l in sk[pi..].lines() {
+                        if let Some(n) = l.trim().strip_prefix("- name:") {
+                            let n = n.trim();
+                            if !n.is_empty()
+                                && n.chars()
+                                    .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+                            {
+                                out.actions.push(
+                                    a(format!("{pre}:dev:{n}"), format!("skaffold dev -p {n}"))
+                                        .risk(Risk::External)
+                                        .confidence(Confidence::Medium)
+                                        .inferred_desc(format!(
+                                            "Build and deploy the {n} Skaffold profile on change"
+                                        )),
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            if dir.has_any(&["helmfile.yaml", "helmfile.yml", "helmfile.yaml.gotmpl"]) {
+                out.actions.push(
+                    a(format!("{pre}:helmfile:diff"), "helmfile diff".into())
+                        .risk(Risk::External)
+                        .confidence(Confidence::Medium)
+                        .inferred_desc("Diff Helm releases with Helmfile"),
+                );
+                out.actions.push(
+                    a(format!("{pre}:helmfile:apply"), "helmfile apply".into())
+                        .risk(Risk::External)
+                        .confidence(Confidence::Medium)
+                        .inferred_desc("Apply Helm releases with Helmfile")
+                        .cat(Category::Release),
+                );
+                out.actions.push(
+                    a(
+                        format!("{pre}:helmfile:template"),
+                        "helmfile template".into(),
+                    )
+                    .inferred_desc("Render Helm releases with Helmfile"),
                 );
             }
             if dir.has("Tiltfile") {
