@@ -245,6 +245,20 @@ impl Discoverer for Js {
         };
         let pm = package_manager(ctx, base, &pkg);
         let tool: &'static str = pm.name();
+        // Only this project's own `packageManager` pin counts as something IT declares
+        // (an inherited one belongs to the workspace root project, which reads it itself).
+        if let Some(v) = pkg.get("packageManager").and_then(|v| v.as_str()) {
+            if let Some((_, ver)) = v.split_once('@') {
+                out.version(tool, ver.split('+').next().unwrap_or(ver), "package.json");
+            }
+        }
+        if let Some(node) = pkg
+            .get("engines")
+            .and_then(|e| e.get("node"))
+            .and_then(|v| v.as_str())
+        {
+            out.version("node", node, "package.json");
+        }
         let ws = workspace_of(ctx, base);
         let member_name: Option<String> = ws.as_ref().map(|w| {
             pkg.get("name")
