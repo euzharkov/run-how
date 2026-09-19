@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "targets": {
+    "serve": { "executor": "@nx/js:node" },
+    "build": { "executor": "@nx/esbuild:esbuild" },
+    "test": { "executor": "@nx/jest:jest" },
+    "docker": { "executor": "nx:run-commands", "options": { "commands": ["docker build -t api ."] } }
+  }
+}

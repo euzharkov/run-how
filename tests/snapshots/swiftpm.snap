@@ -1,0 +1,9 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [swiftpm] Mobile tools=swift
+build                    Build          inferred high   safe        .          swift build :: Build the Swift package
+test                     Testing        inferred high   safe        .          swift test :: Run Swift tests
+run                      Development    inferred high   safe        .          swift run :: Run the Swift executable
+lint                     Quality        inferred high   safe        .          swiftlint :: Check Swift source with SwiftLint

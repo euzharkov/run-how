@@ -1,0 +1,9 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [cmake] Other tools=cmake
+configure                Build          inferred high   safe        .          cmake -S . -B build :: Configure the CMake project into build/
+build                    Build          inferred high   safe        .          cmake --build build :: Build the CMake project
+test                     Testing        inferred high   safe        .          ctest --test-dir build :: Run CTest tests
+format                   Quality        inferred low    safe        .          find . -name '*.cpp' -o -name '*.h' | xargs clang-format -i :: Format C/C++ sources with clang-format

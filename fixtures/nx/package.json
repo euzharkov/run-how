@@ -1,0 +1,1 @@
+{ "name": "platform", "scripts": { "test": "nx run-many -t test" } }

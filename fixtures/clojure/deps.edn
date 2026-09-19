@@ -1,0 +1,4 @@
+{:deps {}
+ :aliases {:test {:extra-paths ["test"] :main-opts ["-m" "kaocha.runner"]}
+           :dev {:extra-deps {}}
+           :build {:exec-fn build/jar}}}

@@ -1,0 +1,23 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [maven] Jvm tools=maven
+build                    Build          inferred high   safe        .          ./mvnw package :: Package all Maven modules
+test                     Testing        inferred high   safe        .          ./mvnw test :: Run Maven tests
+verify                   Testing        inferred medium safe        .          ./mvnw verify :: Run Maven verification (integration tests)
+install                  Build          inferred low    safe        .          ./mvnw install :: Install artifacts to the local Maven repo
+clean                    Build          inferred low    safe        .          ./mvnw clean :: Delete Maven build outputs
+## api [api] Jvm tools=maven
+api                      Development    inferred high   safe        .          ./mvnw -pl api -am spring-boot:run :: Start the Spring Boot app
+api:build                Build          inferred high   safe        .          ./mvnw -pl api -am package :: Package with Maven
+api:test                 Testing        inferred high   safe        .          ./mvnw -pl api -am test :: Run Maven tests
+api:verify               Testing        inferred medium safe        .          ./mvnw -pl api -am verify :: Run Maven verification (integration tests)
+api:install              Build          inferred low    safe        .          ./mvnw -pl api -am install :: Install artifacts to the local Maven repo
+api:clean                Build          inferred low    safe        .          ./mvnw -pl api -am clean :: Delete Maven build outputs
+## core [core] Jvm tools=maven
+core:build               Build          inferred high   safe        .          ./mvnw -pl core -am package :: Package with Maven
+core:test                Testing        inferred high   safe        .          ./mvnw -pl core -am test :: Run Maven tests
+core:verify              Testing        inferred medium safe        .          ./mvnw -pl core -am verify :: Run Maven verification (integration tests)
+core:install             Build          inferred low    safe        .          ./mvnw -pl core -am install :: Install artifacts to the local Maven repo
+core:clean               Build          inferred low    safe        .          ./mvnw -pl core -am clean :: Delete Maven build outputs

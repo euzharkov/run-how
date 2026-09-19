@@ -1,0 +1,25 @@
+{
+  "name": "acme/shop",
+  "require": {
+    "laravel/framework": "^11"
+  },
+  "require-dev": {
+    "pestphp/pest": "^2",
+    "laravel/pint": "^1",
+    "phpstan/phpstan": "^1"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@php artisan package:discover"
+    ],
+    "dev": "php artisan serve",
+    "test": "pest",
+    "analyse": "phpstan analyse",
+    "lint": [
+      "@php vendor/bin/pint --test"
+    ]
+  },
+  "scripts-descriptions": {
+    "analyse": "Static analysis with PHPStan"
+  }
+}

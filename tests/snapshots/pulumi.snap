@@ -1,0 +1,9 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [pulumi] JavaScript tools=npm,pulumi
+up                       Release        declared exact  external    .          npm run up :: Deploy the Pulumi stack
+pulumi:preview           Infrastructure inferred high   external    .          pulumi preview :: Preview Pulumi changes
+pulumi:up                Release        inferred high   external    .          pulumi up :: Deploy the Pulumi stack
+pulumi:destroy           Infrastructure inferred low    destructive .          pulumi destroy :: Destroy the Pulumi stack

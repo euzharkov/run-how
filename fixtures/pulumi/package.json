@@ -1,0 +1,1 @@
+{ "name": "site", "scripts": { "up": "pulumi up --yes" } }

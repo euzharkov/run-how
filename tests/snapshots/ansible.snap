@@ -1,0 +1,10 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [ansible] Root tools=ansible
+ansible:site:check       Infrastructure inferred medium external    .          ansible-playbook --check site.yml :: Dry-run the site playbook
+ansible:site             Release        inferred medium external    .          ansible-playbook site.yml :: Run the site Ansible playbook
+ansible:backup:check     Infrastructure inferred medium external    .          ansible-playbook --check playbooks/backup.yml :: Dry-run the backup playbook
+ansible:backup           Release        inferred medium external    .          ansible-playbook playbooks/backup.yml :: Run the backup Ansible playbook
+ansible:lint             Quality        inferred medium safe        .          ansible-lint :: Lint Ansible playbooks

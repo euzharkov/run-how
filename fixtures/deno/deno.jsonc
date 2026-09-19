@@ -1,0 +1,8 @@
+{
+  "name": "@acme/server",
+  "tasks": {
+    "dev": "deno run -A --watch main.ts", // hot reload
+    "start": "deno run -A main.ts",
+    "check": { "command": "deno check main.ts", "description": "Type-check the entrypoint" },
+  },
+}

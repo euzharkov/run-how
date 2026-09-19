@@ -1,0 +1,16 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [php-laravel] Php tools=composer,artisan,php
+dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server
+test                     Testing        declared exact  safe        .          composer test :: Run PHP tests
+analyse                  Quality        declared exact  safe        .          composer analyse :: Static analysis with PHPStan
+lint                     Quality        declared exact  safe        .          composer lint :: Check PHP code style with Pint
+tinker                   Development    inferred medium safe        .          php artisan tinker :: Open the Laravel REPL
+migrate                  Database       inferred high   safe        .          php artisan migrate :: Apply Laravel migrations
+db:seed                  Database       inferred medium safe        .          php artisan db:seed :: Seed the database
+migrate:fresh            Database       inferred low    destructive .          php artisan migrate:fresh --seed :: Drop all tables, re-run migrations and seed
+queue                    Development    inferred medium safe        .          php artisan queue:work :: Start a Laravel queue worker
+routes                   Other          inferred low    safe        .          php artisan route:list :: List Laravel routes
+format                   Quality        inferred high   safe        .          ./vendor/bin/pint :: Format PHP code with Pint

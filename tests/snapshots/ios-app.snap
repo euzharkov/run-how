@@ -1,0 +1,10 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [ios-app] Mobile tools=xcode,cocoapods,fastlane
+build                    Build          inferred low    safe        .          xcodebuild -project App.xcodeproj -scheme App -destination 'platform=iOS Simulator,name=iPhone 16' build :: Build the App scheme for the iOS Simulator
+test                     Testing        inferred low    safe        .          xcodebuild -project App.xcodeproj -scheme App -destination 'platform=iOS Simulator,name=iPhone 16' test :: Run App tests in the iOS Simulator
+pods                     Other          inferred medium safe        .          pod install :: Install CocoaPods dependencies
+ios:test                 Testing        declared exact  safe        .          bundle exec fastlane ios test :: Run unit tests
+ios:beta                 Release        declared exact  external    .          bundle exec fastlane ios beta :: Ship a build to TestFlight

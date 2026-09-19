@@ -1,0 +1,14 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [turborepo] JavaScript tools=pnpm,turbo
+build                    Build          declared exact  safe        .          pnpm run build :: Run build across packages with Turborepo
+test                     Testing        inferred medium safe        .          turbo run test :: Run test across packages with Turborepo
+lint                     Quality        inferred medium safe        .          turbo run lint :: Run lint across packages with Turborepo
+dev                      Development    inferred medium safe        .          turbo run dev :: Run dev across packages with Turborepo
+## apps/web [web] JavaScript tools=pnpm
+web                      Development    declared exact  safe        .          pnpm --filter web dev :: Start the Next.js development server
+web:build                Build          declared exact  safe        .          pnpm --filter web build :: Build the Next.js app
+web:test                 Testing        declared exact  safe        .          pnpm --filter web run test :: Run Vitest tests
+web:lint                 Quality        declared exact  safe        .          pnpm --filter web lint :: Lint the Next.js app

@@ -1,0 +1,1 @@
+<project><artifactId>platform</artifactId><packaging>pom</packaging><modules><module>api</module><module>core</module></modules></project>

@@ -1,0 +1,9 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [bazel] Bazel tools=bazel
+build                    Build          inferred high   safe        .          bazelisk build //... :: Build all Bazel targets
+test                     Testing        inferred high   safe        .          bazelisk test //... :: Run all Bazel tests
+query                    Other          inferred low    safe        .          bazelisk query //... :: List all Bazel targets
+clean                    Build          inferred low    safe        .          bazelisk clean :: Delete Bazel outputs

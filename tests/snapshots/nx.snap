@@ -1,0 +1,23 @@
+---
+source: tests/fixtures.rs
+expression: table
+---
+## . [nx] JavaScript tools=npm,nx
+test                     Testing        declared exact  safe        .          npm run test :: Run test across Nx projects
+build                    Build          inferred medium safe        .          nx run-many -t build :: Run build across all Nx projects
+lint                     Quality        inferred medium safe        .          nx run-many -t lint :: Run lint across all Nx projects
+e2e                      Testing        inferred medium safe        .          nx run-many -t e2e :: Run e2e across all Nx projects
+affected                 Quality        inferred medium safe        .          nx affected -t build test lint :: Build, test and lint affected Nx projects
+graph                    Other          inferred low    safe        .          nx graph :: Open the Nx project graph
+## apps/api [api] Workspace tools=nx
+api                      Development    declared exact  safe        .          nx run api:serve :: Serve the app
+api:build                Build          declared exact  safe        .          nx run api:build :: Build with esbuild
+api:test                 Testing        declared exact  safe        .          nx run api:test :: Run Jest tests
+api:docker               Infrastructure declared exact  safe        .          nx run api:docker :: Build the Docker image
+## apps/web [web] Workspace tools=nx
+web                      Development    declared exact  safe        .          nx run web:serve :: Serve the app with Vite
+web:build                Build          declared exact  safe        .          nx run web:build :: Build with Vite
+web:test                 Testing        declared exact  safe        .          nx run web:test :: Run Vitest tests
+web:lint                 Quality        declared exact  safe        .          nx run web:lint :: Check source code with ESLint
+web:e2e                  Testing        declared exact  safe        .          nx run web:e2e :: Run end-to-end tests
+web:deploy               Release        declared exact  external    .          nx run web:deploy :: Deploy the Cloudflare Worker

@@ -1,0 +1,8 @@
+{
+  "name": "acme/lib",
+  "require-dev": {
+    "phpunit/phpunit": "^11",
+    "friendsofphp/php-cs-fixer": "^3",
+    "vimeo/psalm": "^5"
+  }
+}

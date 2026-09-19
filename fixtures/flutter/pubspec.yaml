@@ -1,0 +1,6 @@
+name: shop_app
+dependencies:
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  build_runner: ^2.4.0
