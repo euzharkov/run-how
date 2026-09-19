@@ -4012,6 +4012,309 @@ pub fn summarize(program: &str, args: &[String]) -> Option<Summary> {
                 )
             }
         }
+        "fastlane" => {
+            let p = a.positionals();
+            let lane = if p.len() >= 2 && matches!(p[0], "ios" | "android" | "mac") {
+                format!("{} {}", p[0], p[1])
+            } else {
+                p.first().copied().unwrap_or("").to_string()
+            };
+            let l = lane.to_ascii_lowercase();
+            if l.contains("release")
+                || l.contains("deploy")
+                || l.contains("beta")
+                || l.contains("testflight")
+                || l.contains("upload")
+                || l.contains("submit")
+                || l.contains("distribute")
+                || l.contains("publish")
+                || l == "pilot"
+                || l == "deliver"
+                || l == "supply"
+            {
+                s(
+                    "fastlane",
+                    format!("Run the {lane} Fastlane lane (uploads a build)"),
+                    Deploy,
+                    External,
+                )
+            } else if l.contains("test") || l == "scan" {
+                s(
+                    "fastlane",
+                    format!("Run the {lane} Fastlane lane"),
+                    Test,
+                    Safe,
+                )
+            } else if l == "match" || l == "cert" || l == "sigh" {
+                s(
+                    "fastlane",
+                    "Sync code-signing certificates and profiles",
+                    Other,
+                    External,
+                )
+            } else if lane.is_empty() {
+                s("fastlane", "Run Fastlane", Other, Safe)
+            } else {
+                s(
+                    "fastlane",
+                    format!("Run the {lane} Fastlane lane"),
+                    Other,
+                    Safe,
+                )
+            }
+        }
+        "pod" => match sub {
+            Some("install") => s("cocoapods", "Install CocoaPods dependencies", Install, Safe),
+            Some("update") => s("cocoapods", "Update CocoaPods dependencies", Install, Safe),
+            Some(x) => s("cocoapods", format!("Run pod {x}"), Other, Safe),
+            None => s("cocoapods", "Run CocoaPods", Other, Safe),
+        },
+        "xcrun" => match a.positionals().first().copied() {
+            Some("simctl") => s("xcode", "Control the iOS Simulator", Other, Safe),
+            Some("xcodebuild") => s("xcode", "Build with Xcode", Build, Safe),
+            Some("altool") | Some("notarytool") => {
+                s("xcode", "Upload or notarize with Apple", Publish, External)
+            }
+            Some(x) => s("xcode", format!("Run xcrun {x}"), Other, Safe),
+            None => s("xcode", "Run xcrun", Other, Safe),
+        },
+        "swiftlint" => s(
+            "swiftlint",
+            if a.has("--fix") || a.has("autocorrect") {
+                "Fix Swift lint issues with SwiftLint"
+            } else {
+                "Check Swift source with SwiftLint"
+            },
+            Lint,
+            Safe,
+        ),
+        "swiftformat" => s(
+            "swiftformat",
+            "Format Swift source with SwiftFormat",
+            Format,
+            Safe,
+        ),
+        "xcodegen" => s(
+            "xcodegen",
+            "Generate the Xcode project with XcodeGen",
+            Generate,
+            Safe,
+        ),
+        "tuist" => s(
+            "tuist",
+            format!("Run tuist {}", sub.unwrap_or("generate")),
+            Generate,
+            Safe,
+        ),
+        "adb" => match a.positionals().first().copied() {
+            Some("install") => s("adb", "Install the APK on a device", Dev, Safe),
+            Some("logcat") => s("adb", "Stream Android device logs", Dev, Safe),
+            Some("reverse") => s("adb", "Forward a device port to the host", Dev, Safe),
+            Some("shell") => s("adb", "Run a command on the Android device", Other, Safe),
+            Some("uninstall") => s("adb", "Uninstall the app from the device", Other, Safe),
+            Some(x) => s("adb", format!("Run adb {x}"), Other, Safe),
+            None => s("adb", "Run adb", Other, Safe),
+        },
+        "emulator" => s("android", "Start an Android emulator", Dev, Safe),
+        "expo-doctor" => s(
+            "expo",
+            "Check the Expo project for common issues",
+            Lint,
+            Safe,
+        ),
+        "sbt" => match sub {
+            Some("compile") => s("sbt", "Compile with sbt", Build, Safe),
+            Some("test") => s("sbt", "Run tests with sbt", Test, Safe),
+            Some("run") => s("sbt", "Run the main class with sbt", Run, Safe),
+            Some("package") | Some("assembly") => s("sbt", "Package with sbt", Build, Safe),
+            Some("publish") | Some("publishSigned") => {
+                s("sbt", "Publish artifacts with sbt", Publish, External)
+            }
+            Some("scalafmtAll") | Some("scalafmt") => {
+                s("sbt", "Format Scala source with scalafmt", Format, Safe)
+            }
+            Some(x) => s("sbt", format!("Run sbt {x}"), Other, Safe),
+            None => s("sbt", "Start the sbt shell", Other, Safe),
+        },
+        "lein" => match sub {
+            Some("test") => s("lein", "Run tests with Leiningen", Test, Safe),
+            Some("run") => s("lein", "Run the app with Leiningen", Run, Safe),
+            Some("repl") => s("lein", "Start a REPL with Leiningen", Dev, Safe),
+            Some("uberjar") | Some("jar") => s("lein", "Build the JAR with Leiningen", Build, Safe),
+            Some("deploy") => s("lein", "Deploy artifacts with Leiningen", Publish, External),
+            Some(x) => s("lein", format!("Run lein {x}"), Other, Safe),
+            None => s("lein", "Run Leiningen", Other, Safe),
+        },
+        "clojure" | "clj" => {
+            let alias = args.iter().find_map(|x| {
+                x.strip_prefix("-M:")
+                    .or_else(|| x.strip_prefix("-X:"))
+                    .or_else(|| x.strip_prefix("-T:"))
+                    .or_else(|| x.strip_prefix("-A:"))
+            });
+            match alias {
+                Some(al) => s(
+                    "clojure",
+                    format!("Run the {al} deps.edn alias"),
+                    crate::explain::name_hint(al)
+                        .map(|h| h.kind)
+                        .unwrap_or(Other),
+                    Safe,
+                ),
+                None => s("clojure", "Start a Clojure REPL", Dev, Safe),
+            }
+        }
+        "stack" => match sub {
+            Some("build") => s("stack", "Build with Stack", Build, Safe),
+            Some("test") => s("stack", "Run tests with Stack", Test, Safe),
+            Some("run") | Some("exec") => s("stack", "Run the executable with Stack", Run, Safe),
+            Some("ghci") | Some("repl") => {
+                s("stack", "Open GHCi with the project loaded", Dev, Safe)
+            }
+            Some(x) => s("stack", format!("Run stack {x}"), Other, Safe),
+            None => s("stack", "Run Stack", Other, Safe),
+        },
+        "cabal" => match sub {
+            Some("build") => s("cabal", "Build with Cabal", Build, Safe),
+            Some("test") => s("cabal", "Run tests with Cabal", Test, Safe),
+            Some("run") => s("cabal", "Run the executable with Cabal", Run, Safe),
+            Some("repl") => s("cabal", "Open GHCi with Cabal", Dev, Safe),
+            Some("upload") => s("cabal", "Upload the package to Hackage", Publish, External),
+            Some(x) => s("cabal", format!("Run cabal {x}"), Other, Safe),
+            None => s("cabal", "Run Cabal", Other, Safe),
+        },
+        "hlint" => s("hlint", "Check Haskell source with HLint", Lint, Safe),
+        "ormolu" | "fourmolu" => s(program, "Format Haskell source", Format, Safe),
+        "dune" => match sub {
+            Some("build") => s("dune", "Build with dune", Build, Safe),
+            Some("test") | Some("runtest") => s("dune", "Run tests with dune", Test, Safe),
+            Some("exec") => s("dune", "Run the executable with dune", Run, Safe),
+            Some("fmt") => s("dune", "Format OCaml source with dune", Format, Safe),
+            Some(x) => s("dune", format!("Run dune {x}"), Other, Safe),
+            None => s("dune", "Run dune", Other, Safe),
+        },
+        "nimble" => match sub {
+            Some("build") => s("nimble", "Build with Nimble", Build, Safe),
+            Some("test") => s("nimble", "Run tests with Nimble", Test, Safe),
+            Some("install") => s("nimble", "Install Nim dependencies", Install, Safe),
+            Some(x) => s("nimble", format!("Run nimble {x}"), Other, Safe),
+            None => s("nimble", "Run Nimble", Other, Safe),
+        },
+        "ctest" => s("ctest", "Run CTest tests", Test, Safe),
+        "meson" => s(
+            "meson",
+            format!("Run meson {}", sub.unwrap_or("setup")),
+            Build,
+            Safe,
+        ),
+        "clang-format" => s(
+            "clang-format",
+            "Format C/C++ sources with clang-format",
+            Format,
+            Safe,
+        ),
+        "clang-tidy" => s(
+            "clang-tidy",
+            "Check C/C++ sources with clang-tidy",
+            Lint,
+            Safe,
+        ),
+        "cppcheck" => s(
+            "cppcheck",
+            "Analyse C/C++ sources with cppcheck",
+            Lint,
+            Safe,
+        ),
+        "iex" => s("iex", "Open an IEx shell", Dev, Safe),
+        "dbt" => match sub {
+            Some("run") => s("dbt", "Run dbt models against the warehouse", Db, External),
+            Some("build") => s("dbt", "Build dbt models, tests and seeds", Db, External),
+            Some("test") => s("dbt", "Run dbt tests", Test, External),
+            Some("seed") => s("dbt", "Load dbt seed data into the warehouse", Db, External),
+            Some("snapshot") => s("dbt", "Run dbt snapshots", Db, External),
+            Some("compile") => s("dbt", "Compile dbt models", Build, Safe),
+            Some("docs") => s("dbt", "Generate or serve dbt docs", Docs, Safe),
+            Some("deps") => s("dbt", "Install dbt packages", Install, Safe),
+            Some("debug") | Some("parse") | Some("ls") | Some("list") => {
+                s("dbt", "Inspect the dbt project", Other, Safe)
+            }
+            Some("clean") => s("dbt", "Delete dbt artifacts", Clean, Safe),
+            Some(x) => s("dbt", format!("Run dbt {x}"), Db, Safe),
+            None => s("dbt", "Run dbt", Db, Safe),
+        },
+        "sqlfluff" => s(
+            "sqlfluff",
+            if sub == Some("fix") {
+                "Fix SQL style issues with SQLFluff"
+            } else {
+                "Lint SQL with SQLFluff"
+            },
+            Lint,
+            Safe,
+        ),
+        "dagger" => match sub {
+            Some("call") => s(
+                "dagger",
+                format!(
+                    "Run the {} Dagger function",
+                    a.positionals().get(1).copied().unwrap_or("")
+                )
+                .trim()
+                .to_string(),
+                Other,
+                Safe,
+            ),
+            Some("run") => s("dagger", "Run a Dagger pipeline", Other, Safe),
+            Some(x) => s("dagger", format!("Run dagger {x}"), Other, Safe),
+            None => s("dagger", "Run Dagger", Other, Safe),
+        },
+        "earthly" => s(
+            "earthly",
+            format!(
+                "Run the {} Earthly target",
+                a.positionals().first().copied().unwrap_or("default")
+            ),
+            Build,
+            if a.has("--push") { External } else { Safe },
+        ),
+        "garden" => match sub {
+            Some("deploy") => s("garden", "Deploy with Garden", Deploy, External),
+            Some("test") => s("garden", "Run tests with Garden", Test, External),
+            Some("build") => s("garden", "Build with Garden", Build, Safe),
+            Some(x) => s("garden", format!("Run garden {x}"), Infra, External),
+            None => s("garden", "Run Garden", Infra, Safe),
+        },
+        "rabbitmqadmin" | "rabbitmqctl" => {
+            let p = a.positionals();
+            if p.iter().any(|x| {
+                x.starts_with("delete") || x.starts_with("purge") || x.starts_with("reset")
+            }) {
+                s("rabbitmq", "Delete RabbitMQ resources", Infra, Destructive)
+            } else if p.iter().any(|x| x.starts_with("declare")) {
+                s("rabbitmq", "Declare RabbitMQ resources", Infra, External)
+            } else {
+                s("rabbitmq", "Inspect RabbitMQ", Infra, External)
+            }
+        }
+        "nats" => {
+            let p = a.positionals();
+            if p.iter()
+                .any(|x| *x == "rm" || *x == "purge" || *x == "delete")
+            {
+                s("nats", "Delete NATS resources", Infra, Destructive)
+            } else if p.first() == Some(&"server") {
+                s("nats", "Manage the NATS server", Infra, Safe)
+            } else {
+                s("nats", "Interact with NATS", Infra, External)
+            }
+        }
+        "nats-server" => s("nats", "Start a NATS server", Infra, Safe),
+        "invoke" | "inv" => s(
+            "invoke",
+            format!("Run the {} invoke task", sub.unwrap_or("default")),
+            Other,
+            Safe,
+        ),
         "mkcert" => s("mkcert", "Create local TLS certificates", Other, Safe),
         "ngrok" | "cloudflared" => s(
             program,
