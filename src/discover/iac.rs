@@ -96,6 +96,10 @@ impl Discoverer for Iac {
                     });
                 let bin = if tofu { "tofu" } else { "terraform" };
                 let name = if tofu { "OpenTofu" } else { "Terraform" };
+                if let Some((v, f)) = terraform_required_version(dir) {
+                    let source = if at_base { f } else { format!("{rel}/{f}") };
+                    out.version(bin, v, source);
+                }
                 let p = pre("tf");
                 let t = |sub: &str| format!("{bin}{chdir} {sub}");
                 let infra = Category::Infrastructure;

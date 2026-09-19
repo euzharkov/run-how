@@ -90,6 +90,9 @@ impl Discoverer for Ruby {
         let mut out = Discovery::default();
         let gemfile = base.read("Gemfile").unwrap_or_default();
         let bundler = base.has("Gemfile");
+        if let Some(v) = base.read(".ruby-version") {
+            out.version("ruby", v.trim(), ".ruby-version");
+        }
         let be = |cmd: &str| {
             if bundler {
                 format!("bundle exec {cmd}")

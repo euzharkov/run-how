@@ -39,6 +39,14 @@ impl Discoverer for Php {
             })
             .unwrap_or_default();
         let dep = |n: &str| deps.iter().any(|d| d == n);
+        if let Some(v) = composer
+            .as_ref()
+            .and_then(|c| c.get("require"))
+            .and_then(|r| r.get("php"))
+            .and_then(|v| v.as_str())
+        {
+            out.version("php", v, "composer.json");
+        }
         let mut declared: Vec<String> = Vec::new();
 
         if let Some(scripts) = composer

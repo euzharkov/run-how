@@ -251,6 +251,14 @@ impl Discoverer for Python {
         let py: Option<Value> = base
             .read("pyproject.toml")
             .and_then(|t| toml::from_str(&t).ok());
+        if let Some(rp) = py
+            .as_ref()
+            .and_then(|p| p.get("project"))
+            .and_then(|p| p.get("requires-python"))
+            .and_then(|v| v.as_str())
+        {
+            out.version("python", rp, "pyproject.toml");
+        }
         let r = runner(base, py.as_ref());
         let pre = r.prefix();
         let tool = r.tool();

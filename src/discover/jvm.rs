@@ -190,6 +190,17 @@ impl Discoverer for Jvm {
             } else {
                 "gradle".to_string()
             };
+            // Only the wrapper-owning root carries `gradle/wrapper/gradle-wrapper.properties`;
+            // sub-projects share it, so record it once from there.
+            if member.is_none() {
+                if let Some(props) = crate::repo::read_text(
+                    &root.path.join("gradle/wrapper/gradle-wrapper.properties"),
+                ) {
+                    if let Some(v) = gradle_wrapper_version(&props) {
+                        out.version("gradle", v, "gradle/wrapper/gradle-wrapper.properties");
+                    }
+                }
+            }
             let g = |task: &str| {
                 format!("{wrapper} {path}:{task}")
                     .replace(" :", " ")

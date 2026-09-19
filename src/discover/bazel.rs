@@ -35,6 +35,9 @@ impl Discoverer for Bazel {
             } else {
                 "bazel"
             };
+            if let Some(v) = base.read(".bazelversion") {
+                out.version("bazel", v.trim(), ".bazelversion");
+            }
             let b = |s: &str| format!("{bin} {s}");
             out.actions.push(
                 Action::new("build", b("build //..."))
