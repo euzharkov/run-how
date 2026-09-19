@@ -265,6 +265,15 @@ impl Discoverer for DotNet {
             let text = base.read(pf).unwrap_or_default();
             let fl = flavor(&text);
             let pname = stem(pf);
+            let tfms = tag(&text, "TargetFramework").or_else(|| tag(&text, "TargetFrameworks"));
+            for tfm in tfms
+                .iter()
+                .flat_map(|v| v.split(';'))
+                .map(str::trim)
+                .filter(|v| !v.is_empty())
+            {
+                out.version("dotnet-tfm", tfm, *pf);
+            }
             let target = if multi || !slns.is_empty() {
                 format!(" {}", super::q(pf))
             } else {

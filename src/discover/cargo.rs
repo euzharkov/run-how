@@ -106,6 +106,18 @@ impl Discoverer for Cargo {
         let virtual_ws = is_ws_root && pkg.is_none();
         let member_of = workspace_root(ctx, base);
 
+        // `edition` may be set directly, or inherited from `[workspace.package]`.
+        let edition = pkg
+            .and_then(|p| p.get("edition"))
+            .or_else(|| {
+                m.get("workspace")
+                    .and_then(|w| w.get("package"))
+                    .and_then(|p| p.get("edition"))
+            })
+            .and_then(|e| e.as_str());
+        if let Some(e) = edition {
+            out.version("cargo-edition", e, "Cargo.toml");
+        }
 
         // How to address this crate.
         let (sel, cwd): (String, Option<String>) = match (&member_of, &name) {

@@ -127,9 +127,19 @@ impl Discoverer for Taskfile {
         let Some(text) = base.read(file) else {
             return out;
         };
+        let root_doc = serde_yaml::from_str::<Value>(&text).ok();
+        if let Some(v) = root_doc.as_ref().and_then(|doc| {
+            doc.get("version").and_then(|v| {
+                v.as_str()
+                    .map(|s| s.to_string())
+                    .or_else(|| v.as_f64().map(|f| f.to_string()))
+            })
+        }) {
+            out.version("taskfile", v, file);
+        }
         let mut tasks = parse_tasks(&text, "");
         // One level of includes.
-        if let Ok(doc) = serde_yaml::from_str::<Value>(&text) {
+        if let Some(doc) = &root_doc {
             if let Some(inc) = doc.get("includes").and_then(|i| i.as_mapping()) {
                 for (k, v) in inc {
                     let Some(ns) = k.as_str() else { continue };

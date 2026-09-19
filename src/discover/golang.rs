@@ -7,6 +7,13 @@ use crate::repo::DirInfo;
 
 pub struct Go;
 
+/// The `go 1.NN` directive from `go.mod` or `go.work`, whichever `file` names.
+fn go_directive(dir: &DirInfo, file: &str) -> Option<String> {
+    let text = dir.read(file)?;
+    let line = text.lines().find(|l| l.trim_start().starts_with("go "))?;
+    Some(line.trim().trim_start_matches("go ").trim().to_string())
+}
+
 fn module_name(dir: &DirInfo) -> Option<String> {
     let text = dir.read("go.mod")?;
     let line = text
@@ -51,6 +58,10 @@ impl Discoverer for Go {
         let mut out = Discovery::default();
         let workspace = base.has("go.work") && !base.has("go.mod");
         let name = module_name(base).unwrap_or_else(|| base.name().to_string());
+        let version_file = if workspace { "go.work" } else { "go.mod" };
+        if let Some(v) = go_directive(base, version_file) {
+            out.version("go", v, version_file);
+        }
         let scope = if workspace {
             "the Go workspace"
         } else {
