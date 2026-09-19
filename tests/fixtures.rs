@@ -151,3 +151,98 @@ fn discovery_is_read_only() {
     assert_eq!(before, after);
 }
 
+#[test]
+fn declared_versions_are_extracted_and_compared() {
+    use rhow::support::{self, Compat};
+
+    // Baselines: the existing fixtures use edition 2021, Go 1.22, net8.0, Taskfile schema 3,
+    // Node >=18, pnpm 9.x/9.12, Terraform >= 1.6 — all at or below what `support::REGISTRY`
+    // has been verified against, so nothing here should read as "newer".
+    let checks: &[(&str, &[(&str, &str)])] = &[
+        ("cargo", &[("cargo-edition", "2021")]),
+        ("go", &[("go", "1.22")]),
+        ("dotnet", &[("dotnet-tfm", "net8.0")]),
+        ("taskfile", &[("taskfile", "3")]),
+        ("terraform", &[("terraform", ">= 1.6")]),
+        ("pnpm-monorepo", &[("pnpm", "9.12.0")]),
+        ("php-composer", &[("php", "^8.1")]),
+        ("ruby-rails", &[("ruby", "3.2.0")]),
+        ("npm-basic", &[("npm", "10.5.0")]),
+        ("yarn-workspace", &[("yarn", "4.1.0")]),
+        ("bun", &[("bun", "1.1.0")]),
+        ("gradle", &[("gradle", "8.9")]),
+        ("bazel", &[("bazel", "7.1.0")]),
+    ];
+    for (fixture_name, expected) in checks {
+        let repo = discover(
+            &fixture(fixture_name),
+            &Options {
+                probe_runtime: false,
+                host_os: "linux",
+            },
+        );
+        let findings = support::check(&repo);
+        for (tool, value) in *expected {
+            let f = findings
+                .iter()
+                .find(|f| f.tool == *tool)
+                .unwrap_or_else(|| {
+                    panic!("{fixture_name}: no `{tool}` finding (got {findings:?})")
+                });
+            assert_eq!(f.value, *value, "{fixture_name}: {tool} value");
+            assert_eq!(
+                f.compat,
+                Compat::Supported,
+                "{fixture_name}: {tool} = {} should be Supported",
+                f.value
+            );
+        }
+    }
+}
+
+#[test]
+fn newer_than_verified_versions_are_flagged() {
+    use rhow::support::{self, Compat};
+
+    let repo = discover(
+        &fixture("version-drift"),
+        &Options {
+            probe_runtime: false,
+            host_os: "linux",
+        },
+    );
+    let findings = support::check(&repo);
+    let expect: &[(&str, &str)] = &[
+        ("cargo-edition", "2024"),
+        ("go", "1.26"),
+        ("dotnet-tfm", "net10.0"),
+        ("taskfile", "4"),
+        ("python", ">=3.15"),
+        ("node", ">=24"),
+        ("pnpm", "10.0.0"),
+        ("php", "^8.5"),
+        ("ruby", "3.5.0"),
+        ("bazel", "8.0.0"),
+        ("gradle", "9.0"),
+        ("terraform", ">= 2.0"),
+    ];
+    for (tool, value) in expect {
+        let f = findings
+            .iter()
+            .find(|f| f.tool == *tool)
+            .unwrap_or_else(|| panic!("version-drift: no `{tool}` finding (got {findings:?})"));
+        assert_eq!(f.value, *value, "version-drift: {tool} value");
+        assert_eq!(
+            f.compat,
+            Compat::Newer,
+            "version-drift: {tool} = {} should read Newer",
+            f.value
+        );
+    }
+    // Every declared version in this fixture is deliberately past the baseline: nothing should
+    // slip through as Supported, and none of these forms should be ambiguous either.
+    assert!(
+        findings.iter().all(|f| f.compat == Compat::Newer),
+        "unexpected non-Newer finding: {findings:?}"
+    );
+}

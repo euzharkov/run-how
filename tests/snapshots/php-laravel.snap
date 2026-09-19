@@ -6,6 +6,7 @@ expression: table
 dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server
 test                     Testing        declared exact  safe        .          composer test :: Run PHP tests
 analyse                  Quality        declared exact  safe        .          composer analyse :: Static analysis with PHPStan
+stan:strict              Quality        declared exact  safe        .          composer stan:strict :: Analyse PHP code with PHPStan (level 8)
 lint                     Quality        declared exact  safe        .          composer lint :: Check PHP code style with Pint
 tinker                   Development    inferred medium safe        .          php artisan tinker :: Open the Laravel REPL
 migrate                  Database       inferred high   safe        .          php artisan migrate :: Apply Laravel migrations

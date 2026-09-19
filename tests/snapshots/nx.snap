@@ -14,6 +14,8 @@ api                      Development    declared exact  safe        .          n
 api:build                Build          declared exact  safe        .          nx run api:build :: Build with esbuild
 api:test                 Testing        declared exact  safe        .          nx run api:test :: Run Jest tests
 api:docker               Infrastructure declared exact  safe        .          nx run api:docker :: Build the Docker image
+api:ci                   Quality        declared exact  safe        .          nx run api:ci :: Run linting, type checks, and tests
+api:release              Release        declared exact  safe        .          nx run api:release :: Run the release task
 ## apps/web [web] Workspace tools=nx
 web                      Development    declared exact  safe        .          nx run web:serve :: Serve the app with Vite
 web:build                Build          declared exact  safe        .          nx run web:build :: Build with Vite
