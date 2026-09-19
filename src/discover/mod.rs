@@ -110,6 +110,7 @@ pub struct Script {
 pub struct Discovery {
     pub actions: Vec<Action>,
     pub scripts: Vec<Script>,
+    pub versions: Vec<ToolVersion>,
 }
 
 impl Discovery {
@@ -118,6 +119,21 @@ impl Discovery {
             family,
             name: name.to_string(),
             body: body.to_string(),
+        });
+    }
+
+    /// Record a version/schema the project declares for itself, for `rhow support` to check
+    /// against [`crate::support`]. `tool` must match a `support::Entry::id`.
+    pub fn version(
+        &mut self,
+        tool: &'static str,
+        value: impl Into<String>,
+        source: impl Into<String>,
+    ) {
+        self.versions.push(ToolVersion {
+            tool,
+            value: value.into(),
+            source: source.into(),
         });
     }
 }
@@ -275,6 +291,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
         };
         let mut actions = Vec::new();
         let mut scripts = Vec::new();
+        let mut versions = Vec::new();
         let mut tools: Vec<&'static str> = Vec::new();
         for (ki, d) in discs.iter().enumerate() {
             let Some(idxs) = groups.get(&(di, ki)) else {
@@ -295,11 +312,14 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             }
             actions.extend(disc.actions);
             scripts.extend(disc.scripts);
+            versions.extend(disc.versions);
         }
-        // A non-root project that ends up with no actions at all is noise, not a finding
-        // (e.g. a bare `composer.json` with no scripts, deps, or artisan). The root project is
+        // A non-root project that ends up with no actions AND no declared version is noise,
+        // not a finding (e.g. a bare `composer.json` with no scripts, deps, or artisan). One
+        // that only carries a declared version (a `pyproject.toml` with `requires-python` and
+        // nothing else to run) is still worth keeping for `rhow support`. The root project is
         // always kept so `rhow` still explains why nothing was found.
-        if di != 0 && actions.is_empty() {
+        if di != 0 && actions.is_empty() && versions.is_empty() {
             continue;
         }
         projects.push(Project {
@@ -308,6 +328,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             kind,
             tools,
             actions,
+            versions,
         });
         project_scripts.push(scripts);
     }

@@ -233,6 +233,21 @@ impl Action {
     }
 }
 
+/// A version or schema value a project declares for itself (a Cargo edition, a `go.mod`
+/// directive, a Taskfile schema, a `required_version` constraint, …), read from a file the
+/// project's own adapter already parses. This is what `rhow support` compares against the
+/// [`crate::support`] registry to tell a still-current config from one that has moved past
+/// what this build of `rhow` has been verified against.
+#[derive(Debug, Clone, Serialize)]
+pub struct ToolVersion {
+    /// Matches a [`crate::support::Entry::id`].
+    pub tool: &'static str,
+    /// The declared value, exactly as written (`"2021"`, `"1.22"`, `">= 1.9"`, `"net9.0"`, …).
+    pub value: String,
+    /// The file it was read from, relative to the project.
+    pub source: String,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Project {
     pub name: String,
@@ -242,6 +257,8 @@ pub struct Project {
     /// Every tool family that contributed actions (`npm`, `make`, `compose`, …).
     pub tools: Vec<&'static str>,
     pub actions: Vec<Action>,
+    /// Versions/schemas this project declares for itself, for `rhow support` to check.
+    pub versions: Vec<ToolVersion>,
 }
 
 impl Project {
