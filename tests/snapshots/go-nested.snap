@@ -1,0 +1,20 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [go-nested] Go tools=go
+build                    Build          inferred high   safe        .          go build ./... :: Build Go packages
+test                     Testing        inferred high   safe        .          go test ./... :: Run Go tests
+vet                      Quality        inferred high   safe        .          go vet ./... :: Check Go source with go vet
+fmt                      Quality        inferred high   safe        .          go fmt ./... :: Format Go source
+tidy                     Other          inferred low    safe        .          go mod tidy :: Tidy Go module dependencies [download]
+run                      Development    inferred high   safe        .          go run . :: Run the Go svc program
+## tools/codegen [codegen] Go tools=go
+codegen:build            Build          inferred high   safe        hidden tools/codegen go build ./... :: Build Go packages
+codegen:test             Testing        inferred high   safe        hidden tools/codegen go test ./... :: Run Go tests
+codegen:vet              Quality        inferred high   safe        hidden tools/codegen go vet ./... :: Check Go source with go vet
+codegen:fmt              Quality        inferred high   safe        hidden tools/codegen go fmt ./... :: Format Go source
+codegen:tidy             Other          inferred low    safe        hidden tools/codegen go mod tidy :: Tidy Go module dependencies [download]
+codegen                  Development    inferred high   safe        tools/codegen go run . :: Run the Go codegen program
+codegen:generate         Build          inferred high   safe        tools/codegen go generate ./... :: Run go:generate directives

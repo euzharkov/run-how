@@ -7,11 +7,13 @@ use crate::repo::DirInfo;
 
 pub struct Go;
 
-/// The `go 1.NN` directive from `go.mod` or `go.work`, whichever `file` names.
-fn go_directive(dir: &DirInfo, file: &str) -> Option<String> {
-    let text = dir.read(file)?;
-    let line = text.lines().find(|l| l.trim_start().starts_with("go "))?;
-    Some(line.trim().trim_start_matches("go ").trim().to_string())
+/// The value of a top-level `name value` directive (`go 1.22`, `toolchain go1.22.5`).
+fn directive(text: &str, name: &str) -> Option<String> {
+    let line = text
+        .lines()
+        .map(str::trim)
+        .find(|l| l.strip_prefix(name).is_some_and(|r| r.starts_with(' ')))?;
+    Some(line[name.len()..].trim().to_string())
 }
 
 fn module_name(dir: &DirInfo) -> Option<String> {
@@ -27,12 +29,13 @@ fn module_name(dir: &DirInfo) -> Option<String> {
     Some(m.rsplit('/').next().unwrap_or(m).to_string())
 }
 
-fn is_main_package(path: &std::path::Path, files: &[String]) -> bool {
-    for f in files
+fn is_main_package(dir: &DirInfo) -> bool {
+    for f in dir
+        .files
         .iter()
         .filter(|f| f.ends_with(".go") && !f.ends_with("_test.go"))
     {
-        if let Some(text) = crate::repo::read_text(&path.join(f)) {
+        if let Some(text) = dir.read(f) {
             if text.lines().any(|l| l.trim() == "package main") {
                 return true;
             }
@@ -56,8 +59,19 @@ impl Discoverer for Go {
         let workspace = base.has("go.work") && !base.has("go.mod");
         let name = module_name(base).unwrap_or_else(|| base.name().to_string());
         let version_file = if workspace { "go.work" } else { "go.mod" };
-        if let Some(v) = go_directive(base, version_file) {
+        let text = ctx.text(base, version_file);
+        // `toolchain go1.22.5` is the version that actually runs; the `go` line is the
+        // language version the module needs. The toolchain is the stricter declaration.
+        if let Some(t) = text
+            .as_deref()
+            .and_then(|t| directive(t, "toolchain"))
+            .and_then(|t| t.strip_prefix("go").map(|v| v.to_string()))
+        {
+            out.version("go", t, format!("{version_file} (toolchain)"));
+        } else if let Some(v) = text.as_deref().and_then(|t| directive(t, "go")) {
             out.version("go", v, version_file);
+        } else if let Some((v, src)) = super::tool_version(ctx, base, "golang") {
+            out.version("go", v, src);
         }
         let scope = if workspace {
             "the Go workspace"
@@ -110,7 +124,7 @@ impl Discoverer for Go {
         }
         // run targets
         let subtree = ctx.descendants(base);
-        if is_main_package(&base.path, &base.files) {
+        if is_main_package(base) {
             out.actions.push(
                 Action::new("run", "go run .")
                     .tool("go")
@@ -126,7 +140,7 @@ impl Discoverer for Go {
                     d.rel_to(base, "").starts_with("cmd/")
                         && d.rel_to(base, "").matches('/').count() == 1
                 })
-                .filter(|d| is_main_package(&d.path, &d.files))
+                .filter(|d| is_main_package(d))
                 .collect();
             cmds.sort_by(|a, b| a.rel.cmp(&b.rel));
             let single = cmds.len() == 1;
@@ -147,11 +161,22 @@ impl Discoverer for Go {
                 );
             }
         }
-        // generate only when directives exist (nested modules are skipped: they have their own go.mod)
+        // generate only when directives exist. A nested module (its own `go.mod`) is its own
+        // project: its whole subtree is skipped here, so its files are read once, by it.
+        let nested: Vec<&DirInfo> = subtree
+            .iter()
+            .copied()
+            .filter(|d| d.has("go.mod"))
+            .collect();
+        let in_nested = |d: &DirInfo| {
+            nested
+                .iter()
+                .any(|n| d.rel == n.rel || d.rel.starts_with(&format!("{}/", n.rel)))
+        };
         let mut has_generate = false;
         let mut scanned = 0usize;
         'outer: for d in std::iter::once(base).chain(subtree.iter().copied()) {
-            if d.rel != base.rel && d.has("go.mod") {
+            if d.rel != base.rel && in_nested(d) {
                 continue;
             }
             for f in d.files.iter().filter(|f| f.ends_with(".go")) {
@@ -159,7 +184,7 @@ impl Discoverer for Go {
                 if scanned > 4000 {
                     break 'outer;
                 }
-                if let Some(text) = crate::repo::read_text(&d.path.join(f)) {
+                if let Some(text) = d.read(f) {
                     if text.contains("//go:generate") {
                         has_generate = true;
                         break 'outer;

@@ -83,6 +83,7 @@ fixture_tests!(
     many,
     ci,
     ruby_gem,
+    go_nested,
 );
 
 #[test]
