@@ -7,6 +7,9 @@ ruby-rails
 
   bundle exec rake import          Import the product catalogue from CSV
   bundle exec rake reports:weekly  Send the weekly sales report
+  bundle exec rake db:seed:demo    Seed demo accounts
+  bundle exec rake db:reindex      Rebuild the search index
+  bundle exec rake data:anonymise  Anonymise customer records for staging
   bin/dev                          Start the Rails app and its dev processes  ∞ long-running
   bin/rails server                 Start the Rails server  ∞ long-running
   bin/rails console                Open the Rails console  ∞ long-running
