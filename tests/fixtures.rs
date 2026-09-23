@@ -82,6 +82,7 @@ fixture_tests!(
     noise,
     many,
     ci,
+    ruby_gem,
 );
 
 #[test]

@@ -6,6 +6,9 @@ expression: table
 ## . [ruby-rails] Ruby tools=rake,rails,ruby
 import                   Other          declared exact  safe        .          bundle exec rake import :: Import the product catalogue from CSV
 reports:weekly           Other          declared exact  safe        .          bundle exec rake reports:weekly :: Send the weekly sales report
+db:seed:demo             Database       declared exact  safe        .          bundle exec rake db:seed:demo :: Seed demo accounts
+db:reindex               Database       declared exact  safe        .          bundle exec rake db:reindex :: Rebuild the search index
+data:anonymise           Other          declared exact  safe        .          bundle exec rake data:anonymise :: Anonymise customer records for staging
 dev                      Development    inferred high   safe        .          bin/dev :: Start the Rails app and its dev processes [long-running]
 server                   Development    inferred medium safe        .          bin/rails server :: Start the Rails server [long-running]
 console                  Development    inferred high   safe        .          bin/rails console :: Open the Rails console [long-running]
