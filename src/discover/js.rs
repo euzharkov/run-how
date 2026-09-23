@@ -458,3 +458,19 @@ impl Discoverer for Js {
         out
     }
 }
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    #[test]
+    fn nvmrc_when_engines_are_absent() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let node = ctx.dir_at("node").unwrap();
+        let d = Js.discover(&ctx, node, &[node]);
+        let v = d.versions.iter().find(|v| v.tool == "node").unwrap();
+        assert_eq!((v.value.as_str(), v.source.as_str()), ("20.10.0", ".nvmrc"));
+        assert_eq!(node_version_file("lts/*\n"), None);
+    }
+}

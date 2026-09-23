@@ -363,3 +363,21 @@ impl Discoverer for Iac {
         out
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn terraform_version_file_is_a_declaration() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let tf = ctx.dir_at("tf").unwrap();
+        let d = Iac.discover(&ctx, tf, &[tf]);
+        let v = d.versions.iter().find(|v| v.tool == "terraform").unwrap();
+        assert_eq!(
+            (v.value.as_str(), v.source.as_str()),
+            ("1.8.2", ".terraform-version")
+        );
+    }
+}

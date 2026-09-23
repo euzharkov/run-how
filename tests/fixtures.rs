@@ -83,9 +83,10 @@ fixture_tests!(
     many,
     ci,
     ruby_gem,
-    go_nested,
     terraform_modules,
     terragrunt,
+    go_nested,
+    version_sources,
 );
 
 #[test]

@@ -210,3 +210,26 @@ impl Discoverer for Go {
         out
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn go_work_toolchain_wins_over_the_go_line() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let ws = ctx.dir_at("gowork").unwrap();
+        let d = Go.discover(&ctx, ws, &[ws]);
+        let v = d.versions.iter().find(|v| v.tool == "go").unwrap();
+        assert_eq!(
+            (v.value.as_str(), v.source.as_str()),
+            ("1.22.5", "go.work (toolchain)")
+        );
+        assert_eq!(
+            directive("module x\n\ngo 1.21\n", "go"),
+            Some("1.21".into())
+        );
+        assert_eq!(directive("golang 1\n", "go"), None);
+    }
+}

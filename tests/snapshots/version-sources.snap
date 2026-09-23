@@ -1,0 +1,29 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [version-sources] Root tools=terraform
+tf:init                  Infrastructure inferred medium safe        .          terraform -chdir=tf init :: Initialise the Terraform working directory
+tf:plan                  Infrastructure inferred high   external    .          terraform -chdir=tf plan :: Plan Terraform changes
+tf:apply                 Release        inferred high   external    .          terraform -chdir=tf apply :: Apply Terraform changes to infrastructure
+tf:destroy               Infrastructure inferred low    destructive .          terraform -chdir=tf destroy :: Destroy Terraform-managed infrastructure
+tf:validate              Quality        inferred low    safe        .          terraform -chdir=tf validate :: Validate the Terraform configuration
+tf:fmt                   Quality        inferred low    safe        .          terraform -chdir=tf fmt -recursive :: Format Terraform files
+## gowork [gowork] Go tools=go
+gowork:build             Build          inferred high   safe        gowork     go build ./... :: Build the Go workspace
+gowork:test              Testing        inferred high   safe        gowork     go test ./... :: Run Go tests
+gowork:vet               Quality        inferred high   safe        gowork     go vet ./... :: Check Go source with go vet
+gowork:fmt               Quality        inferred high   safe        gowork     go fmt ./... :: Format Go source
+gowork:tidy              Other          inferred low    safe        gowork     go mod tidy :: Tidy Go module dependencies [download]
+## gowork/api [api] Go tools=go
+api:build                Build          inferred high   safe        hidden gowork/api go build ./... :: Build Go packages
+api:test                 Testing        inferred high   safe        hidden gowork/api go test ./... :: Run Go tests
+api:vet                  Quality        inferred high   safe        hidden gowork/api go vet ./... :: Check Go source with go vet
+api:fmt                  Quality        inferred high   safe        hidden gowork/api go fmt ./... :: Format Go source
+api:tidy                 Other          inferred low    safe        hidden gowork/api go mod tidy :: Tidy Go module dependencies [download]
+## node [node] JavaScript tools=npm
+node:build               Build          declared exact  safe        node       npm run build :: Build the app with Vite
+## poetry [poetry] Python tools=
+## py [py] Python tools=
+## rb [rb] Ruby tools=

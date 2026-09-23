@@ -700,3 +700,44 @@ fn script_body(v: &Value) -> (String, Option<String>) {
         _ => (String::new(), None),
     }
 }
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    fn python_version(dir: &str) -> (String, String) {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let d = ctx.dir_at(dir).unwrap();
+        let disc = Python.discover(&ctx, d, &[d]);
+        let v = disc.versions.iter().find(|v| v.tool == "python").unwrap();
+        (v.value.clone(), v.source.clone())
+    }
+
+    #[test]
+    fn python_version_file_and_poetry_constraint() {
+        assert_eq!(
+            python_version("py"),
+            ("3.12.1".into(), ".python-version".into())
+        );
+        assert_eq!(
+            python_version("poetry"),
+            ("^3.11".into(), "pyproject.toml".into())
+        );
+        assert_eq!(
+            python_version_file("python-3.11.4\n"),
+            Some("3.11.4".into())
+        );
+    }
+
+    #[test]
+    fn workspace_member_uses_the_root_runner() {
+        let (root, dirs) = super::super::fixture_dirs("python-uv");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let lib = ctx.dir_at("packages/lib").unwrap();
+        assert_eq!(
+            runner(&ctx, lib, ctx.toml(lib, "pyproject.toml").as_deref()),
+            Runner::Uv
+        );
+    }
+}

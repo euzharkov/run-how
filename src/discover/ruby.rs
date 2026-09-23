@@ -333,3 +333,21 @@ mod tests {
         assert_eq!(names, ["db:seed:all", "db:migrate", "top"]);
     }
 }
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    #[test]
+    fn ruby_from_a_parent_tool_versions() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let rb = ctx.dir_at("rb").unwrap();
+        let d = Ruby.discover(&ctx, rb, &[rb]);
+        let v = d.versions.iter().find(|v| v.tool == "ruby").unwrap();
+        assert_eq!(
+            (v.value.as_str(), v.source.as_str()),
+            ("3.3.0", ".tool-versions")
+        );
+    }
+}
