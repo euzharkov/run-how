@@ -137,16 +137,17 @@ wins; otherwise `NO_COLOR` turns colour off, and `CLICOLOR_FORCE=1` or `FORCE_CO
 | Ecosystem | Detected from | Notes |
 |---|---|---|
 | JavaScript / TypeScript | `package.json`, lockfiles, `pnpm-workspace.yaml` | npm, pnpm, Yarn, Bun; workspaces become separate projects with correct filter commands |
-| Make | `Makefile`, `makefile`, `GNUmakefile` | `.PHONY` and `##` comments; file-like and internal targets hidden |
+| Make | `Makefile`, `makefile`, `GNUmakefile` | `.PHONY` and `##` comments, `include`d files; file-like and internal targets hidden |
 | Just | `justfile` | Comments, `[doc]`, `[private]`, `[group]`, aliases |
-| Taskfile | `Taskfile.yml` | `desc`/`summary`, `internal`, one level of `includes` |
+| Taskfile | `Taskfile.yml` | `desc`/`summary`, `internal`, one level of `includes` (`flatten` honoured) |
 | Python | `pyproject.toml`, `uv.lock`, `poetry.lock`, `pdm.lock`, `Pipfile`, `tox.ini`, `noxfile.py`, `manage.py`, … | uv/Poetry/PDM/Pipenv runners, pytest, Ruff, mypy, tox, nox, Django, `[project.scripts]`, PDM scripts, Poe tasks. `pip` is never a task |
 | Go | `go.mod`, `go.work` | build/test/vet/fmt, `run` per `cmd/*`, `generate` only when `//go:generate` exists |
 | Rust | `Cargo.toml`, `.cargo/config.toml` | run/build/test/check/clippy/fmt/bench, workspaces (`-p`), Cargo aliases |
-| Ruby / Rails | `Gemfile`, `Rakefile`, `bin/rails`, `config.ru` | Rake tasks with `desc`, `bin/dev`, server/console, db tasks, RSpec or Minitest, RuboCop, Brakeman |
+| Ruby / Rails | `Gemfile`, `Rakefile`, `bin/rails`, `config.ru` | Rake tasks with `desc` (including `lib/tasks/*.rake`), `bin/dev`, server/console, db tasks, RSpec or Minitest, RuboCop, Brakeman, gem build |
 | .NET | `*.sln`, `*.slnx`, `*.csproj`, `*.fsproj` | Solution vs project hierarchy, web/worker/exe/test flavours, EF Core, `*.ps1`/`*.cmd`/`*.bat` scripts, Cake and NUKE hooks |
 | Docker | `Dockerfile`, `compose.yml`, `docker-compose.yml` | Compose services become actions with image-aware descriptions (PostgreSQL, Kafka, Redis, …) |
-| Kubernetes | `Chart.yaml`, `kustomization.yaml`, manifest directories | Helm, Kustomize overlays, plain manifests. Discovery never contacts a cluster |
+| Kubernetes | `Chart.yaml`, `kustomization.yaml`, manifest directories | Helm, Kustomize overlays, plain manifests, Skaffold profiles. Discovery never contacts a cluster |
+| Terraform / Terragrunt | `*.tf`, `terragrunt.hcl` | One root per environment directory (`env/`, `envs/`, `stacks/`); Terragrunt units and `run-all` at the config root; five or more roots are a module library |
 
 Command analysis recognises well over a hundred tools (Vite, Next, Vitest, Jest, Playwright,
 Cypress, Detox, Maestro, ESLint, Prettier, tsc, Prisma, Drizzle, pytest, Ruff, mypy, uvicorn, Django, go, cargo, dotnet,
@@ -251,18 +252,18 @@ disagree.
 | Tool | Verified against | Read from |
 |---|---|---|
 | Rust / Cargo | editions 2015-2024 | Cargo.toml `edition` (own or inherited from `[workspace.package]`) |
-| Go | up to Go 1.26 | the `go` directive in go.mod / go.work |
+| Go | up to Go 1.26 | the `go` / `toolchain` directives in go.mod / go.work, .tool-versions |
 | .NET | net5.0-net10.0 (net48 and netstandard* recognised but not version-checked) | `<TargetFramework(s)>` in .csproj/.fsproj/.vbproj |
-| Python | up to Python 3.14 (compound constraints like `>=3.9,<4` are left unclear) | `project.requires-python` in pyproject.toml |
+| Python | up to Python 3.14 (compound constraints like `>=3.9,<4` are left unclear) | `project.requires-python` or `tool.poetry.dependencies.python` in pyproject.toml, .python-version, .tool-versions |
 | Taskfile | schema version 3 | `version:` in Taskfile.yml |
-| Node.js | up to Node 24 | `engines.node` in package.json |
+| Node.js | up to Node 24 | `engines.node` in package.json, .nvmrc, .node-version, .tool-versions |
 | npm | up to npm 11 | the `packageManager` field in package.json |
 | pnpm | up to pnpm 10 | the `packageManager` field in package.json, pnpm-workspace.yaml |
 | Yarn | up to Yarn 4 (Berry) | the `packageManager` field in package.json |
 | Bun | up to Bun 1 | the `packageManager` field in package.json, bun.lock(b) |
-| Ruby | up to Ruby 4.0 | .ruby-version |
+| Ruby | up to Ruby 4.0 | .ruby-version, .tool-versions |
 | PHP | up to PHP 8.5 | `require.php` in composer.json |
-| Terraform | up to Terraform 1.13 | `required_version` in a `terraform {}` block |
+| Terraform | up to Terraform 1.13 | `required_version` in a `terraform {}` block, .terraform-version, .tool-versions |
 | OpenTofu | up to OpenTofu 1.10 | `required_version` in a `terraform {}` block |
 | Gradle | up to Gradle 9.1 | gradle/wrapper/gradle-wrapper.properties `distributionUrl` |
 | Bazel | up to Bazel 8.3 | .bazelversion |
