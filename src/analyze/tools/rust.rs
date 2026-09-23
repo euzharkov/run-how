@@ -213,3 +213,25 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn cargo_arms() {
+        assert_eq!(
+            sum("cargo build --release").text,
+            "Build the Rust project in release mode"
+        );
+        assert_eq!(sum("cargo test -p api").text, "Run Rust tests for api");
+        assert_eq!(sum("cargo run --bin server").text, "Run the server binary");
+        assert_eq!(sum("cargo clippy --workspace").kind, Lint);
+        assert_eq!(sum("cargo fmt --check").text, "Check Rust formatting");
+        assert_eq!(sum("cargo publish").risk, External);
+        assert_eq!(sum("cargo clean").kind, Clean);
+        assert_eq!(sum("cargo nextest run").kind, Test);
+        assert_eq!(sum("rustfmt src/main.rs").kind, Format);
+    }
+}

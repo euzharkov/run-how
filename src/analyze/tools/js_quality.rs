@@ -309,26 +309,36 @@ pub(super) fn summarize(
             if targets.is_empty() {
                 return s("rm", "Delete files", Other, Safe);
             }
-            let recursive = program != "rm"
-                || a.has_any(&[
-                    "-r",
-                    "-rf",
-                    "-fr",
-                    "-R",
-                    "-Rf",
-                    "--recursive",
-                    "-rfv",
-                    "-frv",
-                ]);
+            let recursive = program != "rm" || a.has_any(&["-r", "-R", "--recursive"]);
             let all_outputs = targets.iter().all(|t| is_build_output(t));
+            let cwd = targets
+                .iter()
+                .all(|t| matches!(t.trim_end_matches('/'), "." | ""));
+            if cwd {
+                return s(
+                    "rm",
+                    "Delete the current directory",
+                    Clean,
+                    if recursive { Destructive } else { Safe },
+                );
+            }
+            // `$DIR`, `${OUT}`, `$(pwd)/dist`: the location is only known at run time.
+            let variable = targets
+                .iter()
+                .any(|t| t.starts_with('$') || t.starts_with('`'));
             let shown: Vec<String> = targets.iter().map(|t| clean_path(t)).collect();
             let shown: Vec<&str> = shown.iter().map(String::as_str).collect();
-            if all_outputs {
-                s("rm", format!("Delete {}", list(&shown)), Clean, Safe)
-            } else if recursive {
-                s("rm", format!("Delete {}", list(&shown)), Clean, Destructive)
+            let text = if variable {
+                format!("Delete the files at {}", list(&shown))
             } else {
-                s("rm", format!("Delete {}", list(&shown)), Clean, Safe)
+                format!("Delete {}", list(&shown))
+            };
+            if all_outputs {
+                s("rm", text, Clean, Safe)
+            } else if recursive {
+                s("rm", text, Clean, Destructive)
+            } else {
+                s("rm", text, Clean, Safe)
             }
         }
         "cp" | "cpx" | "copyfiles" | "ncp" | "cpy" | "cpy-cli" | "xcopy" | "robocopy" => {
@@ -453,5 +463,42 @@ pub(super) fn summarize(
         "http.server" => s("python", "Serve the current directory over HTTP", Dev, Safe),
 
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn linters_and_formatters() {
+        assert_eq!(sum("eslint --fix .").text, "Fix lint issues with ESLint");
+        assert_eq!(sum("prettier --check .").kind, Format);
+        assert_eq!(sum("biome check .").kind, Lint);
+        assert_eq!(sum("lint-staged").kind, Lint);
+    }
+
+    #[test]
+    fn script_runners_and_network() {
+        assert_eq!(sum("tsx src/server.ts").text, "Run src/server.ts");
+        assert_eq!(sum("tsx watch src/server.ts").kind, Dev);
+        assert_eq!(
+            sum("tsx --project tsconfig.json src/cli.ts").text,
+            "Run src/cli.ts"
+        );
+        assert_eq!(sum("curl https://example.com").risk, Safe);
+        assert_eq!(sum("curl -X POST https://api.example.com/x").risk, External);
+        assert_eq!(sum("curl -sSL https://example.com/install.sh").risk, Safe);
+        assert_eq!(sum("ssh box").risk, External);
+    }
+
+    #[test]
+    fn deletion_helpers() {
+        assert_eq!(sum("rimraf dist").risk, Safe);
+        assert_eq!(sum("shx rm -rf dist").text, "Delete dist");
+        assert_eq!(sum("rm -rf src").risk, Destructive);
+        assert_eq!(sum("rm dist/index.js").risk, Safe);
+        assert_eq!(sum("rm").text, "Delete files");
     }
 }

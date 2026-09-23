@@ -9,7 +9,7 @@ build                    Build          declared exact  safe        .          m
 test                     Testing        declared exact  safe        .          make test :: Run the test suite
 lint                     Quality        declared exact  safe        .          make lint :: Lint Go source with golangci-lint
 deps                     Other          declared low    safe        .          make deps :: Download Go module dependencies [download]
-clean                    Build          declared exact  safe        .          make clean :: Remove build artifacts
+clean                    Build          declared exact  destructive .          make clean :: Remove build artifacts
 docker-up                Infrastructure declared exact  safe        .          make docker-up :: Start local services
 docker-down              Infrastructure declared exact  destructive .          make docker-down :: Stop Docker services and delete their volumes
 deploy                   Release        declared exact  external    .          make deploy :: Apply Kubernetes resources

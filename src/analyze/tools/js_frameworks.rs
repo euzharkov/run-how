@@ -270,3 +270,32 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn web_frameworks() {
+        assert_eq!(sum("vite").kind, Dev);
+        assert_eq!(sum("vite build").text, "Build the app with Vite");
+        assert_eq!(sum("next dev").text, "Start the Next.js development server");
+        assert_eq!(sum("next build").kind, Build);
+        assert_eq!(sum("nuxt generate").text, "Generate the static Nuxt site");
+        assert_eq!(sum("astro check").kind, TypeCheck);
+    }
+
+    #[test]
+    fn mobile_and_desktop() {
+        assert_eq!(
+            sum("expo start --ios").text,
+            "Start the Expo development server for iOS"
+        );
+        assert_eq!(sum("eas build --platform ios").risk, External);
+        assert_eq!(sum("eas build --local").risk, Safe);
+        assert_eq!(sum("eas submit").kind, Publish);
+        assert_eq!(sum("react-native run-android").kind, Dev);
+        assert_eq!(sum("electron .").text, "Start the Electron app");
+    }
+}

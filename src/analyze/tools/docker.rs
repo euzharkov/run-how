@@ -19,20 +19,28 @@ pub(super) fn summarize(
         "docker" | "podman" | "nerdctl" => {
             let name = program;
             if sub == Some("compose") {
-                let rest: Vec<String> = a.after("compose").iter().map(|s| s.to_string()).collect();
-                let flags: Vec<String> = args
-                    .iter()
-                    .filter(|x| x.starts_with('-') || x.ends_with(".yml") || x.ends_with(".yaml"))
-                    .cloned()
-                    .collect();
-                let mut all = rest.clone();
-                all.extend(flags);
-                return compose(&all);
+                // Everything after the `compose` word is a Compose command line of its own.
+                let idx = args.iter().position(|x| x == "compose").unwrap_or(0);
+                return compose(&args[idx + 1..]);
             }
             match sub {
-                Some("build") | Some("buildx") => {
-                    s(name, "Build the Docker image", Container, Safe)
-                }
+                Some("build") => s(name, "Build the Docker image", Container, Safe),
+                Some("buildx") | Some("builder") => match a.positionals().get(1).copied() {
+                    Some("prune") => s(name, "Delete the Docker build cache", Clean, Destructive),
+                    Some("build") | None => s(name, "Build the Docker image", Container, Safe),
+                    Some("bake") => s(
+                        name,
+                        "Build Docker images from a bake file",
+                        Container,
+                        Safe,
+                    ),
+                    Some(x) => s(
+                        name,
+                        format!("Run {name} {} {x}", sub.unwrap()),
+                        Container,
+                        Safe,
+                    ),
+                },
                 Some("push") => s(
                     name,
                     "Push the Docker image to a registry",
@@ -173,5 +181,53 @@ pub(super) fn summarize(
         "act" => s("act", "Run GitHub Actions workflows locally", Test, Safe),
 
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn docker_arms() {
+        assert_eq!(sum("docker build -t app .").text, "Build the Docker image");
+        assert_eq!(sum("docker push ghcr.io/x/app").risk, External);
+        assert_eq!(sum("docker push ghcr.io/x/app").kind, Publish);
+        assert_eq!(sum("docker run --rm -it app").text, "Run a app container");
+        assert_eq!(
+            sum("docker system prune -af").text,
+            "Delete all unused Docker data"
+        );
+        assert_eq!(sum("docker volume prune").risk, Destructive);
+        assert_eq!(sum("docker image prune").risk, Safe);
+    }
+
+    #[test]
+    fn build_cache_prune_matches_system_prune() {
+        assert_eq!(
+            sum("docker builder prune").text,
+            "Delete the Docker build cache"
+        );
+        assert_eq!(sum("docker builder prune -af").risk, Destructive);
+        assert_eq!(sum("docker buildx prune").risk, Destructive);
+        assert_eq!(sum("docker buildx build .").risk, Safe);
+        assert_eq!(sum("docker buildx build .").text, "Build the Docker image");
+    }
+
+    #[test]
+    fn global_value_flags_do_not_shift_the_subcommand() {
+        assert_eq!(sum("docker -H ssh://box push app").risk, External);
+        assert_eq!(sum("docker --context prod ps").text, "List containers");
+        let c = sum("docker compose -f x.yml down -v");
+        assert_eq!(c.risk, Destructive);
+        assert_eq!(c.text, "Stop Docker services and delete their volumes");
+        assert_eq!(
+            sum("docker compose -f a.yml -f b.yml --profile dev up -d api").text,
+            "Start the api service in the background"
+        );
+        assert_eq!(sum("docker compose rm -fsv").risk, Destructive);
+        assert_eq!(sum("docker compose rm -f").risk, Safe);
+        assert_eq!(sum("colima delete").risk, Destructive);
     }
 }

@@ -355,3 +355,34 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn test_and_quality_tools() {
+        assert_eq!(sum("pytest").text, "Run Python tests");
+        assert_eq!(
+            sum("pytest tests/unit").text,
+            "Run Python tests in tests/unit"
+        );
+        assert_eq!(sum("pytest --cov").text, "Run Python tests with coverage");
+        assert_eq!(sum("ruff check --fix .").text, "Fix lint issues with Ruff");
+        assert_eq!(sum("ruff format --check .").kind, Format);
+        assert_eq!(sum("mypy src").kind, TypeCheck);
+    }
+
+    #[test]
+    fn environment_managers_and_publishing() {
+        assert_eq!(sum("uv sync").kind, Install);
+        assert_eq!(sum("uv publish").risk, External);
+        assert_eq!(
+            sum("poetry install").text,
+            "Install dependencies with Poetry"
+        );
+        assert_eq!(sum("twine upload dist/*").risk, External);
+        assert_eq!(sum("pdm test").kind, Test);
+    }
+}
