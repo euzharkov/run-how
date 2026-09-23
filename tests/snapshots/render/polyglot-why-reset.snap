@@ -1,0 +1,13 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+reset  Stop Docker services and delete their volumes (+2 more steps)
+  command     pnpm run reset
+  in          .
+  project     polyglot (.)
+  source      declared by the project (pnpm)
+  confidence  exact
+  risk        destructive
+  runs        docker compose -f docker/compose.yml down -v && docker compose -f docker/compose.yml up -d postgres && pnpm migrate

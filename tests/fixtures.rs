@@ -106,6 +106,7 @@ fn ids_are_unique_and_json_roundtrips() {
         assert_eq!(n, ids.len(), "duplicate ids in {name}");
         let json = rhow::ui::json::render(&repo);
         let v: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v["schema"], 1);
         assert!(v["projects"].is_array());
     }
 }
@@ -135,23 +136,44 @@ fn windows_host_prefers_windows_scripts() {
 
 #[test]
 fn discovery_is_read_only() {
-    // Walk the fixture tree before and after discovery and compare modification times.
-    fn stamp(dir: &std::path::Path, out: &mut Vec<(PathBuf, std::time::SystemTime)>) {
+    // Walk the fixture tree before and after discovery: the same entries, with the same
+    // sizes and modification times. A file created, removed, rewritten or touched by
+    // discovery would show up in one of the three.
+    #[derive(Debug, PartialEq)]
+    struct Entry {
+        path: PathBuf,
+        is_dir: bool,
+        len: u64,
+        modified: std::time::SystemTime,
+    }
+    fn stamp(dir: &std::path::Path, out: &mut Vec<Entry>) {
         for e in std::fs::read_dir(dir).unwrap().flatten() {
             let p = e.path();
-            out.push((p.clone(), e.metadata().unwrap().modified().unwrap()));
-            if p.is_dir() {
+            let m = e.metadata().unwrap();
+            out.push(Entry {
+                path: p.clone(),
+                is_dir: m.is_dir(),
+                len: m.len(),
+                modified: m.modified().unwrap(),
+            });
+            if m.is_dir() {
                 stamp(&p, out);
             }
         }
+        out.sort_by(|a, b| a.path.cmp(&b.path));
     }
-    let root = fixture("polyglot");
-    let mut before = Vec::new();
-    stamp(&root, &mut before);
-    let _ = discover(&root, &Options::default());
-    let mut after = Vec::new();
-    stamp(&root, &mut after);
-    assert_eq!(before, after);
+    for name in ["polyglot", "ci"] {
+        let root = fixture(name);
+        let mut before = Vec::new();
+        stamp(&root, &mut before);
+        assert!(!before.is_empty());
+        let _ = discover(&root, &Options::default());
+        let mut after = Vec::new();
+        stamp(&root, &mut after);
+        let files = |v: &[Entry]| v.iter().map(|e| e.path.clone()).collect::<Vec<_>>();
+        assert_eq!(files(&before), files(&after), "{name}: entries changed");
+        assert_eq!(before, after, "{name}: sizes or mtimes changed");
+    }
 }
 
 #[test]

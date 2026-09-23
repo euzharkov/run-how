@@ -1,0 +1,51 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+polyglot
+
+  pnpm run dev                                         Run dev in web, then run the api project  ∞ long-running
+  pnpm run test
+  pnpm run lint
+  pnpm run typecheck
+  pnpm run services                                    Start Docker services in the background
+  pnpm run kafka:topics                                List Kafka topics  [external]
+  pnpm run kafka:reset                                 Delete Kafka topics  [destructive]
+  pnpm run k8s:render                                  Render Kustomize manifests from k8s
+  pnpm run k8s:apply                                   Apply Kubernetes resources  [external]
+  pnpm run migrate                                     Apply EF Core migrations to the database
+  pnpm run reset                                       Stop Docker services and delete their volumes (+2 more steps)  [destructive]
+  docker compose -f docker/compose.yml up -d postgres  Start PostgreSQL
+  docker compose -f docker/compose.yml up -d kafka     Start local Kafka broker
+  docker compose -f docker/compose.yml logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f docker/compose.yml down            Stop and remove Docker services
+  ./scripts/setup.sh                                   Bootstrap a fresh development machine
+
+apps/api
+  dotnet run                 Start the .NET Api web app
+  dotnet build               Build the Api project
+  dotnet publish -c Release  Publish Api for deployment
+
+apps/api.tests
+  dotnet test  Run Api.Tests tests
+
+apps/web
+  pnpm run dev        Start the Vite development server  ∞ long-running
+  pnpm run build      Build the app with Vite
+  pnpm run test       Run Vitest tests
+  pnpm run test:e2e   Run Playwright end-to-end tests
+  pnpm run lint       Check source code with ESLint
+  pnpm run typecheck  Check TypeScript types
+
+packages/ui
+  pnpm run build  Build the package with tsup
+  pnpm run test   Run Vitest tests
+  pnpm run lint   Check source code with ESLint
+
+services/worker
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go run .        Run the Go worker program

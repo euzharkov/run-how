@@ -1,0 +1,13 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+dev  Run dev in web, then run the api project
+  command     pnpm run dev
+  in          .
+  project     polyglot (.)
+  source      declared by the project (pnpm)
+  confidence  exact
+  risk        safe
+  runs        concurrently -n web,api "pnpm --filter web dev" "dotnet run --project apps/api"

@@ -1,0 +1,13 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+deploy  Deploy the Cloudflare Worker
+  command     npm run deploy
+  in          .
+  project     ci (.)
+  source      declared by the project (npm)
+  confidence  exact
+  risk        external
+  runs        wrangler deploy

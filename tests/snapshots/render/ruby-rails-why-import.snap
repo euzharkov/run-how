@@ -1,0 +1,12 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+import  Import the product catalogue from CSV
+  command     bundle exec rake import
+  in          .
+  project     ruby-rails (.)
+  source      declared by the project (rake)
+  confidence  exact
+  risk        safe
