@@ -827,6 +827,99 @@ pub fn q(p: &str) -> String {
     }
 }
 
+/// Strip surrounding whitespace and one pair of matching quotes (`"…"` or `'…'`), the way
+/// a `desc "…"` / `description = '…'` line in a Rakefile, Fastfile, Gradle script or
+/// noxfile is written.
+pub fn unquote(s: &str) -> &str {
+    let s = s.trim();
+    for quote in ['"', '\''] {
+        if s.len() >= 2 && s.starts_with(quote) && s.ends_with(quote) {
+            return &s[1..s.len() - 1];
+        }
+    }
+    s
+}
+
+/// The id prefix for one of several helper directories attached to the same project
+/// (`docker/`, `deploy/dev/`, `infra/envs/prod/`). Derived from the directory's path below
+/// the project, never from a file's content: the shortest trailing run of path segments
+/// that no other attached directory shares, joined with `-`. `infra/envs/dev` alone among
+/// the group is `dev`; next to `deploy/dev` the two become `infra-dev` and `deploy-dev`.
+pub fn attach_prefix(ctx: &Context, base: &DirInfo, dir: &DirInfo, group: &[&DirInfo]) -> String {
+    let segs = |d: &DirInfo| -> Vec<String> {
+        ctx.rel_from(base, d)
+            .split('/')
+            .map(|s| s.to_string())
+            .collect()
+    };
+    let mine = segs(dir);
+    let others: Vec<Vec<String>> = group
+        .iter()
+        .filter(|d| d.rel != dir.rel && d.rel != base.rel)
+        .map(|d| segs(d))
+        .collect();
+    for n in 1..=mine.len() {
+        let tail = &mine[mine.len() - n..];
+        let clash = others
+            .iter()
+            .any(|o| o.len() >= n && &o[o.len() - n..] == tail);
+        if !clash {
+            return tail.join("-");
+        }
+    }
+    mine.join("-")
+}
+
+/// `path` (relative to `dir`, `/` or `\\` separated, e.g. `src/Api/Api.csproj`) as text,
+/// through the scan and the cache: `None` when the directory or the file is not there.
+pub fn text_at(ctx: &Context, dir: &DirInfo, path: &str) -> Option<Rc<str>> {
+    let path = path.replace('\\', "/");
+    let path = path.trim_start_matches("./");
+    match path.rsplit_once('/') {
+        None => ctx.text(dir, path),
+        Some((sub, file)) => ctx.text(ctx.child(dir, sub)?, file),
+    }
+}
+
+/// The version pinned for `tool` (asdf/mise naming: `nodejs`, `python`, `ruby`, `golang`,
+/// `terraform`) in the nearest `.tool-versions` at `dir` or above it, with the path of the
+/// file it came from relative to `dir`.
+pub fn tool_version(ctx: &Context, dir: &DirInfo, tool: &str) -> Option<(String, String)> {
+    for a in ctx.ancestors(dir) {
+        let Some(text) = ctx.text(a, ".tool-versions") else {
+            continue;
+        };
+        for l in text.lines() {
+            let l = l.split('#').next().unwrap_or("").trim();
+            let mut parts = l.split_whitespace();
+            if parts.next() == Some(tool) {
+                if let Some(v) = parts.next() {
+                    // The source is the file's path from the repository root, so a pin
+                    // inherited from a parent directory is not mistaken for a local one.
+                    let source = if a.rel == "." {
+                        ".tool-versions".to_string()
+                    } else {
+                        format!("{}/.tool-versions", a.rel)
+                    };
+                    return Some((v.to_string(), source));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Scan a fixture repository under `fixtures/` for an adapter's own unit tests; the caller
+/// builds a [`Context`] over the returned listing.
+#[cfg(test)]
+pub(crate) fn fixture_dirs(name: &str) -> (std::path::PathBuf, Vec<DirInfo>) {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("fixtures")
+        .join(name);
+    let dirs = repo::scan(&root);
+    (root, dirs)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -847,6 +940,52 @@ mod tests {
             .iter()
             .flat_map(|p| p.actions.iter().map(|a| a.id.clone()))
             .collect()
+    }
+
+    #[test]
+    fn unquote_strips_one_matching_pair() {
+        assert_eq!(unquote("  \"Run it\" "), "Run it");
+        assert_eq!(unquote("'Run it'"), "Run it");
+        assert_eq!(unquote("\"mixed'"), "\"mixed'");
+        assert_eq!(unquote("plain"), "plain");
+    }
+
+    fn dir(rel: &str) -> DirInfo {
+        DirInfo {
+            path: std::path::PathBuf::from(rel),
+            rel: rel.to_string(),
+            depth: if rel == "." {
+                0
+            } else {
+                rel.matches('/').count() + 1
+            },
+            files: vec![],
+            dirs: vec![],
+            ignored: false,
+        }
+    }
+
+    #[test]
+    fn attach_prefix_is_the_shortest_unique_path_tail() {
+        let dirs = vec![
+            dir("."),
+            dir("env"),
+            dir("env/staging"),
+            dir("infra"),
+            dir("infra/envs"),
+            dir("infra/envs/dev"),
+            dir("stacks"),
+            dir("stacks/dev"),
+        ];
+        let root = Path::new(".");
+        let ctx = Context::new(root, &dirs, "linux");
+        let base = &dirs[0];
+        let group: Vec<&DirInfo> = vec![&dirs[2], &dirs[5], &dirs[7]];
+        assert_eq!(attach_prefix(&ctx, base, group[0], &group), "staging");
+        assert_eq!(attach_prefix(&ctx, base, group[1], &group), "envs-dev");
+        assert_eq!(attach_prefix(&ctx, base, group[2], &group), "stacks-dev");
+        // Alone in its group a directory keeps its own name.
+        assert_eq!(attach_prefix(&ctx, base, group[1], &group[1..2]), "dev");
     }
 
     #[test]
