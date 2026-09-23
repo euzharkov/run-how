@@ -118,21 +118,56 @@ pub fn entry(id: &str) -> Option<&'static Entry> {
 // Comparators
 // ---------------------------------------------------------------------------------------
 
-fn leading_ints(s: &str) -> Vec<u32> {
-    s.split(|c: char| !c.is_ascii_digit())
+/// Implementations whose version number is their own, not the language's: `jruby-9.4.5.0`
+/// is JRuby 9.4, which implements Ruby 3.1, and `truffleruby-24.1.0` is a GraalVM release.
+/// Comparing those digits against a Ruby baseline would be a wrong verdict either way.
+const ENGINE_OWN_VERSION: &[&str] = &["jruby", "truffleruby"];
+
+/// The numeric components of a declared version, or `None` when the text cannot be reduced
+/// to one version safely.
+///
+/// A leading implementation or tool prefix is stripped before the digits are read:
+/// `ruby-3.3.0`, `v18.17.0`, `node-20`, `python-3.12` and `go1.22` all name the tool's own
+/// version. A prefix naming an engine with its own numbering (see [`ENGINE_OWN_VERSION`])
+/// and a hyphen range without spaces (`1.2-1.5`) both give `None`: "unclear" is the only
+/// honest answer there.
+fn leading_ints(s: &str) -> Option<Vec<u32>> {
+    let s = s.trim();
+    let prefix_len = s
+        .find(|c: char| !c.is_ascii_alphabetic())
+        .unwrap_or(s.len());
+    let prefix = s[..prefix_len].to_ascii_lowercase();
+    if ENGINE_OWN_VERSION.contains(&prefix.as_str()) {
+        return None;
+    }
+    let rest = s[prefix_len..].trim_start_matches(['-', '_', ' ']);
+    // `1.2-1.5`: a digit on both sides of a hyphen is a range, not a version. `8.0-windows`
+    // and `3.12-dev` are not.
+    let bytes = rest.as_bytes();
+    if (1..bytes.len().saturating_sub(1))
+        .any(|i| bytes[i] == b'-' && bytes[i - 1].is_ascii_digit() && bytes[i + 1].is_ascii_digit())
+    {
+        return None;
+    }
+    let got: Vec<u32> = rest
+        .split(|c: char| !c.is_ascii_digit())
         .filter(|p| !p.is_empty())
         .filter_map(|p| p.parse().ok())
-        .collect()
+        .collect();
+    if got.is_empty() {
+        None
+    } else {
+        Some(got)
+    }
 }
 
 /// Compare against a fixed "verified up to" tuple, using only as many numeric components as
 /// the declared value provides (so `"1.22"` against a baseline of `(1, 23, 0)` compares just
 /// major.minor). An empty or non-numeric value is `Unclear`, never guessed at.
 fn at_most(declared: &str, max: &[u32]) -> Compat {
-    let got = leading_ints(declared);
-    if got.is_empty() {
+    let Some(got) = leading_ints(declared) else {
         return Compat::Unclear;
-    }
+    };
     for (g, m) in got.iter().zip(max.iter()) {
         if g > m {
             return Compat::Newer;
@@ -293,6 +328,38 @@ mod tests {
         assert_eq!(check("node", ">=18 <21 || >=22"), Compat::Unclear);
         assert_eq!(check("terraform", "~> 1.9"), Compat::Supported);
         assert_eq!(check("terraform", ">= 1.6, < 2.0"), Compat::Unclear);
+    }
+
+    #[test]
+    fn engine_prefixes_are_stripped_or_refused() {
+        // The tool's own version behind a prefix compares normally.
+        assert_eq!(check("ruby", "ruby-3.3.0"), Compat::Supported);
+        assert_eq!(check("ruby", "ruby-4.1.0"), Compat::Newer);
+        assert_eq!(check("node", "v18.17.0"), Compat::Supported);
+        assert_eq!(check("node", "v18"), Compat::Supported);
+        assert_eq!(check("node", "node-20"), Compat::Supported);
+        assert_eq!(check("node", "v25"), Compat::Newer);
+        assert_eq!(check("python", "python-3.12"), Compat::Supported);
+        assert_eq!(check("go", "go1.22"), Compat::Supported);
+        // An engine's own numbering says nothing about the language version: no verdict,
+        // and in particular never "newer than verified".
+        assert_eq!(check("ruby", "jruby-9.4.5.0"), Compat::Unclear);
+        assert_eq!(check("ruby", "truffleruby-24.1.0"), Compat::Unclear);
+        assert_eq!(check("ruby", "JRuby-9.4.5.0"), Compat::Unclear);
+    }
+
+    #[test]
+    fn version_shapes_that_are_not_one_version() {
+        assert_eq!(check("python", "~=3.12"), Compat::Supported);
+        assert_eq!(check("python", "==3.12.*"), Compat::Supported);
+        assert_eq!(check("node", "18.x"), Compat::Supported);
+        assert_eq!(check("node", "lts/*"), Compat::Unclear);
+        assert_eq!(check("node", ">=18 <21"), Compat::Unclear);
+        assert_eq!(check("node", "1.2-1.5"), Compat::Unclear);
+        assert_eq!(check("ruby", "3.2-3.3"), Compat::Unclear);
+        assert_eq!(check("dotnet-tfm", "net8.0-windows"), Compat::Supported);
+        assert_eq!(check("dotnet-tfm", "net11.0-android"), Compat::Newer);
+        assert_eq!(check("python", "3.12-dev"), Compat::Supported);
     }
 
     #[test]
