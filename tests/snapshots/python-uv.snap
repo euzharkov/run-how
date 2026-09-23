@@ -13,3 +13,5 @@ format                   Quality        inferred high   safe        .          u
 typecheck                Quality        inferred high   safe        .          uv run mypy . :: Run static type checking with mypy
 pre-commit               Quality        inferred medium safe        .          uv run pre-commit run --all-files :: Run pre-commit hooks on all files
 dev                      Development    inferred medium safe        .          uv run uvicorn main:app --reload :: Start main:app with Uvicorn and auto-reload [long-running]
+## packages/lib [lib] Python tools=uv
+lib:test                 Testing        inferred high   safe        hidden packages/lib uv run pytest :: Run Python tests
