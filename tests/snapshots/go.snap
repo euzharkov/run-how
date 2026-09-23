@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [go] Go tools=go
+## . [go] Go tools=go techs=Go
 build                    Build          inferred high   safe        .          go build ./... :: Build Go packages
 test                     Testing        inferred high   safe        .          go test ./... :: Run Go tests
 vet                      Quality        inferred high   safe        .          go vet ./... :: Check Go source with go vet

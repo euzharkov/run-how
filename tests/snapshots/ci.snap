@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [ci] JavaScript tools=npm
+## . [ci] JavaScript tools=npm techs=Node.js,Vite,Vitest,Cloudflare Workers
 dev                      Development    declared exact  safe        .          npm run dev :: Start the Vite development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Vitest tests
 build                    Build          declared exact  safe        .          npm run build :: Build the app with Vite

@@ -1,8 +1,9 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
-## . [swiftpm] Mobile tools=swift
+## . [swiftpm] Mobile tools=swift techs=Swift
 build                    Build          inferred high   safe        .          swift build :: Build the Swift package
 test                     Testing        inferred high   safe        .          swift test :: Run Swift tests
 run                      Development    inferred high   safe        .          swift run :: Run the Swift executable

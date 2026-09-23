@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [tricky] JavaScript tools=npm,make
+## . [tricky] JavaScript tools=npm,make techs=Node.js,Jest,Vitest,webpack,Docker
 build                    Build          declared exact  safe        .          npm run build :: Bundle with webpack
 test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests with coverage and run Vitest tests
 test:unit                Testing        declared exact  safe        .          npm run test:unit :: Run Jest tests with coverage

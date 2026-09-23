@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [taskfile] Taskfile tools=task
+## . [taskfile] Taskfile tools=task techs=Go,Fly.io,Docker
 default                  Other          declared exact  safe        .          task default :: Run the default task
 build                    Build          declared exact  safe        .          task build :: Build the Go binary
 test                     Testing        declared exact  safe        .          task test :: Run unit tests
@@ -16,9 +16,9 @@ services                 Infrastructure declared exact  safe        .          t
 docs:serve               Development    declared exact  safe        .          task docs:serve :: Serve the docs site [long-running]
 docs:build               Build          declared exact  safe        .          task docs:build :: Build the MkDocs site
 fmt                      Quality        declared exact  safe        .          task fmt :: Format Go source
-## docs [docs] Taskfile tools=task
+## docs [docs] Taskfile tools=task techs=
 docs                     Development    declared exact  safe        docs       task serve :: Serve the docs site [long-running]
 docs:task:build          Build          declared exact  safe        docs       task build :: Build the MkDocs site
-## tools [tools] Taskfile tools=task
+## tools [tools] Taskfile tools=task techs=
 tools:fmt                Quality        declared exact  safe        tools      task fmt :: Format Go source
 tools:test               Testing        declared exact  safe        tools      task test :: Would shadow the root test task

@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [clojure] Other tools=clojure
+## . [clojure] Other tools=clojure techs=Clojure
 test                     Testing        inferred medium safe        .          clojure -M:test :: Run the test deps.edn alias
 dev                      Development    inferred medium safe        .          clojure -M:dev :: Run the dev deps.edn alias [long-running]
 build                    Build          inferred medium safe        .          clojure -X:build :: Run the build deps.edn alias

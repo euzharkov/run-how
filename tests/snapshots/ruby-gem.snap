@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [ruby-gem] Ruby tools=rake,ruby
+## . [ruby-gem] Ruby tools=rake,ruby techs=Ruby
 default                  Other          declared exact  safe        .          bundle exec rake default :: Run the default Rake task
 test                     Testing        inferred high   safe        .          bundle exec rspec :: Run RSpec tests
 lint                     Quality        inferred high   safe        .          bundle exec rubocop :: Check Ruby source with RuboCop

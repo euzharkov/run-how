@@ -141,6 +141,9 @@ pub fn render(repo: &Repo, style: &Style, opts: &RenderOptions) -> String {
     let hidden = repo.all_actions().count() - shown.len();
 
     out.push_str(&style.bold(&repo.name));
+    if let Some(root) = repo.projects.first().filter(|p| p.is_root()) {
+        out.push_str(&techs_tag(root, style));
+    }
     out.push('\n');
 
     if shown.is_empty() {
@@ -219,7 +222,7 @@ pub fn render(repo: &Repo, style: &Style, opts: &RenderOptions) -> String {
         } else if !opts.group {
             out.push('\n');
             if !p.is_root() {
-                out.push_str(&style.bold(&p.path));
+                out.push_str(&title(p, style));
                 out.push('\n');
             }
             for a in &block {
@@ -231,7 +234,7 @@ pub fn render(repo: &Repo, style: &Style, opts: &RenderOptions) -> String {
             // The root's actions sit directly under the repository name; nested projects
             // get a title with their path.
             if !p.is_root() {
-                out.push_str(&style.bold(&p.path));
+                out.push_str(&title(p, style));
                 out.push('\n');
             }
             for cat in GROUP_ORDER {
@@ -516,16 +519,32 @@ pub fn render_why(repo: &Repo, id: &str, style: &Style) -> Option<String> {
     Some(o)
 }
 
+/// A project's title line: its path, then the technologies it visibly uses
+/// (`apps/api  [.NET, Kafka, Docker]`).
+fn title(p: &Project, style: &Style) -> String {
+    format!("{}{}", style.bold(&p.path), techs_tag(p, style))
+}
+
+/// `  [.NET, Kafka, Docker]`, or nothing when the project names no technology.
+fn techs_tag(p: &Project, style: &Style) -> String {
+    if p.techs.is_empty() {
+        String::new()
+    } else {
+        format!("  {}", style.dim(&format!("[{}]", p.techs.join(", "))))
+    }
+}
+
 /// Deterministic tabular dump used by snapshot tests.
 pub fn debug_table(repo: &Repo) -> String {
     let mut o = String::new();
     for p in &repo.projects {
         o.push_str(&format!(
-            "## {} [{}] {:?} tools={}\n",
+            "## {} [{}] {:?} tools={} techs={}\n",
             p.path,
             p.name,
             p.kind,
-            p.tools.join(",")
+            p.tools.join(","),
+            p.techs.join(",")
         ));
         for a in &p.actions {
             let notes: Vec<&str> = a.notes.iter().map(|n| n.label()).collect();
@@ -601,6 +620,7 @@ mod tests {
                 path: ".".into(),
                 kind: ProjectKind::JavaScript,
                 tools: vec!["npm"],
+                techs: vec![],
                 actions,
                 versions: vec![],
             }],

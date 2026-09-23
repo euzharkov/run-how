@@ -3,7 +3,7 @@ source: tests/render.rs
 assertion_line: 33
 expression: out
 ---
-ci
+ci  [Node.js, Vite, Vitest, Cloudflare Workers]
 
   npm run dev      Start the Vite development server  ∞ long-running
   npm run test     Run Vitest tests

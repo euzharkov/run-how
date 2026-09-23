@@ -1,8 +1,9 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
-## . [cargo] Rust tools=cargo
+## . [cargo] Rust tools=cargo techs=Rust
 run                      Development    inferred high   safe        .          cargo run :: Run the Rust program
 build                    Build          inferred high   safe        .          cargo build :: Build the crate
 test                     Testing        inferred high   safe        .          cargo test :: Run Rust tests

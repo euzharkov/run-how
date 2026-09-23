@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [mobile-maestro] JavaScript tools=maestro,npm
+## . [mobile-maestro] JavaScript tools=maestro,npm techs=Node.js,Expo,Maestro,Jest,Detox
 test:maestro             Testing        inferred high   safe        .          maestro test .maestro :: Run Maestro mobile end-to-end flows [device]
 start                    Development    declared exact  safe        .          npm run start :: Start the Expo development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests

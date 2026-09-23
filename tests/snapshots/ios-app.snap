@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [ios-app] Mobile tools=xcode,cocoapods,fastlane
+## . [ios-app] Mobile tools=xcode,cocoapods,fastlane techs=Xcode,Fastlane
 build                    Build          inferred low    safe        .          xcodebuild -project App.xcodeproj -scheme App -destination 'generic/platform=iOS Simulator' build :: Build the App scheme for the iOS Simulator [device]
 test                     Testing        inferred low    safe        .          xcodebuild -project App.xcodeproj -scheme App -destination 'platform=iOS Simulator,name=iPhone 15' test :: Run App tests in the iOS Simulator [device]
 pods                     Other          inferred medium safe        .          pod install :: Install CocoaPods dependencies

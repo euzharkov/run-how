@@ -3,8 +3,8 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [many] JavaScript tools=
-## app01 [app01] Mobile tools=flutter
+## . [many] JavaScript tools= techs=Node.js
+## app01 [app01] Mobile tools=flutter techs=Flutter
 app01                    Development    inferred high   safe        app01      flutter run :: Run the Flutter app [long-running,device]
 app01:test               Testing        inferred high   safe        hidden app01      flutter test :: Run Flutter tests
 app01:analyze            Quality        inferred high   safe        hidden app01      flutter analyze :: Analyze Dart source
@@ -12,7 +12,7 @@ app01:format             Quality        inferred medium safe        hidden app01
 app01:build:apk          Build          inferred medium safe        hidden app01      flutter build apk :: Build the Android APK
 app01:build:appbundle    Build          inferred low    safe        hidden app01      flutter build appbundle :: Build the Android App Bundle
 app01:pub:get            Other          inferred low    safe        hidden app01      flutter pub get :: Install Dart dependencies [download]
-## app02 [app02] Mobile tools=flutter
+## app02 [app02] Mobile tools=flutter techs=Flutter
 app02                    Development    inferred high   safe        app02      flutter run :: Run the Flutter app [long-running,device]
 app02:test               Testing        inferred high   safe        hidden app02      flutter test :: Run Flutter tests
 app02:analyze            Quality        inferred high   safe        hidden app02      flutter analyze :: Analyze Dart source
@@ -20,7 +20,7 @@ app02:format             Quality        inferred medium safe        hidden app02
 app02:build:apk          Build          inferred medium safe        hidden app02      flutter build apk :: Build the Android APK
 app02:build:appbundle    Build          inferred low    safe        hidden app02      flutter build appbundle :: Build the Android App Bundle
 app02:pub:get            Other          inferred low    safe        hidden app02      flutter pub get :: Install Dart dependencies [download]
-## app03 [app03] Mobile tools=flutter
+## app03 [app03] Mobile tools=flutter techs=Flutter
 app03                    Development    inferred high   safe        app03      flutter run :: Run the Flutter app [long-running,device]
 app03:test               Testing        inferred high   safe        hidden app03      flutter test :: Run Flutter tests
 app03:analyze            Quality        inferred high   safe        hidden app03      flutter analyze :: Analyze Dart source
@@ -28,7 +28,7 @@ app03:format             Quality        inferred medium safe        hidden app03
 app03:build:apk          Build          inferred medium safe        hidden app03      flutter build apk :: Build the Android APK
 app03:build:appbundle    Build          inferred low    safe        hidden app03      flutter build appbundle :: Build the Android App Bundle
 app03:pub:get            Other          inferred low    safe        hidden app03      flutter pub get :: Install Dart dependencies [download]
-## app04 [app04] Mobile tools=flutter
+## app04 [app04] Mobile tools=flutter techs=Flutter
 app04                    Development    inferred high   safe        app04      flutter run :: Run the Flutter app [long-running,device]
 app04:test               Testing        inferred high   safe        hidden app04      flutter test :: Run Flutter tests
 app04:analyze            Quality        inferred high   safe        hidden app04      flutter analyze :: Analyze Dart source
@@ -36,7 +36,7 @@ app04:format             Quality        inferred medium safe        hidden app04
 app04:build:apk          Build          inferred medium safe        hidden app04      flutter build apk :: Build the Android APK
 app04:build:appbundle    Build          inferred low    safe        hidden app04      flutter build appbundle :: Build the Android App Bundle
 app04:pub:get            Other          inferred low    safe        hidden app04      flutter pub get :: Install Dart dependencies [download]
-## app05 [app05] Mobile tools=flutter
+## app05 [app05] Mobile tools=flutter techs=Flutter
 app05                    Development    inferred high   safe        app05      flutter run :: Run the Flutter app [long-running,device]
 app05:test               Testing        inferred high   safe        hidden app05      flutter test :: Run Flutter tests
 app05:analyze            Quality        inferred high   safe        hidden app05      flutter analyze :: Analyze Dart source
@@ -44,7 +44,7 @@ app05:format             Quality        inferred medium safe        hidden app05
 app05:build:apk          Build          inferred medium safe        hidden app05      flutter build apk :: Build the Android APK
 app05:build:appbundle    Build          inferred low    safe        hidden app05      flutter build appbundle :: Build the Android App Bundle
 app05:pub:get            Other          inferred low    safe        hidden app05      flutter pub get :: Install Dart dependencies [download]
-## app06 [app06] Mobile tools=flutter
+## app06 [app06] Mobile tools=flutter techs=Flutter
 app06                    Development    inferred high   safe        app06      flutter run :: Run the Flutter app [long-running,device]
 app06:test               Testing        inferred high   safe        hidden app06      flutter test :: Run Flutter tests
 app06:analyze            Quality        inferred high   safe        hidden app06      flutter analyze :: Analyze Dart source
@@ -52,7 +52,7 @@ app06:format             Quality        inferred medium safe        hidden app06
 app06:build:apk          Build          inferred medium safe        hidden app06      flutter build apk :: Build the Android APK
 app06:build:appbundle    Build          inferred low    safe        hidden app06      flutter build appbundle :: Build the Android App Bundle
 app06:pub:get            Other          inferred low    safe        hidden app06      flutter pub get :: Install Dart dependencies [download]
-## app07 [app07] Mobile tools=flutter
+## app07 [app07] Mobile tools=flutter techs=Flutter
 app07                    Development    inferred high   safe        app07      flutter run :: Run the Flutter app [long-running,device]
 app07:test               Testing        inferred high   safe        hidden app07      flutter test :: Run Flutter tests
 app07:analyze            Quality        inferred high   safe        hidden app07      flutter analyze :: Analyze Dart source
@@ -60,7 +60,7 @@ app07:format             Quality        inferred medium safe        hidden app07
 app07:build:apk          Build          inferred medium safe        hidden app07      flutter build apk :: Build the Android APK
 app07:build:appbundle    Build          inferred low    safe        hidden app07      flutter build appbundle :: Build the Android App Bundle
 app07:pub:get            Other          inferred low    safe        hidden app07      flutter pub get :: Install Dart dependencies [download]
-## app08 [app08] Mobile tools=flutter
+## app08 [app08] Mobile tools=flutter techs=Flutter
 app08                    Development    inferred high   safe        app08      flutter run :: Run the Flutter app [long-running,device]
 app08:test               Testing        inferred high   safe        hidden app08      flutter test :: Run Flutter tests
 app08:analyze            Quality        inferred high   safe        hidden app08      flutter analyze :: Analyze Dart source
@@ -68,7 +68,7 @@ app08:format             Quality        inferred medium safe        hidden app08
 app08:build:apk          Build          inferred medium safe        hidden app08      flutter build apk :: Build the Android APK
 app08:build:appbundle    Build          inferred low    safe        hidden app08      flutter build appbundle :: Build the Android App Bundle
 app08:pub:get            Other          inferred low    safe        hidden app08      flutter pub get :: Install Dart dependencies [download]
-## app09 [app09] Mobile tools=flutter
+## app09 [app09] Mobile tools=flutter techs=Flutter
 app09                    Development    inferred high   safe        app09      flutter run :: Run the Flutter app [long-running,device]
 app09:test               Testing        inferred high   safe        hidden app09      flutter test :: Run Flutter tests
 app09:analyze            Quality        inferred high   safe        hidden app09      flutter analyze :: Analyze Dart source
@@ -76,7 +76,7 @@ app09:format             Quality        inferred medium safe        hidden app09
 app09:build:apk          Build          inferred medium safe        hidden app09      flutter build apk :: Build the Android APK
 app09:build:appbundle    Build          inferred low    safe        hidden app09      flutter build appbundle :: Build the Android App Bundle
 app09:pub:get            Other          inferred low    safe        hidden app09      flutter pub get :: Install Dart dependencies [download]
-## app10 [app10] Mobile tools=flutter
+## app10 [app10] Mobile tools=flutter techs=Flutter
 app10                    Development    inferred high   safe        app10      flutter run :: Run the Flutter app [long-running,device]
 app10:test               Testing        inferred high   safe        hidden app10      flutter test :: Run Flutter tests
 app10:analyze            Quality        inferred high   safe        hidden app10      flutter analyze :: Analyze Dart source
@@ -84,7 +84,7 @@ app10:format             Quality        inferred medium safe        hidden app10
 app10:build:apk          Build          inferred medium safe        hidden app10      flutter build apk :: Build the Android APK
 app10:build:appbundle    Build          inferred low    safe        hidden app10      flutter build appbundle :: Build the Android App Bundle
 app10:pub:get            Other          inferred low    safe        hidden app10      flutter pub get :: Install Dart dependencies [download]
-## app11 [app11] Mobile tools=flutter
+## app11 [app11] Mobile tools=flutter techs=Flutter
 app11                    Development    inferred high   safe        app11      flutter run :: Run the Flutter app [long-running,device]
 app11:test               Testing        inferred high   safe        hidden app11      flutter test :: Run Flutter tests
 app11:analyze            Quality        inferred high   safe        hidden app11      flutter analyze :: Analyze Dart source
@@ -92,7 +92,7 @@ app11:format             Quality        inferred medium safe        hidden app11
 app11:build:apk          Build          inferred medium safe        hidden app11      flutter build apk :: Build the Android APK
 app11:build:appbundle    Build          inferred low    safe        hidden app11      flutter build appbundle :: Build the Android App Bundle
 app11:pub:get            Other          inferred low    safe        hidden app11      flutter pub get :: Install Dart dependencies [download]
-## app12 [app12] Mobile tools=flutter
+## app12 [app12] Mobile tools=flutter techs=Flutter
 app12                    Development    inferred high   safe        app12      flutter run :: Run the Flutter app [long-running,device]
 app12:test               Testing        inferred high   safe        hidden app12      flutter test :: Run Flutter tests
 app12:analyze            Quality        inferred high   safe        hidden app12      flutter analyze :: Analyze Dart source
@@ -100,7 +100,7 @@ app12:format             Quality        inferred medium safe        hidden app12
 app12:build:apk          Build          inferred medium safe        hidden app12      flutter build apk :: Build the Android APK
 app12:build:appbundle    Build          inferred low    safe        hidden app12      flutter build appbundle :: Build the Android App Bundle
 app12:pub:get            Other          inferred low    safe        hidden app12      flutter pub get :: Install Dart dependencies [download]
-## app13 [app13] Mobile tools=flutter
+## app13 [app13] Mobile tools=flutter techs=Flutter
 app13                    Development    inferred high   safe        app13      flutter run :: Run the Flutter app [long-running,device]
 app13:test               Testing        inferred high   safe        hidden app13      flutter test :: Run Flutter tests
 app13:analyze            Quality        inferred high   safe        hidden app13      flutter analyze :: Analyze Dart source

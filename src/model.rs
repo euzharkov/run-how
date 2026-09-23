@@ -186,6 +186,10 @@ pub struct Action {
     /// "Run <program>" fallback that explains nothing, and the listing leaves it out. Kept
     /// in JSON so a consumer can leave it out too.
     pub opaque: bool,
+    /// Technologies this action visibly involves (`Kafka`, `PostgreSQL`, `Vitest`): adapter
+    /// hints plus what command analysis recognised. Aggregated into [`Project::techs`].
+    #[serde(skip)]
+    pub techs: Vec<String>,
 }
 
 impl Action {
@@ -207,7 +211,18 @@ impl Action {
             raw: None,
             explicit_description: false,
             opaque: false,
+            techs: Vec::new(),
         }
+    }
+
+    /// A technology the adapter knows this action involves (the image behind a Compose
+    /// service, for instance). Nothing the command text does not show.
+    pub fn tech(mut self, t: impl Into<String>) -> Self {
+        let t = t.into();
+        if !self.techs.contains(&t) {
+            self.techs.push(t);
+        }
+        self
     }
 
     /// A description declared by the project itself; takes precedence over analysis.
@@ -305,6 +320,10 @@ pub struct Project {
     pub kind: ProjectKind,
     /// Every tool family that contributed actions (`npm`, `make`, `compose`, …).
     pub tools: Vec<&'static str>,
+    /// The technologies the project visibly uses, most prominent first, at most five:
+    /// its language or platform, then what its commands and services name
+    /// (`[".NET", "Kafka", "Docker"]`). See [`crate::techs`].
+    pub techs: Vec<String>,
     pub actions: Vec<Action>,
     /// Versions/schemas this project declares for itself, for `rhow support` to check.
     pub versions: Vec<ToolVersion>,

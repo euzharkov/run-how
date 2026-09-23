@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [terraform-modules] Root tools=terraform
+## . [terraform-modules] Root tools=terraform techs=Terraform
 tf:init                  Infrastructure inferred medium safe        .          terraform init :: Initialise the Terraform working directory [download]
 tf:plan                  Infrastructure inferred high   external    .          terraform plan :: Plan Terraform changes
 tf:apply                 Release        inferred high   external    .          terraform apply :: Apply Terraform changes to infrastructure

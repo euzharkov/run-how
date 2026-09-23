@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [python-django] Python tools=django,poetry
+## . [python-django] Python tools=django,poetry techs=Python,Django
 dev                      Development    inferred high   safe        .          poetry run python manage.py runserver :: Start the Django development server [long-running]
 migrate                  Database       inferred high   safe        .          poetry run python manage.py migrate :: Apply Django database migrations
 makemigrations           Database       inferred high   safe        .          poetry run python manage.py makemigrations :: Create Django migrations from model changes

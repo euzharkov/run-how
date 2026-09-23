@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [elixir] Other tools=mix
+## . [elixir] Other tools=mix techs=Elixir
 dev                      Development    inferred high   safe        .          mix phx.server :: Start the Phoenix server [long-running]
 test                     Testing        inferred high   safe        .          mix test :: Run Elixir tests
 format                   Quality        inferred high   safe        .          mix format :: Format Elixir source

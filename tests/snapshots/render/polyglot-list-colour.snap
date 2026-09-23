@@ -3,7 +3,7 @@ source: tests/render.rs
 assertion_line: 33
 expression: out
 ---
-[1mpolyglot[0m
+[1mpolyglot[0m  [2m[Node.js, Docker, Kubernetes, Kafka, EF Core][0m
 
   [36mpnpm run dev                                       [0m  Run dev in web, then run the api project[2m  ∞ long-running[0m
   [36mpnpm run test                                      [0m
@@ -22,15 +22,15 @@ expression: out
   [36mdocker compose -f docker/compose.yml down          [0m  Stop and remove Docker services
   [36m./scripts/setup.sh                                 [0m  Bootstrap a fresh development machine
 
-[1mapps/api[0m
+[1mapps/api[0m  [2m[.NET][0m
   [36mdotnet run               [0m  Start the .NET Api web app
   [36mdotnet build             [0m  Build the Api project
   [36mdotnet publish -c Release[0m  Publish Api for deployment
 
-[1mapps/api.tests[0m
+[1mapps/api.tests[0m  [2m[.NET][0m
   [36mdotnet test[0m  Run Api.Tests tests
 
-[1mapps/web[0m
+[1mapps/web[0m  [2m[Node.js, Vite, Vitest, Playwright][0m
   [36mpnpm run dev      [0m  Start the Vite development server[2m  ∞ long-running[0m
   [36mpnpm run build    [0m  Build the app with Vite
   [36mpnpm run test     [0m  Run Vitest tests
@@ -38,12 +38,12 @@ expression: out
   [36mpnpm run lint     [0m  Check source code with ESLint
   [36mpnpm run typecheck[0m  Check TypeScript types
 
-[1mpackages/ui[0m
+[1mpackages/ui[0m  [2m[Node.js, Vitest][0m
   [36mpnpm run build[0m  Build the package with tsup
   [36mpnpm run test [0m  Run Vitest tests
   [36mpnpm run lint [0m  Check source code with ESLint
 
-[1mservices/worker[0m
+[1mservices/worker[0m  [2m[Go][0m
   [36mgo build ./...[0m
   [36mgo test ./... [0m  Run Go tests
   [36mgo vet ./...  [0m  Check Go source with go vet

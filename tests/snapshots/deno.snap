@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [deno] Deno tools=deno
+## . [deno] Deno tools=deno techs=Deno
 dev                      Development    declared exact  safe        .          deno task dev :: Run main.ts with Deno [long-running]
 start                    Development    declared exact  safe        .          deno task start :: Run main.ts with Deno
 check                    Quality        declared exact  safe        .          deno task check :: Type-check the entrypoint

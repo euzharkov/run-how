@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [gradle] Jvm tools=gradle
+## . [gradle] Jvm tools=gradle techs=JVM,Gradle
 generateDocs             Other          declared exact  safe        .          ./gradlew generateDocs :: Generate the API docs
 dev                      Development    inferred high   safe        .          ./gradlew bootRun :: Start the Spring Boot app
 build                    Build          inferred high   safe        .          ./gradlew build :: Build with Gradle
@@ -11,7 +11,7 @@ test                     Testing        inferred high   safe        .          .
 check                    Quality        inferred medium safe        .          ./gradlew check :: Run Gradle checks (tests and linters)
 clean                    Build          inferred low    safe        .          ./gradlew clean :: Delete Gradle build outputs
 tasks                    Other          inferred low    safe        .          ./gradlew tasks :: List all Gradle tasks
-## app [app] Jvm tools=gradle
+## app [app] Jvm tools=gradle techs=JVM,Gradle
 app                      Development    inferred high   safe        .          ./gradlew :app:installDebug :: Build and install the debug app on a device [device]
 app:build:debug          Build          inferred high   safe        .          ./gradlew :app:assembleDebug :: Build the debug APK
 app:build:release        Build          inferred medium safe        .          ./gradlew :app:assembleRelease :: Build the release APK
@@ -22,7 +22,7 @@ app:build                Build          inferred high   safe        hidden .    
 app:test                 Testing        inferred high   safe        hidden .          ./gradlew :app:test :: Run Gradle tests
 app:check                Quality        inferred medium safe        hidden .          ./gradlew :app:check :: Run Gradle checks (tests and linters)
 app:clean                Build          inferred low    safe        hidden .          ./gradlew :app:clean :: Delete Gradle build outputs
-## lib [lib] Jvm tools=gradle
+## lib [lib] Jvm tools=gradle techs=JVM,Gradle
 lib:integrationTest      Other          declared exact  safe        .          ./gradlew :lib:integrationTest :: Run the integrationTest Gradle task
 lib                      Development    inferred high   safe        .          ./gradlew :lib:bootRun :: Start the Spring Boot app
 lib:build                Build          inferred high   safe        hidden .          ./gradlew :lib:build :: Build with Gradle

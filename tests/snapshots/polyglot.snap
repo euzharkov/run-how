@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [polyglot] JavaScript tools=pnpm,compose,kubernetes,sh
+## . [polyglot] JavaScript tools=pnpm,compose,kubernetes,sh techs=Node.js,Docker,Kubernetes,Kafka,EF Core
 dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev in web, then run the api project [long-running]
 test                     Testing        declared exact  safe        .          pnpm run test :: Run test in all workspace packages
 lint                     Quality        declared exact  safe        .          pnpm run lint :: Run lint in all workspace packages
@@ -25,25 +25,25 @@ kubernetes:k8s:render    Infrastructure inferred high   safe        hidden .    
 kubernetes:k8s:apply     Release        inferred medium external    hidden .          kubectl apply -k k8s :: Apply resources to the cluster
 k8s:delete               Infrastructure inferred low    destructive .          kubectl delete -k k8s :: Delete resources from the cluster
 setup                    Other          inferred medium safe        .          ./scripts/setup.sh :: Bootstrap a fresh development machine
-## apps/api [api] DotNet tools=dotnet
+## apps/api [api] DotNet tools=dotnet techs=.NET
 api                      Development    inferred high   safe        apps/api   dotnet run :: Start the .NET Api web app
 api:watch                Development    inferred low    safe        apps/api   dotnet watch run :: Start Api with hot reload [long-running]
 api:build                Build          inferred high   safe        apps/api   dotnet build :: Build the Api project
 api:publish              Release        inferred medium safe        apps/api   dotnet publish -c Release :: Publish Api for deployment
-## apps/api.tests [api.tests] DotNet tools=dotnet
+## apps/api.tests [api.tests] DotNet tools=dotnet techs=.NET
 api.tests:test           Testing        inferred high   safe        apps/api.tests dotnet test :: Run Api.Tests tests
-## apps/web [web] JavaScript tools=pnpm
+## apps/web [web] JavaScript tools=pnpm techs=Node.js,Vite,Vitest,Playwright
 web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start the Vite development server [long-running]
 web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build the app with Vite
 web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
 web:test:e2e             Testing        declared exact  safe        apps/web   pnpm run test:e2e :: Run Playwright end-to-end tests
 web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Check source code with ESLint
 web:typecheck            Quality        declared exact  safe        apps/web   pnpm run typecheck :: Check TypeScript types
-## packages/ui [ui] JavaScript tools=pnpm
+## packages/ui [ui] JavaScript tools=pnpm techs=Node.js,Vitest
 ui:build                 Build          declared exact  safe        packages/ui pnpm run build :: Build the package with tsup
 ui:test                  Testing        declared exact  safe        packages/ui pnpm run test :: Run Vitest tests
 ui:lint                  Quality        declared exact  safe        packages/ui pnpm run lint :: Check source code with ESLint
-## services/worker [worker] Go tools=go
+## services/worker [worker] Go tools=go techs=Go
 worker:build             Build          inferred high   safe        services/worker go build ./... :: Build Go packages
 worker:test              Testing        inferred high   safe        services/worker go test ./... :: Run Go tests
 worker:vet               Quality        inferred high   safe        services/worker go vet ./... :: Check Go source with go vet

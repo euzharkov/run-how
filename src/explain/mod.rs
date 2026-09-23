@@ -328,6 +328,16 @@ pub fn finalize(a: &mut Action, resolver: Resolver) {
     if a.category == Category::Other {
         a.category = categorize(&analysis, &a.name);
     }
+    for t in analysis
+        .steps
+        .iter()
+        .filter_map(|s| s.tool.as_deref())
+        .filter_map(crate::techs::from_tool)
+    {
+        if !a.techs.iter().any(|x| x == t) {
+            a.techs.push(t.to_string());
+        }
+    }
     let r = risk::classify(&text, &analysis);
     a.risk = a.risk.max(r);
     a.notes = crate::notes::classify(&text, &analysis);

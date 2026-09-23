@@ -3,7 +3,7 @@ source: tests/render.rs
 assertion_line: 33
 expression: out
 ---
-noise
+noise  [Node.js, Rust, Kubernetes, PHP, Laravel]
 
   npm run lint                               Check source code with ESLint
   npm run deploy                             Run tools/deploy.ts
@@ -22,12 +22,12 @@ noise
   kubectl apply -f k8s/                      Apply resources to the cluster  [external]
   npm run compile --workspaces --if-present  Compile TypeScript sources in every workspace package
 
-mobile
+mobile  [Flutter]
   flutter run        Run the Flutter app  ∞ long-running  ⊙ device
   flutter test       Run Flutter tests
   flutter analyze    Analyze Dart source
   dart format .
   flutter build apk  Build the Android APK
 
-packages/lib
+packages/lib  [Node.js, Vitest]
   npm run build  Build the package with tsup

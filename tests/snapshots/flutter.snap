@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [flutter] Mobile tools=flutter
+## . [flutter] Mobile tools=flutter techs=Flutter
 run                      Development    inferred high   safe        .          flutter run :: Run the Flutter app [long-running,device]
 test                     Testing        inferred high   safe        .          flutter test :: Run Flutter tests
 analyze                  Quality        inferred high   safe        .          flutter analyze :: Analyze Dart source

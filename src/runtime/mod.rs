@@ -208,6 +208,7 @@ mod tests {
             path: ".".into(),
             kind: ProjectKind::Docker,
             tools: vec!["compose"],
+            techs: vec![],
             actions: commands
                 .iter()
                 .map(|c| Action::new("x", *c).cwd("."))

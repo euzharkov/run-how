@@ -478,6 +478,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             path: dir.rel.clone(),
             kind,
             tools,
+            techs: Vec::new(),
             actions,
             versions,
         });
@@ -501,6 +502,10 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     hide_workspace_fan_out(&mut projects);
     lift_repeated_package_scripts(&mut projects);
     hide_convention_in_large_repos(&mut projects);
+
+    for p in &mut projects {
+        p.techs = crate::techs::of_project(p.kind, &p.actions);
+    }
 
     // ---- identifiers -------------------------------------------------------------------
     assign_ids(&mut projects);
@@ -930,6 +935,7 @@ mod tests {
             path: path.into(),
             kind: ProjectKind::JavaScript,
             tools: vec![],
+            techs: vec![],
             actions,
             versions: vec![],
         }

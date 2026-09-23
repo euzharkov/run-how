@@ -3,7 +3,7 @@ source: tests/render.rs
 assertion_line: 33
 expression: out
 ---
-nx
+nx  [Node.js, Nx]
 
   npm run test
   nx run-many -t build
@@ -12,7 +12,7 @@ nx
   nx run-many -t format           Format source code with Prettier
   nx affected -t build test lint
 
-apps/api
+apps/api  [Nx, Docker, Vitest]
   nx run api:serve    Serve the app  ∞ long-running
   nx run api:build    Build with esbuild
   nx run api:test     Run Jest tests
@@ -20,7 +20,7 @@ apps/api
   nx run api:ci       Run linting, type checks, and tests
   nx run api:release
 
-apps/web
+apps/web  [Node.js, Nx, Vitest, Cloudflare Workers]
   npm run test       Run Vitest tests
   npm run typecheck  Check TypeScript types
   nx run web:serve   Serve the app with Vite  ∞ long-running

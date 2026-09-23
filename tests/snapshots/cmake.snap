@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [cmake] Other tools=cmake
+## . [cmake] Other tools=cmake techs=CMake
 configure                Build          inferred high   safe        .          cmake --preset dev :: Configure with the dev CMake preset
 build                    Build          inferred high   safe        .          cmake --build --preset dev :: Build with the dev CMake preset
 test                     Testing        inferred high   safe        .          ctest --preset dev :: Run CTest with the dev preset

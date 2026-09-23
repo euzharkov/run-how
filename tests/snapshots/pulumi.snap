@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [pulumi] JavaScript tools=npm,pulumi
+## . [pulumi] JavaScript tools=npm,pulumi techs=Node.js,Pulumi
 up                       Release        declared exact  external    .          npm run up :: Deploy the Pulumi stack
 pulumi:preview           Infrastructure inferred high   external    .          pulumi preview :: Preview Pulumi changes
 pulumi:up                Release        inferred high   external    hidden .          pulumi up :: Deploy the Pulumi stack

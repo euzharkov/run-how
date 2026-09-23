@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [terraform] JavaScript tools=npm,terraform
+## . [terraform] JavaScript tools=npm,terraform techs=Node.js,Terraform
 plan                     Infrastructure declared exact  external    .          npm run plan :: Plan Terraform changes
 tf:staging:init          Infrastructure inferred medium safe        .          terraform -chdir=env/staging init :: Initialise the Terraform working directory
 tf:staging:plan          Infrastructure inferred high   external    .          terraform -chdir=env/staging plan :: Plan Terraform changes

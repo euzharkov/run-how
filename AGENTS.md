@@ -106,6 +106,7 @@ cwd ─► repo::find_root ─► repo::scan ─► discover (adapters) ─► e
 | `src/explain/`  | Descriptions: explicit → command analysis → name heuristics → `Run <program>`                                                                                       |
 | `src/risk/`     | `safe` / `external` / `destructive` from tool evidence plus textual patterns                                                                                        |
 | `src/support/`  | Embeds `support.toml`; compares a repository's declared versions against it                                                                                         |
+| `src/techs.rs`  | Names the technologies a project visibly uses (kind, tool families, recognised tools, Compose images) for the title tag                                            |
 | `src/runtime/`  | Suggestions about the local machine (Colima, OrbStack, Podman, Docker Desktop)                                                                                      |
 | `src/ui/`       | Terminal rendering, `--json`, `rhow support`, `rhow <action>`                                                                                                       |
 | `src/model.rs`  | `Repo → Project → Action`, plus `ToolVersion`                                                                                                                       |

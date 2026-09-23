@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [terragrunt] Root tools=terragrunt
+## . [terragrunt] Root tools=terragrunt techs=Terragrunt
 tg:plan                  Infrastructure inferred medium external    .          terragrunt run-all plan :: Plan all Terragrunt units
 tg:dev:plan              Infrastructure inferred high   external    .          terragrunt plan --terragrunt-working-dir dev :: Plan Terragrunt changes
 tg:dev:apply             Release        inferred high   external    .          terragrunt apply --terragrunt-working-dir dev :: Apply Terragrunt changes to infrastructure

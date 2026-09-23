@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [haskell] Other tools=stack,haskell
+## . [haskell] Other tools=stack,haskell techs=Haskell
 build                    Build          inferred high   safe        .          stack build :: Build with Stack
 test                     Testing        inferred high   safe        .          stack test :: Run tests with Stack
 run                      Development    inferred medium safe        .          stack run :: Run the executable with Stack

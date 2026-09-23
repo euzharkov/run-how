@@ -3,7 +3,7 @@ source: tests/render.rs
 assertion_line: 33
 expression: out
 ---
-polyglot
+polyglot  [Node.js, Docker, Kubernetes, Kafka, EF Core]
 
   pnpm run dev                                         Run dev in web, then run the api project  ∞ long-running
   pnpm run test
@@ -22,15 +22,15 @@ polyglot
   docker compose -f docker/compose.yml down            Stop and remove Docker services
   ./scripts/setup.sh                                   Bootstrap a fresh development machine
 
-apps/api
+apps/api  [.NET]
   dotnet run                 Start the .NET Api web app
   dotnet build               Build the Api project
   dotnet publish -c Release  Publish Api for deployment
 
-apps/api.tests
+apps/api.tests  [.NET]
   dotnet test  Run Api.Tests tests
 
-apps/web
+apps/web  [Node.js, Vite, Vitest, Playwright]
   pnpm run dev        Start the Vite development server  ∞ long-running
   pnpm run build      Build the app with Vite
   pnpm run test       Run Vitest tests
@@ -38,12 +38,12 @@ apps/web
   pnpm run lint       Check source code with ESLint
   pnpm run typecheck  Check TypeScript types
 
-packages/ui
+packages/ui  [Node.js, Vitest]
   pnpm run build  Build the package with tsup
   pnpm run test   Run Vitest tests
   pnpm run lint   Check source code with ESLint
 
-services/worker
+services/worker  [Go]
   go build ./...
   go test ./...   Run Go tests
   go vet ./...    Check Go source with go vet

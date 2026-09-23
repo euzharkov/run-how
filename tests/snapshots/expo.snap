@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [expo] JavaScript tools=expo,eas,detox,npm
+## . [expo] JavaScript tools=expo,eas,detox,npm techs=Node.js,Expo,Detox,Jest
 ios                      Development    inferred high   safe        .          npx expo run:ios :: Build and run the app on iOS [long-running,device]
 android                  Development    inferred high   safe        .          npx expo run:android :: Build and run the app on Android [long-running,device]
 web                      Development    inferred medium safe        .          npx expo start --web :: Start the Expo app in the browser [long-running]

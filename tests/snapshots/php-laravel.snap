@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [php-laravel] Php tools=composer,artisan,php
+## . [php-laravel] Php tools=composer,artisan,php techs=PHP,Laravel
 dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server [long-running]
 test                     Testing        declared exact  safe        .          composer test :: Run PHP tests
 analyse                  Quality        declared exact  safe        .          composer analyse :: Static analysis with PHPStan
