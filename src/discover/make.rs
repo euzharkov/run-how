@@ -291,14 +291,15 @@ impl Discoverer for Make {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(FILES)
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let Some(file) = base.first_of(FILES) else {
             return out;
         };
-        let Some(text) = base.read(file) else {
+        let Some(text) = ctx.text(base, file) else {
             return out;
         };
+        let text = with_includes(ctx, base, &text);
         let targets = parse(&text);
         let vars = variables(&text);
         let has_phony = targets.iter().any(|t| t.phony);
@@ -348,6 +349,58 @@ impl Discoverer for Make {
         }
         out
     }
+}
+
+/// The makefile text followed by the files it `include`s (`include x.mk`, `-include`,
+/// `sinclude`): plain relative paths only, no variables or globs, three levels deep, each
+/// file once. Targets and `##` comments in an included file are the project's too.
+fn with_includes(ctx: &Context, base: &DirInfo, text: &str) -> String {
+    const MAX_DEPTH: usize = 3;
+    fn walk(
+        ctx: &Context,
+        base: &DirInfo,
+        text: &str,
+        depth: usize,
+        seen: &mut Vec<String>,
+        out: &mut String,
+    ) {
+        for line in text.lines() {
+            let t = line.trim();
+            let Some(rest) = ["-include", "sinclude", "include"]
+                .iter()
+                .find_map(|k| t.strip_prefix(k).filter(|r| r.starts_with([' ', '\t'])))
+            else {
+                continue;
+            };
+            for path in rest.split_whitespace() {
+                if path.contains(['$', '*', '?', '['])
+                    || path.starts_with('/')
+                    || path.contains("..")
+                {
+                    continue;
+                }
+                let path = path.trim_start_matches("./");
+                if seen.iter().any(|s| s == path) || depth >= MAX_DEPTH {
+                    continue;
+                }
+                let (dir, file) = match path.rsplit_once('/') {
+                    Some((sub, f)) => (ctx.child(base, sub), f),
+                    None => (Some(base), path),
+                };
+                let Some(inc) = dir.and_then(|d| ctx.text(d, file)) else {
+                    continue;
+                };
+                seen.push(path.to_string());
+                out.push('\n');
+                out.push_str(&inc);
+                walk(ctx, base, &inc, depth + 1, seen, out);
+            }
+        }
+    }
+    let mut out = text.to_string();
+    let mut seen = Vec::new();
+    walk(ctx, base, text, 0, &mut seen, &mut out);
+    out
 }
 
 #[cfg(test)]

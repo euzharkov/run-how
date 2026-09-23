@@ -39,3 +39,8 @@ $(BIN): build
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST)
+
+# Image and release helpers
+include mk/docker.mk
+-include local.mk
+include $(EXTRA_MK)

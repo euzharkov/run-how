@@ -15,3 +15,4 @@ docker-down              Infrastructure declared exact  destructive .          m
 deploy                   Release        declared exact  external    .          make deploy :: Apply Kubernetes resources
 _internal                Other          declared exact  safe        hidden .          make _internal :: Print a message
 help                     Other          declared exact  safe        .          make help :: Run the help make target
+image                    Infrastructure declared exact  safe        .          make image :: Build the Docker image
