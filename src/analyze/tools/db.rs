@@ -52,11 +52,13 @@ pub(super) fn summarize(
                 "prisma",
                 if a.has("--force-reset") {
                     "Reset the database from the Prisma schema"
+                } else if a.has("--accept-data-loss") {
+                    "Push the Prisma schema, accepting data loss"
                 } else {
                     "Push the Prisma schema to the database"
                 },
                 Db,
-                if a.has("--force-reset") {
+                if a.has("--force-reset") || a.has("--accept-data-loss") {
                     Destructive
                 } else {
                     Safe
@@ -186,6 +188,40 @@ pub(super) fn summarize(
             let name = program;
             let pos = a.positionals();
             let joined = pos.join(" ");
+            if name == "flyway" && pos.first() == Some(&"clean") {
+                // `flyway clean` drops every object in the configured schemas.
+                return s(
+                    "flyway",
+                    "Drop the database schema with Flyway",
+                    Db,
+                    Destructive,
+                );
+            }
+            if name == "atlas" {
+                // Atlas applies against the URL it is given, often a remote database.
+                match (pos.first().copied(), pos.get(1).copied()) {
+                    (Some("schema"), Some("apply")) => {
+                        return s("atlas", "Apply the schema with Atlas", Migrate, External)
+                    }
+                    (Some("migrate"), Some("apply")) => {
+                        return s(
+                            "atlas",
+                            "Apply pending migrations with Atlas",
+                            Migrate,
+                            External,
+                        )
+                    }
+                    (Some("schema"), Some("clean")) => {
+                        return s(
+                            "atlas",
+                            "Drop the database schema with Atlas",
+                            Db,
+                            Destructive,
+                        )
+                    }
+                    _ => {}
+                }
+            }
             let up = [
                 "up",
                 "migrate",
@@ -206,7 +242,12 @@ pub(super) fn summarize(
                 "revert",
                 "redo",
             ];
-            if down
+            if pos
+                .iter()
+                .any(|p| p.contains("status") || p.contains("current") || p.contains("history"))
+            {
+                s(name, format!("Show migration status with {name}"), Db, Safe)
+            } else if down
                 .iter()
                 .any(|d| joined.starts_with(d) || pos.contains(d))
             {
@@ -238,11 +279,6 @@ pub(super) fn summarize(
                     Migrate,
                     Safe,
                 )
-            } else if pos
-                .iter()
-                .any(|p| p.contains("status") || p.contains("current") || p.contains("history"))
-            {
-                s(name, format!("Show migration status with {name}"), Db, Safe)
             } else {
                 s(
                     name,
@@ -278,5 +314,65 @@ pub(super) fn summarize(
         }
 
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn prisma_arms() {
+        assert_eq!(
+            sum("prisma migrate deploy").text,
+            "Apply pending Prisma migrations"
+        );
+        assert_eq!(sum("prisma migrate deploy").kind, Migrate);
+        assert_eq!(sum("prisma migrate reset --force").risk, Destructive);
+        assert_eq!(sum("prisma db push").risk, Safe);
+        let loss = sum("prisma db push --accept-data-loss");
+        assert_eq!(loss.risk, Destructive);
+        assert_eq!(loss.text, "Push the Prisma schema, accepting data loss");
+        assert_eq!(sum("prisma db push --force-reset").risk, Destructive);
+        assert_eq!(sum("prisma generate").kind, Generate);
+    }
+
+    #[test]
+    fn flyway_and_atlas() {
+        let clean = sum("flyway clean");
+        assert_eq!(clean.risk, Destructive);
+        assert_eq!(clean.text, "Drop the database schema with Flyway");
+        let migrate = sum("flyway migrate");
+        assert_eq!(migrate.risk, Safe);
+        assert_eq!(migrate.kind, Migrate);
+        assert_eq!(migrate.text, "Apply pending migrations with flyway");
+        assert_eq!(sum("flyway info").risk, Safe);
+        let schema = sum("atlas schema apply --env local");
+        assert_eq!((schema.kind, schema.risk), (Migrate, External));
+        let mig = sum("atlas migrate apply --env local");
+        assert_eq!((mig.kind, mig.risk), (Migrate, External));
+        assert_eq!(mig.text, "Apply pending migrations with Atlas");
+        assert_eq!(sum("atlas migrate diff").risk, Safe);
+        assert_eq!(
+            sum("atlas migrate status").text,
+            "Show migration status with atlas"
+        );
+    }
+
+    #[test]
+    fn generic_migrators_and_shells() {
+        assert_eq!(sum("goose up").risk, Safe);
+        assert_eq!(sum("goose down").risk, Destructive);
+        assert_eq!(
+            sum("alembic upgrade head").text,
+            "Apply pending migrations with alembic"
+        );
+        assert_eq!(sum("knex migrate:rollback").risk, Destructive);
+        assert_eq!(sum("typeorm schema:drop").risk, Destructive);
+        assert_eq!(sum("psql -c 'DROP DATABASE app'").risk, Destructive);
+        assert_eq!(sum("psql -d app").text, "Open a psql session");
+        assert_eq!(sum("dropdb app").risk, Destructive);
+        assert_eq!(sum("pg_dump app").risk, Safe);
     }
 }
