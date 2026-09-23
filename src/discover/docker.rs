@@ -187,7 +187,7 @@ impl Discoverer for Docker {
             let pre = if at_base || !multi_dirs {
                 String::new()
             } else {
-                format!("{}:", dir.name())
+                format!("{}:", super::attach_prefix(ctx, base, dir, dirs))
             };
 
             // ---- Dockerfile ---------------------------------------------------------------
