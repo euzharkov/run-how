@@ -15,6 +15,12 @@ jobs:
       - run: |
           npm run build
           npx playwright test
+      - name: Clean with Python
+        shell: python
+        run: |
+          import shutil, subprocess
+          shutil.rmtree("build", ignore_errors=True)  # rm -rf build
+          subprocess.run(["git", "clean", "-fdx"], check=True)
   deploy:
     runs-on: ubuntu-latest
     steps:
