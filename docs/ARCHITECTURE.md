@@ -25,10 +25,19 @@ Key `Action` fields:
 
 ## Discovery
 
-`repo::scan` performs one read-only walk (max depth 10, ignoring `node_modules`, `target`,
-`dist`, `bin`, hidden directories, …) and caches every directory listing in a `DirInfo`.
-`Context` indexes the listing by relative path, so ancestor walks are O(depth), and caches
-parsed JSON manifests so workspace lookups parse each `package.json` once.
+`repo::scan` performs one read-only, depth-first walk (max depth 10) and caches every
+directory listing in a `DirInfo`. Directories that never hold a project (`node_modules`,
+`target`, `dist`, `bin`, `build`, hidden directories, …) are listed but not descended into
+and carry `ignored = true`: adapters can ask whether `bin/rails` or
+`.config/dotnet-tools.json` exists without touching the filesystem, and detection never
+runs inside them. `env/` and `venv/` are only skipped when they hold `pyvenv.cfg`, so
+Terraform environments under `env/` are found. Because the walk is depth-first, a
+directory's subtree is one contiguous slice of the listing (`repo::subtree`).
+
+`Context` indexes the listing by relative path, so ancestor walks are O(depth) and
+`descendants()` is O(subtree), and caches file text and parsed JSON, TOML and YAML so
+workspace lookups parse each root manifest once (`ctx.text`, `ctx.json`, `ctx.toml`,
+`ctx.yaml`, `ctx.has_file`, `ctx.has_dir`, `ctx.child`).
 
 `discover::discover` then:
 

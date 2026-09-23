@@ -49,7 +49,8 @@ These are decisions, not gaps. Do not reopen them in a pull request without a di
 ## 3. Principles for changes
 
 1. **Read-only, always.** Any change that reads a file through anything other than
-   `repo::DirInfo::read` / `read_text`, or that spawns a process, is wrong by construction.
+   `repo::DirInfo::read` / `read_text` / the `Context` caches, or that spawns a process, is
+   wrong by construction.
 2. **Nothing ecosystem-specific leaves its adapter.** Adapters may use any internal
    representation, but only `model::Action`, `Script` and `ToolVersion` come out.
 3. **Declared beats inferred.** A command the project wrote down wins id collisions and is
@@ -163,7 +164,9 @@ directories takes about a quarter of a second, almost all of it filesystem time.
 ## 7. Conventions
 
 - Rust 2021, MSRV in `Cargo.toml`. No new dependencies without a reason in the PR.
-- Adapters never call `std::fs` directly; they go through `DirInfo`.
+- Adapters never call `std::fs`, `Path::is_file` or `Path::exists`; they go through `DirInfo`
+  and `Context` (`ctx.has_file`, `ctx.text`, `ctx.toml`, …). Ignored directories are listed
+  shallowly for exactly this reason.
 - Terminal glyphs must be single width and drawn by every default monospace font on macOS,
   Linux and Windows: Mathematical Operators (`∞ ∆ ⊙`), basic Arrows (`↓ ↑`) and the common
   Geometric Shapes (`● ■ ▲ ◆`) only. No emoji (double width, boxes on the legacy Windows
