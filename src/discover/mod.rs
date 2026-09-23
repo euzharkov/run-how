@@ -62,6 +62,11 @@ pub struct Context<'a> {
     /// Parsed JSON manifests, keyed by relative path, so workspace lookups that revisit the
     /// same `package.json` for every member parse it once.
     json: RefCell<HashMap<String, Option<Rc<serde_json::Value>>>>,
+    /// Raw file text, keyed the same way: every Cargo workspace member reads the root
+    /// `Cargo.toml`, every Gradle subproject the root `settings.gradle`.
+    text: RefCell<HashMap<String, Option<Rc<str>>>>,
+    toml: RefCell<HashMap<String, Option<Rc<toml::Value>>>>,
+    yaml: RefCell<HashMap<String, Option<Rc<serde_yaml::Value>>>>,
 }
 
 impl<'a> Context<'a> {
@@ -72,7 +77,93 @@ impl<'a> Context<'a> {
             host_os,
             index: repo::index(dirs),
             json: RefCell::new(HashMap::new()),
+            text: RefCell::new(HashMap::new()),
+            toml: RefCell::new(HashMap::new()),
+            yaml: RefCell::new(HashMap::new()),
         }
+    }
+
+    /// The scanned directory at `rel` (`.`-relative, `/`-separated), if any. Ignored
+    /// directories (`bin/`, `.config/`) are listed shallowly, so they resolve too.
+    pub fn dir_at(&self, rel: &str) -> Option<&'a DirInfo> {
+        self.index.get(rel).map(|&i| &self.dirs[i])
+    }
+
+    /// The child directory `name` of `dir`, when it was scanned or listed.
+    pub fn child(&self, dir: &DirInfo, name: &str) -> Option<&'a DirInfo> {
+        let rel = if dir.rel == "." {
+            name.to_string()
+        } else {
+            format!("{}/{name}", dir.rel)
+        };
+        self.dir_at(&rel)
+    }
+
+    /// Does `path` (relative to `dir`, `/`-separated, e.g. `bin/rails` or
+    /// `.config/dotnet-tools.json`) exist as a file? Answered from the scan, never by
+    /// touching the filesystem.
+    pub fn has_file(&self, dir: &DirInfo, path: &str) -> bool {
+        match path.rsplit_once('/') {
+            None => dir.has(path),
+            Some((sub, file)) => self
+                .child_path(dir, sub)
+                .map(|d| d.has(file))
+                .unwrap_or(false),
+        }
+    }
+
+    /// Does `path` (relative to `dir`) exist as a directory?
+    pub fn has_dir(&self, dir: &DirInfo, path: &str) -> bool {
+        self.child_path(dir, path).is_some()
+    }
+
+    fn child_path(&self, dir: &DirInfo, sub: &str) -> Option<&'a DirInfo> {
+        let sub = sub.trim_matches('/');
+        let rel = if dir.rel == "." {
+            sub.to_string()
+        } else {
+            format!("{}/{sub}", dir.rel)
+        };
+        self.dir_at(&rel)
+    }
+
+    /// `file` inside `dir` as text. Cached for the lifetime of the scan.
+    pub fn text(&self, dir: &DirInfo, file: &str) -> Option<Rc<str>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.text.borrow().get(&key) {
+            return v.clone();
+        }
+        let t = dir.read(file).map(Rc::from);
+        self.text.borrow_mut().insert(key, t.clone());
+        t
+    }
+
+    /// `file` inside `dir`, parsed as TOML. Cached.
+    pub fn toml(&self, dir: &DirInfo, file: &str) -> Option<Rc<toml::Value>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.toml.borrow().get(&key) {
+            return v.clone();
+        }
+        let parsed = self
+            .text(dir, file)
+            .and_then(|t| toml::from_str(&t).ok())
+            .map(Rc::new);
+        self.toml.borrow_mut().insert(key, parsed.clone());
+        parsed
+    }
+
+    /// `file` inside `dir`, parsed as YAML. Cached.
+    pub fn yaml(&self, dir: &DirInfo, file: &str) -> Option<Rc<serde_yaml::Value>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.yaml.borrow().get(&key) {
+            return v.clone();
+        }
+        let parsed = self
+            .text(dir, file)
+            .and_then(|t| serde_yaml::from_str(&t).ok())
+            .map(Rc::new);
+        self.yaml.borrow_mut().insert(key, parsed.clone());
+        parsed
     }
 
     /// `dir` itself followed by its ancestors up to the root.
@@ -99,24 +190,24 @@ impl<'a> Context<'a> {
         if let Some(v) = self.json.borrow().get(&key) {
             return v.clone();
         }
-        let parsed = dir
-            .read(file)
+        let parsed = self
+            .text(dir, file)
             .and_then(|t| serde_json::from_str(&t).ok())
             .map(Rc::new);
         self.json.borrow_mut().insert(key, parsed.clone());
         parsed
     }
 
-    /// Scanned directories strictly below `dir`.
+    /// Scanned directories strictly below `dir`, in scan order, without ignored ones.
+    /// The scan is depth-first, so this is one contiguous slice, not a search of every
+    /// directory in the repository.
     pub fn descendants(&self, dir: &DirInfo) -> Vec<&'a DirInfo> {
-        let prefix = if dir.rel == "." {
-            String::new()
-        } else {
-            format!("{}/", dir.rel)
+        let Some(i) = self.position(dir) else {
+            return vec![];
         };
-        self.dirs
+        self.dirs[repo::subtree(self.dirs, i)]
             .iter()
-            .filter(|d| d.rel != dir.rel && d.rel.starts_with(&prefix))
+            .filter(|d| !d.ignored)
             .collect()
     }
 
@@ -231,7 +322,10 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     // scaffolding; nothing below them is a project or a helper directory of its own.
     let mut shadow_roots: Vec<String> = Vec::new();
     for dir in dirs.iter() {
-        if repo::is_mobile_app_dir(dir) {
+        if dir.ignored {
+            continue;
+        }
+        if repo::is_mobile_app_dir(dir) || repo::is_native_module_dir(dir) {
             for p in repo::PLATFORM_DIRS {
                 if dir.has_dir(p) {
                     shadow_roots.push(if dir.rel == "." {
@@ -256,7 +350,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     // ---- detection ---------------------------------------------------------------------
     let mut det: Vec<Vec<bool>> = vec![vec![false; discs.len()]; dirs.len()];
     for (di, dir) in dirs.iter().enumerate() {
-        if shadowed[di] {
+        if shadowed[di] || dir.ignored {
             continue;
         }
         for (ki, d) in discs.iter().enumerate() {
@@ -504,36 +598,43 @@ fn hide_duplicates(actions: &mut [Action]) {
 /// project shows one with the same name and tool. Declared scripts are never touched, and
 /// `run`/`dev`-style actions stay because each app's is its own.
 fn hide_workspace_fan_out(projects: &mut [Project]) {
-    let offered: Vec<(String, HashSet<(String, &'static str)>)> = projects
+    let offered: HashMap<&str, HashSet<(&str, &'static str)>> = projects
         .iter()
         .map(|p| {
             (
-                p.path.clone(),
+                p.path.as_str(),
                 // Hidden ones count too: a root `test` hidden behind a declared twin still
                 // means the workspace offers it.
-                p.actions.iter().map(|a| (a.name.clone(), a.tool)).collect(),
+                p.actions
+                    .iter()
+                    .map(|a| (a.name.as_str(), a.tool))
+                    .collect(),
             )
         })
         .collect();
-    for p in projects.iter_mut().filter(|p| !p.is_root()) {
+    let mut hide: Vec<(usize, usize)> = Vec::new();
+    for (pi, p) in projects.iter().enumerate().filter(|(_, p)| !p.is_root()) {
         let mut rel = repo::parent_rel(&p.path);
-        let mut ancestor: Option<&HashSet<(String, &'static str)>> = None;
+        let mut ancestor = None;
         while let Some(r) = rel {
-            if let Some((_, set)) = offered.iter().find(|(path, _)| path == r) {
+            if let Some(set) = offered.get(r) {
                 ancestor = Some(set);
                 break;
             }
             rel = repo::parent_rel(r);
         }
         let Some(set) = ancestor else { continue };
-        for a in &mut p.actions {
+        for (ai, a) in p.actions.iter().enumerate() {
             if a.source == ActionSource::Inferred
                 && a.category != Category::Development
-                && set.contains(&(a.name.clone(), a.tool))
+                && set.contains(&(a.name.as_str(), a.tool))
             {
-                a.hidden = true;
+                hide.push((pi, ai));
             }
         }
+    }
+    for (pi, ai) in hide {
+        projects[pi].actions[ai].hidden = true;
     }
 }
 
