@@ -141,8 +141,7 @@ impl Discoverer for DotNet {
             let mut has_test = false;
             let mut has_packable = false;
             for m in &members {
-                let p = base.path.join(m);
-                if let Some(t) = crate::repo::read_text(&p) {
+                if let Some(t) = super::text_at(ctx, base, m) {
                     if flavor(&t) == Flavor::Test {
                         has_test = true
                     }
@@ -205,11 +204,10 @@ impl Discoverer for DotNet {
                         .cat(Category::Release),
                 );
             }
-            if base.has(".config/dotnet-tools.json")
-                || crate::repo::read_text(&base.path.join(".config/dotnet-tools.json")).is_some()
+            if let Some(manifest) = ctx
+                .child(base, ".config")
+                .and_then(|d| ctx.text(d, "dotnet-tools.json"))
             {
-                let manifest = crate::repo::read_text(&base.path.join(".config/dotnet-tools.json"))
-                    .unwrap_or_default();
                 if manifest.contains("\"cake.tool\"") && base.has("build.cake") {
                     out.actions.push(
                         Action::new("cake", "dotnet cake build.cake")
@@ -239,8 +237,8 @@ impl Discoverer for DotNet {
                         .inferred(Confidence::Low),
                 );
             }
-            if crate::repo::read_text(&base.path.join("build/_build.csproj")).is_some()
-                || crate::repo::read_text(&base.path.join(".nuke/build.schema.json")).is_some()
+            if ctx.has_file(base, "build/_build.csproj")
+                || ctx.has_file(base, ".nuke/build.schema.json")
             {
                 out.actions.push(
                     Action::new("nuke", "dotnet nuke")

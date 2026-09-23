@@ -54,6 +54,13 @@ fn read_pkg(ctx: &Context, dir: &DirInfo) -> Option<Rc<Value>> {
     ctx.json(dir, "package.json")
 }
 
+/// The version an `.nvmrc` / `.node-version` pins: its first line, without a leading `v`.
+/// Aliases (`lts/*`, `node`, `stable`) name no version and are left out.
+fn node_version_file(text: &str) -> Option<String> {
+    let v = text.lines().next()?.trim().trim_start_matches('v');
+    (v.chars().next().is_some_and(|c| c.is_ascii_digit())).then(|| v.to_string())
+}
+
 fn pm_from_field(pkg: &Value) -> Option<Pm> {
     let f = pkg.get("packageManager")?.as_str()?;
     let name = f.split('@').next()?;
@@ -193,6 +200,14 @@ impl Discoverer for Js {
             .and_then(|v| v.as_str())
         {
             out.version("node", node, "package.json");
+        } else if let Some((v, f)) = [".nvmrc", ".node-version"]
+            .iter()
+            .find_map(|f| ctx.text(base, f).map(|t| (t, *f)))
+            .and_then(|(t, f)| node_version_file(&t).map(|v| (v, f)))
+        {
+            out.version("node", v, f);
+        } else if let Some((v, src)) = super::tool_version(ctx, base, "nodejs") {
+            out.version("node", v, src);
         }
         // A workspace member's scripts are shown the way they are run inside that package
         // (`pnpm dev` in apps/web), which is how a per-project listing reads. The
@@ -343,7 +358,7 @@ impl Discoverer for Js {
                         .cat(Category::Development),
                 );
             }
-            if base.has_dir("ios") && base.path.join("ios/Podfile").is_file() {
+            if ctx.has_file(base, "ios/Podfile") {
                 out.actions.push(
                     Action::new("pods", "pod install --project-directory=ios")
                         .tool("cocoapods")
