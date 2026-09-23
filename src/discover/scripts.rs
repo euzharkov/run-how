@@ -134,16 +134,15 @@ impl Discoverer for Scripts {
                     "sh" if windows => conf = Confidence::Low,
                     _ => {}
                 }
-                // Skip a .cmd/.sh twin when a .ps1 with the same stem exists (common in .NET repos).
-                if (ext == "cmd" || ext == "bat" || ext == "sh")
-                    && dir.has(&format!("{stem}.ps1"))
-                    && !windows
-                    && ext != "sh"
-                {
-                    conf = Confidence::Low;
-                }
-                if ext == "ps1" && dir.has(&format!("{stem}.sh")) && !windows {
-                    conf = Confidence::Low;
+                // Twins with the same stem (`build.sh`, `build.ps1`, `build.cmd`, common in
+                // .NET repositories) are one action: the host's native one keeps Medium, the
+                // others drop to Low. On Windows PowerShell beats batch; elsewhere the shell
+                // script beats PowerShell.
+                let twin = |e: &str| dir.has(&format!("{stem}.{e}"));
+                match ext {
+                    "cmd" | "bat" if windows && twin("ps1") => conf = Confidence::Low,
+                    "ps1" if !windows && twin("sh") => conf = Confidence::Low,
+                    _ => {}
                 }
                 let name = lower.clone();
                 let mut a = Action::new(name, command)

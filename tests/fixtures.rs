@@ -125,18 +125,21 @@ fn windows_host_prefers_windows_scripts() {
             host_os: "windows",
         },
     );
+    // `build.cmd` and `build.ps1` are twins: on Windows PowerShell is the native one and
+    // the batch file sits behind `--all`.
     let build_cmd = repo.projects[0]
         .actions
         .iter()
-        .find(|a| a.id == "cmd:build")
+        .find(|a| a.tool == "cmd" && a.name == "build")
         .expect("build.cmd");
-    assert_eq!(build_cmd.confidence, rhow::Confidence::Medium);
+    assert_eq!(build_cmd.confidence, rhow::Confidence::Low);
     let ps = repo.projects[0]
         .actions
         .iter()
         .find(|a| a.tool == "pwsh" && a.name == "build")
         .unwrap();
     assert!(ps.command.starts_with("powershell"));
+    assert_eq!(ps.confidence, rhow::Confidence::Medium);
 }
 
 #[test]
