@@ -1,0 +1,13 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+test  Run Vitest tests
+  command     npm run test
+  in          .
+  project     ci (.)
+  source      declared by the project (npm)
+  confidence  exact
+  risk        safe
+  runs        vitest run

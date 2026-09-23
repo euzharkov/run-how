@@ -1,0 +1,8 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+noise
+
+No CI pipelines found (looked for .github/workflows/*.yml and .gitlab-ci.yml).

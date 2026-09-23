@@ -14,6 +14,7 @@ job Test (ubuntu-latest)
   safe        npm ci :: Install dependencies with npm [download]
   safe        npm test :: Run Vitest tests
   safe        npm run build :: Build the app with Vite, then run Playwright end-to-end tests
+  safe        import shutil, subprocess :: Run a python script
 job deploy (ubuntu-latest)
   external    npx wrangler deploy :: Deploy the Cloudflare Worker
 ## ci .gitlab-ci.yml [GitLab CI] gitlab-ci on=

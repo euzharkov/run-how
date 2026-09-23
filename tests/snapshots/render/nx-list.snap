@@ -1,0 +1,31 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+nx
+
+  npm run test
+  nx run-many -t build
+  nx run-many -t lint             Check source code with ESLint
+  nx run-many -t e2e
+  nx run-many -t format           Format source code with Prettier
+  nx affected -t build test lint
+
+apps/api
+  nx run api:serve    Serve the app  ∞ long-running
+  nx run api:build    Build with esbuild
+  nx run api:test     Run Jest tests
+  nx run api:docker   Build the Docker image
+  nx run api:ci       Run linting, type checks, and tests
+  nx run api:release
+
+apps/web
+  npm run test       Run Vitest tests
+  npm run typecheck  Check TypeScript types
+  nx run web:serve   Serve the app with Vite  ∞ long-running
+  nx run web:build   Build with Vite
+  nx run web:lint    Check source code with ESLint
+  nx run web:format  Format source code with Prettier
+  nx run web:e2e     Run end-to-end tests
+  nx run web:deploy  Deploy the Cloudflare Worker  [external]

@@ -1,5 +1,6 @@
 //! Terminal rendering: plain, aligned, category-grouped output with compact risk markers.
-//! ANSI colour only when stdout is a TTY, `NO_COLOR` is unset and `--color` allows it.
+//! ANSI colour only when `--color` allows it: `--color` wins, then `NO_COLOR` (never), then
+//! `CLICOLOR_FORCE` / `FORCE_COLOR` (always), then a TTY whose `TERM` is not `dumb`.
 
 pub mod json;
 pub mod support;
@@ -22,15 +23,11 @@ pub struct Style {
 impl Style {
     pub fn detect(mode: ColorMode) -> Self {
         let tty = std::io::stdout().is_terminal();
+        let env = |k: &str| std::env::var(k).ok();
         let color = match mode {
             ColorMode::Always => true,
             ColorMode::Never => false,
-            ColorMode::Auto => {
-                tty && std::env::var_os("NO_COLOR")
-                    .map(|v| v.is_empty())
-                    .unwrap_or(true)
-                    && std::env::var("TERM").map(|t| t != "dumb").unwrap_or(true)
-            }
+            ColorMode::Auto => auto_color(tty, &env),
         };
         Style { color, tty }
     }
@@ -58,6 +55,21 @@ impl Style {
     }
 }
 
+/// The `--color auto` decision, with the environment injected so it can be tested:
+/// `NO_COLOR` (set, even empty) turns colour off; `CLICOLOR_FORCE` / `FORCE_COLOR` (set to
+/// anything but empty or `0`) turn it on even when piped; otherwise colour needs a TTY whose
+/// `TERM` is not `dumb`.
+pub fn auto_color(tty: bool, env: &dyn Fn(&str) -> Option<String>) -> bool {
+    if env("NO_COLOR").is_some() {
+        return false;
+    }
+    let forced = |k: &str| env(k).map(|v| !v.is_empty() && v != "0").unwrap_or(false);
+    if forced("CLICOLOR_FORCE") || forced("FORCE_COLOR") {
+        return true;
+    }
+    tty && env("TERM").map(|t| t != "dumb").unwrap_or(true)
+}
+
 pub struct RenderOptions {
     pub all: bool,
     /// Order each project's commands by type (run, build, deploy, test, …) instead of the
@@ -78,8 +90,32 @@ pub const GROUP_ORDER: [Category; 8] = [
     Category::Other,
 ];
 
-fn width(s: &str) -> usize {
-    s.chars().count()
+/// Terminal columns a string occupies. Combining marks and zero-width characters take no
+/// column; East Asian wide and fullwidth forms (and the emoji blocks a project description
+/// may carry) take two; everything else takes one. Close enough to `wcwidth` for aligning
+/// columns without a dependency; ANSI sequences are not expected here (strings are padded
+/// before they are painted).
+pub fn width(s: &str) -> usize {
+    s.chars().map(char_width).sum()
+}
+
+fn char_width(c: char) -> usize {
+    match c as u32 {
+        // Combining marks and zero-width characters.
+        0x0300..=0x036F | 0x20D0..=0x20FF | 0xFE20..=0xFE2F | 0x200B..=0x200D | 0xFEFF => 0,
+        // East Asian wide and fullwidth ranges, plus the common emoji blocks.
+        0x1100..=0x115F
+        | 0x2E80..=0xA4CF
+        | 0xAC00..=0xD7A3
+        | 0xF900..=0xFAFF
+        | 0xFE30..=0xFE4F
+        | 0xFF00..=0xFF60
+        | 0xFFE0..=0xFFE6
+        | 0x1F300..=0x1F64F
+        | 0x1F900..=0x1F9FF
+        | 0x20000..=0x3FFFD => 2,
+        _ => 1,
+    }
 }
 
 fn pad(s: &str, w: usize) -> String {
@@ -390,23 +426,41 @@ pub fn render_ci(repo: &Repo, style: &Style) -> String {
     out
 }
 
-/// Action ids that look like `id`, for "did you mean" hints. At most six, sorted.
+/// Action ids that look like `id`, for "did you mean" hints: the six closest, closest first
+/// (same last segment, then prefix, then substring, then ids the query contains), ties by
+/// length and then name. An empty query matches nothing.
 pub fn similar_ids<'a>(repo: &'a Repo, id: &str) -> Vec<&'a str> {
-    let mut close: Vec<&str> = repo
+    let id = id.trim();
+    if id.is_empty() {
+        return Vec::new();
+    }
+    let rank = |c: &str| -> Option<usize> {
+        if c.split(':').next_back() == Some(id) {
+            Some(0)
+        } else if c.starts_with(id) {
+            Some(1)
+        } else if c.contains(id) {
+            Some(2)
+        } else if id.contains(c) {
+            Some(3)
+        } else {
+            None
+        }
+    };
+    let mut close: Vec<(usize, usize, &str)> = repo
         .all_actions()
         .map(|(_, a)| a.id.as_str())
-        .filter(|c| c.contains(id) || id.contains(*c) || c.split(':').next_back() == Some(id))
-        .take(6)
+        .filter_map(|c| rank(c).map(|r| (r, c.len().abs_diff(id.len()), c)))
         .collect();
     close.sort();
-    close
+    close.dedup();
+    close.into_iter().map(|(_, _, c)| c).take(6).collect()
 }
 
-/// Detailed view of one action (`rhow <id>` / `rhow why <id>`).
-pub fn render_why(repo: &Repo, id: &str, style: &Style) -> Option<String> {
-    // Accept the action id or the exact command text as printed in the listing.
-    let (project, action) = repo
-        .all_actions()
+/// The action behind an id: the action id, the exact command text as printed in the
+/// listing, or a runtime suggestion's id.
+pub fn find_action<'a>(repo: &'a Repo, id: &str) -> Option<(&'a Project, &'a Action)> {
+    repo.all_actions()
         .find(|(_, a)| a.id == id)
         .or_else(|| repo.all_actions().find(|(_, a)| a.command == id.trim()))
         .or_else(|| {
@@ -414,58 +468,49 @@ pub fn render_why(repo: &Repo, id: &str, style: &Style) -> Option<String> {
                 .iter()
                 .find(|a| a.id == id)
                 .map(|a| (&repo.projects[0], a))
-        })?;
+        })
+}
+
+/// Detailed view of one action (`rhow <id>` / `rhow why <id>`).
+pub fn render_why(repo: &Repo, id: &str, style: &Style) -> Option<String> {
+    let (project, action) = find_action(repo, id)?;
     let mut o = String::new();
     o.push_str(&format!(
         "{}  {}\n",
         style.bold(&action.id),
         action.description
     ));
-    o.push_str(&format!(
-        "  {}   {}\n",
-        style.dim("command "),
-        action.command
-    ));
-    o.push_str(&format!(
-        "  {}   {}\n",
-        style.dim("in      "),
-        if action.working_directory == "." {
-            "."
-        } else {
-            &action.working_directory
-        }
-    ));
-    o.push_str(&format!(
-        "  {}   {} ({})\n",
-        style.dim("project "),
-        project.name,
-        project.path
-    ));
-    o.push_str(&format!(
-        "  {}   {}\n",
-        style.dim("source  "),
-        match action.source {
+    // Every label is padded to the longest (`confidence`) before it is painted, so the
+    // values line up whether or not colour is on. Plain text first, paint last:
+    // lowercasing or padding a painted string would mangle the escape codes.
+    let mut row = |label: &str, value: &str| {
+        o.push_str(&format!("  {}  {}\n", style.dim(&pad(label, 10)), value));
+    };
+    row("command", &action.command);
+    row("in", &action.working_directory);
+    row("project", &format!("{} ({})", project.name, project.path));
+    row(
+        "source",
+        &match action.source {
             ActionSource::Declared => format!("declared by the project ({})", action.tool),
             ActionSource::Inferred => format!("inferred from {} conventions", action.tool),
-        }
-    ));
-    o.push_str(
-        &format!("  {}   {:?}\n", style.dim("confidence"), action.confidence)
-            .to_lowercase()
-            .replacen("confidence", &style.dim("confidence"), 1),
+        },
     );
-    o.push_str(&format!(
-        "  {}   {}\n",
-        style.dim("risk    "),
-        match action.risk {
+    row(
+        "confidence",
+        &format!("{:?}", action.confidence).to_lowercase(),
+    );
+    row(
+        "risk",
+        &match action.risk {
             Risk::Safe => "safe".to_string(),
             Risk::External => style.yellow("external"),
             Risk::Destructive => style.red("destructive"),
-        }
-    ));
+        },
+    );
     if let Some(raw) = &action.raw {
         if raw != &action.command {
-            o.push_str(&format!("  {}   {}\n", style.dim("runs    "), raw));
+            row("runs", raw);
         }
     }
     Some(o)
@@ -538,7 +583,138 @@ pub fn debug_table(repo: &Repo) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::restates;
+    use super::*;
+
+    fn action(id: &str, command: &str, description: &str) -> Action {
+        Action::new(id, command)
+            .inferred_desc(description)
+            .cwd(".")
+            .tool("npm")
+    }
+
+    fn repo(actions: Vec<Action>) -> Repo {
+        Repo {
+            root: std::path::PathBuf::from("/r"),
+            name: "r".into(),
+            projects: vec![Project {
+                name: "r".into(),
+                path: ".".into(),
+                kind: ProjectKind::JavaScript,
+                tools: vec!["npm"],
+                actions,
+                versions: vec![],
+            }],
+            suggestions: vec![],
+            ci: vec![],
+        }
+    }
+
+    #[test]
+    fn display_width_counts_columns_not_bytes_or_chars() {
+        assert_eq!(width("abc"), 3);
+        assert_eq!(width("日本語"), 6);
+        assert_eq!(width("한글"), 4);
+        assert_eq!(width("e\u{301}"), 1); // e + combining acute
+        assert_eq!(width("a\u{200B}b"), 2); // zero-width space
+        assert_eq!(width("ｆｕｌｌ"), 8);
+        assert_eq!(width("\u{1F600}"), 2);
+        assert_eq!(pad("日本", 6), "日本  ");
+    }
+
+    #[test]
+    fn columns_align_by_display_width() {
+        let r = repo(vec![
+            action("build", "npm run build", "Build the app"),
+            action("docs", "npm run 文档", "Build the docs"),
+            action("check", "npm run che\u{301}ck", "Check the app"),
+        ]);
+        let style = Style {
+            color: false,
+            tty: false,
+        };
+        let out = render(
+            &r,
+            &style,
+            &RenderOptions {
+                all: false,
+                group: false,
+            },
+        );
+        let starts: Vec<usize> = out
+            .lines()
+            .filter(|l| l.starts_with("  npm"))
+            .map(|l| {
+                let (cmd, _) = l
+                    .split_once("  Build")
+                    .or_else(|| l.split_once("  Check"))
+                    .unwrap();
+                width(cmd)
+            })
+            .collect();
+        assert_eq!(starts.len(), 3);
+        assert!(starts.iter().all(|w| *w == starts[0]), "{out}");
+    }
+
+    #[test]
+    fn similar_ids_are_ranked_and_empty_query_matches_nothing() {
+        let r = repo(vec![
+            action("api:test", "x", ""),
+            action("test", "x", ""),
+            action("test:watch", "x", ""),
+            action("pretest", "x", ""),
+            action("lint", "x", ""),
+            action("build", "x", ""),
+            action("contest", "x", ""),
+            action("testing:all", "x", ""),
+        ]);
+        assert!(similar_ids(&r, "").is_empty());
+        assert!(similar_ids(&r, "   ").is_empty());
+        let close = similar_ids(&r, "test");
+        assert_eq!(close.len(), 6);
+        assert_eq!(close[0], "test");
+        assert_eq!(close[1], "api:test");
+        assert_eq!(close[2], "test:watch");
+        assert!(!close.contains(&"lint"));
+        assert!(!close.contains(&"build"));
+        assert_eq!(similar_ids(&r, "zzz"), Vec::<&str>::new());
+    }
+
+    #[test]
+    fn why_paints_each_field_once() {
+        let r = repo(vec![action("build", "npm run build", "Build the app")]);
+        let style = Style {
+            color: true,
+            tty: true,
+        };
+        let out = render_why(&r, "build", &style).unwrap();
+        let line = out.lines().find(|l| l.contains("confidence")).unwrap();
+        assert_eq!(line.matches("\x1b[2m").count(), 1, "{line:?}");
+        assert!(line.ends_with("  exact"), "{line:?}");
+    }
+
+    #[test]
+    fn color_detection_order() {
+        let env = |vars: &'static [(&str, &str)]| {
+            move |k: &str| {
+                vars.iter()
+                    .find(|(n, _)| *n == k)
+                    .map(|(_, v)| v.to_string())
+            }
+        };
+        assert!(auto_color(true, &env(&[])));
+        assert!(!auto_color(false, &env(&[])));
+        assert!(!auto_color(true, &env(&[("TERM", "dumb")])));
+        assert!(!auto_color(true, &env(&[("NO_COLOR", "")])));
+        assert!(!auto_color(
+            true,
+            &env(&[("NO_COLOR", "1"), ("FORCE_COLOR", "1")])
+        ));
+        assert!(auto_color(false, &env(&[("CLICOLOR_FORCE", "1")])));
+        assert!(auto_color(false, &env(&[("FORCE_COLOR", "3")])));
+        assert!(!auto_color(false, &env(&[("FORCE_COLOR", "0")])));
+        assert!(!auto_color(false, &env(&[("FORCE_COLOR", "")])));
+        assert!(!auto_color(false, &env(&[("CLICOLOR_FORCE", "0")])));
+    }
 
     #[test]
     fn tautological_descriptions_are_dropped() {

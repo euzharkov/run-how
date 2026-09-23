@@ -1,0 +1,33 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+noise
+
+  npm run lint                               Check source code with ESLint
+  npm run deploy                             Run tools/deploy.ts
+  cargo build --workspace
+  cargo check --workspace                    Type-check the Rust project for the whole workspace
+  cargo clippy --workspace                   Lint Rust source with Clippy for the whole workspace
+  cargo fmt --workspace                      Format Rust source
+  rake test                                  Run all tests
+  composer dev                               Start the Laravel development server  ∞ long-running
+  composer test                              Run Laravel tests
+  make docs                                  Build the HTML documentation
+  make clean                                 Delete _build/*
+  make install
+  make help
+  kubectl apply --dry-run=client -f k8s/     Validate Kubernetes manifests
+  kubectl apply -f k8s/                      Apply resources to the cluster  [external]
+  npm run compile --workspaces --if-present  Compile TypeScript sources in every workspace package
+
+mobile
+  flutter run        Run the Flutter app  ∞ long-running  ⊙ device
+  flutter test       Run Flutter tests
+  flutter analyze    Analyze Dart source
+  dart format .
+  flutter build apk  Build the Android APK
+
+packages/lib
+  npm run build  Build the package with tsup
