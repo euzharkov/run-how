@@ -105,18 +105,32 @@ rhow --all            # include internal / low-confidence actions
 rhow --group          # order each project's commands by type: run, build, deploy, test, …
 rhow --ci             # CI pipelines (GitHub Actions, GitLab CI) as workflows, jobs and steps
 rhow --json           # the normalised model, for editors and scripts
+rhow --ci --json      # only the CI pipelines, as JSON
 rhow why 'make test'  # where that command comes from and why it is flagged
 rhow why db:reset     # the same, by action id
+rhow db:reset --json  # the same, as JSON
 rhow support          # which tool versions this build has been verified against
 rhow -C path/to/dir   # inspect exactly that directory
 ```
+
+Without `-C`, rhow walks up from the current directory to the enclosing git repository. When
+there is none it inspects the current directory alone and says so on stderr (one line, only
+for the terminal listing). `--group` is a terminal ordering and is refused with `--json`.
+
+Every JSON document starts with `"schema": 1` and carries every discovered action: the ones
+the listing keeps behind `--all` are marked `"hidden": true` or `"confidence": "low"`, and
+an action whose description is a bare `Run <program>` fallback is marked `"opaque": true`,
+so consumers filter the same way the terminal does. `root` is absolute; every other path is
+relative to it with `/` separators on every platform.
 
 `rhow` never modifies the repository, installs dependencies, starts services, contacts a
 cluster or runs project scripts. It is not a task runner: it shows you the command and what it
 does, and you run it with the tool the project already uses. That keeps rhow free of shell
 quoting, argument forwarding, environment handling and confirmation prompts.
 
-Output respects `NO_COLOR`, uses ANSI colour only on a TTY, and stays plain when piped.
+Output uses ANSI colour only on a TTY and stays plain when piped. `--color always|never`
+wins; otherwise `NO_COLOR` turns colour off, and `CLICOLOR_FORCE=1` or `FORCE_COLOR`
+(non-empty, not `0`) turns it on even through a pipe.
 
 ## Supported ecosystems
 

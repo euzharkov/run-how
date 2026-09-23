@@ -183,8 +183,8 @@ pub struct Action {
     #[serde(skip)]
     pub explicit_description: bool,
     /// Analysis recognised nothing in the command (or only `echo`): the description is a
-    /// "Run <program>" fallback that explains nothing, and the listing leaves it out.
-    #[serde(skip)]
+    /// "Run <program>" fallback that explains nothing, and the listing leaves it out. Kept
+    /// in JSON so a consumer can leave it out too.
     pub opaque: bool,
 }
 
