@@ -1,0 +1,13 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [terragrunt] Root tools=terragrunt
+tg:plan                  Infrastructure inferred medium external    .          terragrunt run-all plan :: Plan all Terragrunt units
+tg:dev:plan              Infrastructure inferred high   external    .          terragrunt plan --terragrunt-working-dir dev :: Plan Terragrunt changes
+tg:dev:apply             Release        inferred high   external    .          terragrunt apply --terragrunt-working-dir dev :: Apply Terragrunt changes to infrastructure
+tg:dev:destroy           Infrastructure inferred low    destructive .          terragrunt destroy --terragrunt-working-dir dev :: Destroy Terragrunt-managed infrastructure
+tg:prod:plan             Infrastructure inferred high   external    .          terragrunt plan --terragrunt-working-dir prod :: Plan Terragrunt changes
+tg:prod:apply            Release        inferred high   external    .          terragrunt apply --terragrunt-working-dir prod :: Apply Terragrunt changes to infrastructure
+tg:prod:destroy          Infrastructure inferred low    destructive .          terragrunt destroy --terragrunt-working-dir prod :: Destroy Terragrunt-managed infrastructure

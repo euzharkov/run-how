@@ -1,0 +1,12 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [terraform-modules] Root tools=terraform
+tf:init                  Infrastructure inferred medium safe        .          terraform init :: Initialise the Terraform working directory [download]
+tf:plan                  Infrastructure inferred high   external    .          terraform plan :: Plan Terraform changes
+tf:apply                 Release        inferred high   external    .          terraform apply :: Apply Terraform changes to infrastructure
+tf:destroy               Infrastructure inferred low    destructive .          terraform destroy :: Destroy Terraform-managed infrastructure
+tf:validate              Quality        inferred low    safe        .          terraform validate :: Validate the Terraform configuration
+tf:fmt                   Quality        inferred low    safe        .          terraform fmt -recursive :: Format Terraform files
