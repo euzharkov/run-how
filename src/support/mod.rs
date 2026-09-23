@@ -10,11 +10,13 @@
 //! part of the normal, read-only discovery pass.
 //!
 //! **Maintaining this**: when you verify `rhow` against a newer version of a tool (a new Rust
-//! edition, a new Taskfile schema, …), bump that tool's baseline in [`REGISTRY`] below and note
-//! it in the changelog. That one-line change is the entire "support matrix".
+//! edition, a new Taskfile schema, …), bump that tool's `max` and `verified` in `support.toml`
+//! at the repository root, then paste the table `cargo test` prints into README.md. That file
+//! is the entire "support matrix"; this module only embeds and interprets it.
 
 use crate::model::{Repo, ToolVersion};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -30,37 +32,86 @@ pub enum Compat {
     Unclear,
 }
 
-impl Compat {
-    pub fn label(self) -> &'static str {
-        match self {
-            Compat::Supported => "supported",
-            Compat::Newer => "newer than verified",
-            Compat::Unclear => "unclear",
+/// How a declared value is judged against [`Entry::max`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Compare {
+    /// The declared value, component by component, must not exceed `max`.
+    AtMost,
+    /// Like `AtMost` after stripping a simple `>=`/`^`/`~`/`=` prefix; compound constraints
+    /// are `Unclear`.
+    LowerBound,
+    /// `netN.N` target frameworks only; `net48` and `netstandard*` are `Unclear`.
+    DotnetTfm,
+}
+
+/// One row of the support matrix. Deserialised from `support.toml`.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Entry {
+    /// Matches a [`ToolVersion::tool`].
+    pub id: String,
+    pub name: String,
+    pub category: String,
+    /// Config file(s)/field(s) an adapter reads to find the declared version.
+    pub config: String,
+    /// The highest version this build has been verified against, as numeric components.
+    pub max: Vec<u32>,
+    pub compare: Compare,
+    /// One-line human description of what has been verified.
+    pub verified: String,
+}
+
+impl Entry {
+    /// Compare a declared value against this entry's baseline.
+    pub fn check(&self, declared: &str) -> Compat {
+        match self.compare {
+            Compare::AtMost => at_most(declared, &self.max),
+            Compare::LowerBound => range_at_most(declared, &self.max),
+            Compare::DotnetTfm => dotnet_tfm(declared, &self.max),
         }
     }
 }
 
-pub struct Entry {
-    /// Matches a [`ToolVersion::tool`].
-    pub id: &'static str,
-    pub name: &'static str,
-    pub category: &'static str,
-    /// Config file(s)/field(s) this reads to find the declared version.
-    pub config: &'static str,
-    /// One-line human description of what has been verified.
-    pub verified: &'static str,
-    /// Compares a declared value against `verified`. `None` when the entry is listed for
-    /// visibility but nothing has been wired up to read a declared value for it yet.
-    pub compare: Option<fn(&str) -> Compat>,
+/// Ecosystems `rhow` discovers but that have no single "version" field worth comparing.
+/// Listed for completeness in `rhow support`, not compared.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Other {
+    pub name: String,
+    pub category: String,
+    pub config: String,
 }
 
-/// Ecosystems `rhow` discovers but that have no single "version" field worth comparing (no
-/// config format to go stale against in the way a numbered schema or edition can). Listed for
-/// completeness in `rhow support`, not compared.
-pub struct Other {
-    pub name: &'static str,
-    pub category: &'static str,
-    pub config: &'static str,
+#[derive(Debug, Clone, Deserialize)]
+pub struct Matrix {
+    #[serde(rename = "tool")]
+    pub tools: Vec<Entry>,
+    #[serde(rename = "other", default)]
+    pub others: Vec<Other>,
+}
+
+/// The support matrix, embedded from `support.toml` at the repository root.
+pub const SOURCE: &str = include_str!("../../support.toml");
+
+/// The parsed support matrix. Parsed once; a malformed file is a build-time bug caught by the
+/// tests, so it panics with the TOML error rather than reporting nothing.
+pub fn matrix() -> &'static Matrix {
+    static M: OnceLock<Matrix> = OnceLock::new();
+    M.get_or_init(|| toml::from_str(SOURCE).expect("support.toml is valid"))
+}
+
+/// The tools with a version baseline.
+pub fn registry() -> &'static [Entry] {
+    &matrix().tools
+}
+
+/// Ecosystems listed without a version check.
+pub fn others() -> &'static [Other] {
+    &matrix().others
+}
+
+/// Look up an entry by [`ToolVersion::tool`].
+pub fn entry(id: &str) -> Option<&'static Entry> {
+    registry().iter().find(|e| e.id == id)
 }
 
 // ---------------------------------------------------------------------------------------
@@ -116,13 +167,7 @@ fn range_at_most(declared: &str, max: &[u32]) -> Compat {
     }
 }
 
-fn cargo_edition(v: &str) -> Compat {
-    at_most(v, &[2021])
-}
-fn go_version(v: &str) -> Compat {
-    at_most(v, &[1, 23])
-}
-fn dotnet_tfm(v: &str) -> Compat {
+fn dotnet_tfm(v: &str, max: &[u32]) -> Compat {
     // "net8.0" / "net9.0" / "netstandard2.1" / "net48" — only the modern "netN.N" shape has a
     // meaningful ordering here; classic .NET Framework (`net48`) and `netstandard*` are Unclear.
     let v = v.trim().to_ascii_lowercase();
@@ -132,286 +177,25 @@ fn dotnet_tfm(v: &str) -> Compat {
     if rest.starts_with("standard") || rest.starts_with("coreapp") || !rest.contains('.') {
         return Compat::Unclear;
     }
-    at_most(rest, &[9, 0])
-}
-fn python_requires(v: &str) -> Compat {
-    range_at_most(v, &[3, 13])
-}
-fn taskfile_schema(v: &str) -> Compat {
-    at_most(v, &[3])
-}
-fn node_engines(v: &str) -> Compat {
-    range_at_most(v, &[22])
-}
-fn npm_version(v: &str) -> Compat {
-    at_most(v, &[10])
-}
-fn pnpm_version(v: &str) -> Compat {
-    at_most(v, &[9])
-}
-fn yarn_version(v: &str) -> Compat {
-    at_most(v, &[4])
-}
-fn bun_version(v: &str) -> Compat {
-    at_most(v, &[1])
-}
-fn ruby_version(v: &str) -> Compat {
-    at_most(v, &[3, 3])
-}
-fn php_requires(v: &str) -> Compat {
-    range_at_most(v, &[8, 3])
-}
-fn terraform_required(v: &str) -> Compat {
-    range_at_most(v, &[1, 9])
-}
-fn tofu_required(v: &str) -> Compat {
-    range_at_most(v, &[1, 8])
-}
-fn gradle_version(v: &str) -> Compat {
-    at_most(v, &[8, 10])
-}
-fn bazel_version(v: &str) -> Compat {
-    at_most(v, &[7, 4])
+    at_most(rest, max)
 }
 
-// ---------------------------------------------------------------------------------------
-// Registry
-// ---------------------------------------------------------------------------------------
-
-pub const REGISTRY: &[Entry] = &[
-    Entry {
-        id: "cargo-edition",
-        name: "Rust / Cargo",
-        category: "Rust",
-        config: "Cargo.toml `edition` (own or inherited from `[workspace.package]`)",
-        verified: "editions 2015-2021; 2024 not yet verified",
-        compare: Some(cargo_edition),
-    },
-    Entry {
-        id: "go",
-        name: "Go",
-        category: "Go",
-        config: "the `go` directive in go.mod / go.work",
-        verified: "up to Go 1.23",
-        compare: Some(go_version),
-    },
-    Entry {
-        id: "dotnet-tfm",
-        name: ".NET",
-        category: ".NET",
-        config: "`<TargetFramework(s)>` in .csproj/.fsproj/.vbproj",
-        verified: "net5.0-net9.0 (net48 and netstandard* recognised but not version-checked)",
-        compare: Some(dotnet_tfm),
-    },
-    Entry {
-        id: "python",
-        name: "Python",
-        category: "Python",
-        config: "`project.requires-python` in pyproject.toml",
-        verified: "up to Python 3.13 (compound constraints like `>=3.9,<4` are left unclear)",
-        compare: Some(python_requires),
-    },
-    Entry {
-        id: "taskfile",
-        name: "Taskfile",
-        category: "Taskfile",
-        config: "`version:` in Taskfile.yml",
-        verified: "schema version 3",
-        compare: Some(taskfile_schema),
-    },
-    Entry {
-        id: "node",
-        name: "Node.js",
-        category: "JavaScript",
-        config: "`engines.node` in package.json",
-        verified: "up to Node 22",
-        compare: Some(node_engines),
-    },
-    Entry {
-        id: "npm",
-        name: "npm",
-        category: "JavaScript",
-        config: "the `packageManager` field in package.json",
-        verified: "up to npm 10",
-        compare: Some(npm_version),
-    },
-    Entry {
-        id: "pnpm",
-        name: "pnpm",
-        category: "JavaScript",
-        config: "the `packageManager` field in package.json, pnpm-workspace.yaml",
-        verified: "up to pnpm 9",
-        compare: Some(pnpm_version),
-    },
-    Entry {
-        id: "yarn",
-        name: "Yarn",
-        category: "JavaScript",
-        config: "the `packageManager` field in package.json",
-        verified: "up to Yarn 4 (Berry)",
-        compare: Some(yarn_version),
-    },
-    Entry {
-        id: "bun",
-        name: "Bun",
-        category: "JavaScript",
-        config: "the `packageManager` field in package.json, bun.lock(b)",
-        verified: "up to Bun 1",
-        compare: Some(bun_version),
-    },
-    Entry {
-        id: "ruby",
-        name: "Ruby",
-        category: "Ruby",
-        config: ".ruby-version",
-        verified: "up to Ruby 3.3",
-        compare: Some(ruby_version),
-    },
-    Entry {
-        id: "php",
-        name: "PHP",
-        category: "PHP",
-        config: "`require.php` in composer.json",
-        verified: "up to PHP 8.3",
-        compare: Some(php_requires),
-    },
-    Entry {
-        id: "terraform",
-        name: "Terraform",
-        category: "Infrastructure",
-        config: "`required_version` in a `terraform {}` block",
-        verified: "up to Terraform 1.9",
-        compare: Some(terraform_required),
-    },
-    Entry {
-        id: "tofu",
-        name: "OpenTofu",
-        category: "Infrastructure",
-        config: "`required_version` in a `terraform {}` block",
-        verified: "up to OpenTofu 1.8",
-        compare: Some(tofu_required),
-    },
-    Entry {
-        id: "gradle",
-        name: "Gradle",
-        category: "JVM",
-        config: "gradle/wrapper/gradle-wrapper.properties `distributionUrl`",
-        verified: "up to Gradle 8.10",
-        compare: Some(gradle_version),
-    },
-    Entry {
-        id: "bazel",
-        name: "Bazel",
-        category: "Bazel",
-        config: ".bazelversion",
-        verified: "up to Bazel 7.4",
-        compare: Some(bazel_version),
-    },
-];
-
-/// Ecosystems with no single version worth comparing, listed in `rhow support` for completeness.
-pub const OTHER: &[Other] = &[
-    Other {
-        name: "Make",
-        category: "Make",
-        config: "Makefile / GNUmakefile",
-    },
-    Other {
-        name: "Just",
-        category: "Just",
-        config: "justfile",
-    },
-    Other {
-        name: "Docker / Compose",
-        category: "Infrastructure",
-        config: "Dockerfile, compose.yml",
-    },
-    Other {
-        name: "Kubernetes",
-        category: "Infrastructure",
-        config: "Helm charts, Kustomize, plain manifests",
-    },
-    Other {
-        name: "Pulumi",
-        category: "Infrastructure",
-        config: "Pulumi.yaml",
-    },
-    Other {
-        name: "Ansible",
-        category: "Infrastructure",
-        config: "ansible.cfg, playbooks",
-    },
-    Other {
-        name: "Nx / Turborepo / Rush / moon",
-        category: "JavaScript",
-        config: "nx.json, turbo.json, rush.json, moon.yml",
-    },
-    Other {
-        name: "Deno",
-        category: "Deno",
-        config: "deno.json(c)",
-    },
-    Other {
-        name: "Maven",
-        category: "JVM",
-        config: "pom.xml",
-    },
-    Other {
-        name: "Swift / Xcode",
-        category: "Mobile",
-        config: "Package.swift, .xcodeproj/.xcworkspace",
-    },
-    Other {
-        name: "Fastlane",
-        category: "Mobile",
-        config: "fastlane/Fastfile",
-    },
-    Other {
-        name: "Flutter / Dart",
-        category: "Mobile",
-        config: "pubspec.yaml",
-    },
-    Other {
-        name: "Expo / React Native",
-        category: "Mobile",
-        config: "package.json dependencies",
-    },
-    Other {
-        name: "Elixir / Mix",
-        category: "Other",
-        config: "mix.exs",
-    },
-    Other {
-        name: "Zig",
-        category: "Other",
-        config: "build.zig",
-    },
-    Other {
-        name: "CMake",
-        category: "Other",
-        config: "CMakeLists.txt",
-    },
-    Other {
-        name: "Haskell",
-        category: "Other",
-        config: "stack.yaml, cabal.project",
-    },
-    Other {
-        name: "Scala / sbt",
-        category: "Other",
-        config: "build.sbt",
-    },
-    Other {
-        name: "Clojure",
-        category: "Other",
-        config: "deps.edn, project.clj",
-    },
-    Other {
-        name: "Pants",
-        category: "Bazel",
-        config: "pants.toml",
-    },
-];
+/// The matrix as a Markdown table, the block README.md carries under "Version support".
+pub fn markdown_table() -> String {
+    let mut o = String::from(
+        "| Tool | Verified against | Read from |
+|---|---|---|
+",
+    );
+    for e in registry() {
+        o.push_str(&format!(
+            "| {} | {} | {} |
+",
+            e.name, e.verified, e.config
+        ));
+    }
+    o
+}
 
 // ---------------------------------------------------------------------------------------
 // Checking a discovered repository
@@ -422,13 +206,13 @@ pub struct Finding {
     /// Project path, `.` for the root.
     pub project: String,
     pub tool: &'static str,
-    pub name: &'static str,
+    pub name: String,
     pub value: String,
     pub source: String,
     pub compat: Compat,
 }
 
-/// Compare every version a discovered repository declares against [`REGISTRY`].
+/// Compare every version a discovered repository declares against the support matrix.
 pub fn check(repo: &Repo) -> Vec<Finding> {
     let mut out = Vec::new();
     for p in &repo.projects {
@@ -440,13 +224,9 @@ pub fn check(repo: &Repo) -> Vec<Finding> {
 }
 
 fn finding(project: &str, v: &ToolVersion) -> Finding {
-    let entry = REGISTRY.iter().find(|e| e.id == v.tool);
-    let (name, compat) = match entry {
-        Some(e) => (
-            e.name,
-            e.compare.map(|f| f(&v.value)).unwrap_or(Compat::Unclear),
-        ),
-        None => (v.tool, Compat::Unclear),
+    let (name, compat) = match entry(v.tool) {
+        Some(e) => (e.name.clone(), e.check(&v.value)),
+        None => (v.tool.to_string(), Compat::Unclear),
     };
     Finding {
         project: project.to_string(),
@@ -462,65 +242,57 @@ fn finding(project: &str, v: &ToolVersion) -> Finding {
 mod tests {
     use super::*;
 
+    fn check(id: &str, v: &str) -> Compat {
+        entry(id)
+            .unwrap_or_else(|| panic!("no `{id}` in support.toml"))
+            .check(v)
+    }
+
     #[test]
-    fn registry_ids_are_unique_and_wired() {
-        let mut ids: Vec<&str> = REGISTRY.iter().map(|e| e.id).collect();
+    fn matrix_parses_and_ids_are_unique() {
+        let mut ids: Vec<&str> = registry().iter().map(|e| e.id.as_str()).collect();
         let n = ids.len();
         ids.sort();
         ids.dedup();
-        assert_eq!(n, ids.len(), "duplicate ids in REGISTRY");
-        assert!(
-            REGISTRY.iter().all(|e| e.compare.is_some()),
-            "every REGISTRY entry should be checkable; list unwired ecosystems in OTHER instead"
-        );
+        assert_eq!(n, ids.len(), "duplicate ids in support.toml");
+        assert!(registry().iter().all(|e| !e.max.is_empty()));
+        assert!(!others().is_empty());
     }
 
     #[test]
-    fn cargo_edition_baseline() {
-        assert_eq!(cargo_edition("2015"), Compat::Supported);
-        assert_eq!(cargo_edition("2021"), Compat::Supported);
-        assert_eq!(cargo_edition("2024"), Compat::Newer);
+    fn baselines_compare_as_declared() {
+        assert_eq!(check("cargo-edition", "2015"), Compat::Supported);
+        assert_eq!(check("cargo-edition", "2024"), Compat::Supported);
+        assert_eq!(check("cargo-edition", "2027"), Compat::Newer);
+        assert_eq!(check("go", "1.22"), Compat::Supported);
+        assert_eq!(check("go", "1.26"), Compat::Supported);
+        assert_eq!(check("go", "1.27"), Compat::Newer);
+        assert_eq!(check("taskfile", "3"), Compat::Supported);
+        assert_eq!(check("taskfile", "4"), Compat::Newer);
+        assert_eq!(check("gradle", "9.1"), Compat::Supported);
+        assert_eq!(check("gradle", "9.2"), Compat::Newer);
+        assert_eq!(check("bazel", "8.3.0"), Compat::Supported);
+        assert_eq!(check("bazel", "8.4.0"), Compat::Newer);
     }
 
     #[test]
-    fn go_version_baseline() {
-        assert_eq!(go_version("1.22"), Compat::Supported);
-        assert_eq!(go_version("1.23"), Compat::Supported);
-        assert_eq!(go_version("1.24"), Compat::Newer);
-    }
-
-    #[test]
-    fn dotnet_tfm_baseline() {
-        assert_eq!(dotnet_tfm("net8.0"), Compat::Supported);
-        assert_eq!(dotnet_tfm("net9.0"), Compat::Supported);
-        assert_eq!(dotnet_tfm("net10.0"), Compat::Newer);
-        assert_eq!(dotnet_tfm("net48"), Compat::Unclear);
-        assert_eq!(dotnet_tfm("netstandard2.1"), Compat::Unclear);
-    }
-
-    #[test]
-    fn taskfile_schema_baseline() {
-        assert_eq!(taskfile_schema("3"), Compat::Supported);
-        assert_eq!(taskfile_schema("4"), Compat::Newer);
+    fn dotnet_target_frameworks() {
+        assert_eq!(check("dotnet-tfm", "net8.0"), Compat::Supported);
+        assert_eq!(check("dotnet-tfm", "net10.0"), Compat::Supported);
+        assert_eq!(check("dotnet-tfm", "net11.0"), Compat::Newer);
+        assert_eq!(check("dotnet-tfm", "net48"), Compat::Unclear);
+        assert_eq!(check("dotnet-tfm", "netstandard2.1"), Compat::Unclear);
     }
 
     #[test]
     fn range_constraints_prefer_unclear() {
-        assert_eq!(python_requires(">=3.13"), Compat::Supported);
-        assert_eq!(python_requires(">=3.14"), Compat::Newer);
-        assert_eq!(python_requires(">=3.9,<4"), Compat::Unclear);
-        assert_eq!(node_engines(">=18"), Compat::Supported);
-        assert_eq!(node_engines(">=18 <21 || >=22"), Compat::Unclear);
-        assert_eq!(terraform_required("~> 1.9"), Compat::Supported);
-        assert_eq!(terraform_required(">= 1.6, < 2.0"), Compat::Unclear);
-    }
-
-    #[test]
-    fn gradle_and_bazel_baselines() {
-        assert_eq!(gradle_version("8.10"), Compat::Supported);
-        assert_eq!(gradle_version("8.11"), Compat::Newer);
-        assert_eq!(bazel_version("7.4.0"), Compat::Supported);
-        assert_eq!(bazel_version("7.5.0"), Compat::Newer);
+        assert_eq!(check("python", ">=3.14"), Compat::Supported);
+        assert_eq!(check("python", ">=3.15"), Compat::Newer);
+        assert_eq!(check("python", ">=3.9,<4"), Compat::Unclear);
+        assert_eq!(check("node", ">=18"), Compat::Supported);
+        assert_eq!(check("node", ">=18 <21 || >=22"), Compat::Unclear);
+        assert_eq!(check("terraform", "~> 1.9"), Compat::Supported);
+        assert_eq!(check("terraform", ">= 1.6, < 2.0"), Compat::Unclear);
     }
 
     #[test]
@@ -535,5 +307,25 @@ mod tests {
         );
         assert_eq!(f.compat, Compat::Unclear);
         assert_eq!(f.name, "made-up");
+    }
+
+    /// README.md carries the matrix as a table between two marker comments. It must be the
+    /// exact rendering of `support.toml`, so nobody has to read Rust to see what is supported.
+    #[test]
+    fn readme_table_matches_support_toml() {
+        let readme = include_str!("../../README.md");
+        let start = "<!-- support-matrix:start -->\n";
+        let end = "<!-- support-matrix:end -->";
+        let (_, rest) = readme
+            .split_once(start)
+            .expect("README.md has <!-- support-matrix:start -->");
+        let (table, _) = rest
+            .split_once(end)
+            .expect("README.md has <!-- support-matrix:end -->");
+        let expected = markdown_table();
+        assert!(
+            table == expected,
+            "README.md's support table is out of date. Replace the block between the markers with:\n\n{expected}"
+        );
     }
 }

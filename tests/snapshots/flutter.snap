@@ -1,9 +1,10 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [flutter] Mobile tools=flutter
-run                      Development    inferred high   safe        .          flutter run :: Run the Flutter app
+run                      Development    inferred high   safe        .          flutter run :: Run the Flutter app [long-running,device]
 test                     Testing        inferred high   safe        .          flutter test :: Run Flutter tests
 analyze                  Quality        inferred high   safe        .          flutter analyze :: Analyze Dart source
 format                   Quality        inferred medium safe        .          dart format . :: Run dart format
@@ -13,4 +14,4 @@ build:ios                Build          inferred low    safe        .          f
 build:web                Build          inferred medium safe        .          flutter build web :: Build the web app
 generate                 Build          inferred high   safe        .          dart run build_runner build --delete-conflicting-outputs :: Generate code with build_runner
 test:integration         Testing        inferred high   safe        .          flutter test integration_test :: Run Flutter integration tests on a device
-pub:get                  Other          inferred low    safe        .          flutter pub get :: Install Dart dependencies
+pub:get                  Other          inferred low    safe        .          flutter pub get :: Install Dart dependencies [download]

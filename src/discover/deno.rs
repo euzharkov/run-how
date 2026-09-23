@@ -16,13 +16,6 @@ impl Discoverer for Deno {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(&["deno.json", "deno.jsonc", "deno.lock"])
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        let f = dir.first_of(&["deno.json", "deno.jsonc"])?;
-        super::mono::read_jsonc(dir, f)?
-            .get("name")?
-            .as_str()
-            .map(|s| s.rsplit('/').next().unwrap_or(s).to_string())
-    }
     fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let cfg = base

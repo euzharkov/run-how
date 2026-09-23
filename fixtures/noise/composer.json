@@ -1,0 +1,7 @@
+{
+  "name": "noise/app",
+  "scripts": {
+    "dev": ["Composer\\Config::disableProcessTimeout", "@php artisan serve"],
+    "test": "@php artisan test"
+  }
+}

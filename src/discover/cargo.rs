@@ -87,13 +87,6 @@ impl Discoverer for Cargo {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has("Cargo.toml")
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        manifest(dir)?
-            .get("package")?
-            .get("name")?
-            .as_str()
-            .map(|s| s.to_string())
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let Some(m) = manifest(base) else { return out };

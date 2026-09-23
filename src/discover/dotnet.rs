@@ -129,13 +129,6 @@ impl Discoverer for DotNet {
     fn detect(&self, dir: &DirInfo) -> bool {
         !solution_files(dir).is_empty() || !project_files(dir).is_empty()
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        let p = project_files(dir);
-        if solution_files(dir).is_empty() && p.len() == 1 {
-            return Some(stem(p[0]).to_string());
-        }
-        None
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let slns = solution_files(base);

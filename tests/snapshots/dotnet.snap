@@ -1,11 +1,12 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [dotnet] DotNet tools=dotnet,cmd,pwsh,sh
 build                    Build          inferred high   safe        .          dotnet build :: Build the Shop solution
 test                     Testing        inferred high   safe        .          dotnet test :: Run all Shop solution tests
-restore                  Build          inferred medium safe        .          dotnet restore :: Restore NuGet packages
+restore                  Build          inferred medium safe        .          dotnet restore :: Restore NuGet packages [download]
 clean                    Build          inferred low    safe        .          dotnet clean :: Delete .NET build outputs
 pack                     Release        inferred medium safe        .          dotnet pack :: Create NuGet packages
 format                   Quality        inferred low    safe        .          dotnet format :: Format .NET source code
@@ -15,17 +16,17 @@ publish-image            Release        inferred medium external    .          p
 seed-db                  Database       inferred medium safe        .          ./scripts/seed-db.sh :: Seed the development database
 ## src/Api [Api] DotNet tools=dotnet
 api                      Development    inferred high   safe        src/Api    dotnet run :: Start the .NET Api web app
-api:watch                Development    inferred low    safe        src/Api    dotnet watch run :: Start Api with hot reload
-api:build                Build          inferred high   safe        src/Api    dotnet build :: Build the Api project
+api:watch                Development    inferred low    safe        src/Api    dotnet watch run :: Start Api with hot reload [long-running]
+api:build                Build          inferred high   safe        hidden src/Api    dotnet build :: Build the Api project
 api:publish              Release        inferred medium safe        src/Api    dotnet publish -c Release :: Publish Api for deployment
 api:migrate              Database       inferred medium safe        src/Api    dotnet ef database update :: Apply EF Core migrations to the database
 api:db:drop              Database       inferred low    destructive src/Api    dotnet ef database drop :: Drop the database with EF Core
 ## src/Core [Core] DotNet tools=dotnet
-core:build               Build          inferred high   safe        src/Core   dotnet build :: Build the Core project
-core:pack                Release        inferred medium safe        src/Core   dotnet pack :: Create the Core NuGet package
+core:build               Build          inferred high   safe        hidden src/Core   dotnet build :: Build the Core project
+core:pack                Release        inferred medium safe        hidden src/Core   dotnet pack :: Create the Core NuGet package
 ## src/Worker [Worker] DotNet tools=dotnet
 worker                   Development    inferred high   safe        src/Worker dotnet run :: Run the .NET Worker worker
-worker:build             Build          inferred high   safe        src/Worker dotnet build :: Build the Worker project
+worker:build             Build          inferred high   safe        hidden src/Worker dotnet build :: Build the Worker project
 worker:publish           Release        inferred medium safe        src/Worker dotnet publish -c Release :: Publish Worker for deployment
 ## tests/Api.Tests [Api.Tests] DotNet tools=dotnet
-api.tests:test           Testing        inferred high   safe        tests/Api.Tests dotnet test :: Run Api.Tests tests
+api.tests:test           Testing        inferred low    safe        hidden tests/Api.Tests dotnet test :: Run Api.Tests tests

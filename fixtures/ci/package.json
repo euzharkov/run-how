@@ -1,0 +1,1 @@
+{ "name": "ci-demo", "scripts": { "dev": "vite", "test": "vitest run", "build": "vite build", "deploy": "wrangler deploy", "release": "changeset version && git push --follow-tags" } }

@@ -51,9 +51,6 @@ impl Discoverer for Go {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has("go.mod") || dir.has("go.work")
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        module_name(dir)
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let workspace = base.has("go.work") && !base.has("go.mod");

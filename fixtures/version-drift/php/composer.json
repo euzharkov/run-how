@@ -1,1 +1,1 @@
-{ "name": "acme/future", "require": { "php": "^8.5" } }
+{ "name": "acme/future", "require": { "php": "^8.6" } }

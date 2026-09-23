@@ -1,15 +1,20 @@
 #!/bin/sh
-# rhow installer — https://github.com/line-19/rhow
+# rhow installer — https://github.com/euzharkov/run-how
 #
-#   curl -fsSL https://raw.githubusercontent.com/line-19/rhow/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/euzharkov/run-how/main/install.sh | sh
 #
 # Environment overrides:
 #   RHOW_VERSION      version to install (default: latest release)
 #   RHOW_INSTALL_DIR  install directory  (default: ~/.local/bin)
-#   RHOW_REPO         GitHub repo         (default: line-19/rhow)
+#   RHOW_REPO         GitHub repo         (default: euzharkov/run-how)
+#   RHOW_DOWNLOAD_BASE  where release archives live (default: https://github.com);
+#   RHOW_API_BASE       where "latest release" is asked (default: https://api.github.com).
+#                       Both exist so tests/install can point this script at a local mirror.
 set -eu
 
-REPO="${RHOW_REPO:-line-19/rhow}"
+REPO="${RHOW_REPO:-euzharkov/run-how}"
+DOWNLOAD_BASE="${RHOW_DOWNLOAD_BASE:-https://github.com}"
+API_BASE="${RHOW_API_BASE:-https://api.github.com}"
 INSTALL_DIR="${RHOW_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${RHOW_VERSION:-}"
 
@@ -49,12 +54,12 @@ target="${arch_target}-${os_target}"
 
 # 3. Release artifact
 if [ -z "$VERSION" ]; then
-  VERSION="$(fetch_stdout "https://api.github.com/repos/${REPO}/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1)"
+  VERSION="$(fetch_stdout "${API_BASE}/repos/${REPO}/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1)"
   [ -n "$VERSION" ] || die "could not determine the latest release of ${REPO}"
 fi
 VERSION="${VERSION#v}"
 name="rhow-${VERSION}-${target}"
-base="https://github.com/${REPO}/releases/download/v${VERSION}"
+base="${DOWNLOAD_BASE}/${REPO}/releases/download/v${VERSION}"
 
 tmp="$(mktemp -d 2>/dev/null || mktemp -d -t rhow)"
 trap 'rm -rf "$tmp"' EXIT

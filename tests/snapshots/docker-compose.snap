@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [docker-compose] Root tools=docker,compose
@@ -12,7 +13,7 @@ kafka                    Infrastructure inferred high   safe        .          d
 zookeeper                Infrastructure inferred high   safe        .          docker compose up -d zookeeper :: Start ZooKeeper
 mailpit                  Infrastructure inferred high   safe        .          docker compose up -d mailpit :: Start Mailpit (test mail server)
 grafana                  Infrastructure inferred high   safe        .          docker compose up -d grafana :: Start Grafana
-logs                     Infrastructure inferred high   safe        .          docker compose logs -f :: Follow Docker service logs
+logs                     Infrastructure inferred high   safe        .          docker compose logs -f :: Follow Docker service logs [long-running]
 services:build           Infrastructure inferred high   safe        .          docker compose build :: Build Docker service images
 services:down            Infrastructure inferred high   safe        .          docker compose down :: Stop and remove Docker services
 services:reset           Infrastructure inferred low    destructive .          docker compose down -v :: Stop Docker services and delete their volumes

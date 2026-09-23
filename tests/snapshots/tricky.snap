@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [tricky] JavaScript tools=npm,make
@@ -17,6 +18,6 @@ q                        Other          declared exact  external    .          n
 ci                       Quality        declared exact  safe        .          npm run ci :: Run linting and tests
 generate                 Build          declared exact  safe        .          npm run generate :: Generate GraphQL types, then generate the Prisma client
 empty                    Other          declared exact  safe        .          npm run empty :: Run the empty script
-make:test                Testing        declared exact  safe        .          make test :: Run Jest tests with coverage and run Vitest tests
-make:build               Build          declared exact  safe        .          make build :: Bundle with webpack
+make:test                Testing        declared exact  safe        hidden .          make test :: Run Jest tests with coverage and run Vitest tests
+make:build               Build          declared exact  safe        hidden .          make build :: Bundle with webpack
 up                       Infrastructure declared exact  safe        .          make up :: Start Docker services in the background

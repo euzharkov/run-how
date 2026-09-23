@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [just] Just tools=just
@@ -8,6 +9,6 @@ test                     Testing        declared exact  safe        .          j
 check                    Quality        declared exact  safe        .          just check :: Check formatting and lints
 build                    Build          declared exact  safe        .          just build :: Build the Rust project in release mode
 publish                  Release        declared exact  external    .          just publish :: Publish to crates.io
-_setup                   Other          declared exact  safe        hidden .          just _setup :: Manage the Rust toolchain
+_setup                   Other          declared exact  safe        hidden .          just _setup :: Manage the Rust toolchain [download]
 db-reset                 Database       declared exact  destructive .          just db-reset :: Reset the local database
-watch                    Development    declared exact  safe        .          just watch :: Rebuild on change with cargo-watch
+watch                    Development    declared exact  safe        .          just watch :: Rebuild on change with cargo-watch [long-running]

@@ -1,0 +1,66 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [noise] JavaScript tools=npm,cargo,rake,composer,make,kubernetes
+lint                     Quality        declared exact  safe        .          npm run lint :: Check source code with ESLint
+deploy                   Release        declared exact  safe        .          npm run deploy :: Run tools/deploy.ts
+build                    Build          inferred high   safe        .          cargo build --workspace :: Build the workspace
+test                     Testing        inferred high   safe        hidden .          cargo test --workspace :: Run Rust tests for the whole workspace
+check                    Quality        inferred high   safe        .          cargo check --workspace :: Type-check the Rust project for the whole workspace
+clippy                   Quality        inferred medium safe        .          cargo clippy --workspace :: Lint Rust source with Clippy for the whole workspace
+fmt                      Quality        inferred medium safe        .          cargo fmt --workspace :: Format Rust source
+bench                    Testing        inferred low    safe        .          cargo bench --workspace :: Run Rust benchmarks
+doc                      Build          inferred low    safe        .          cargo doc --no-deps --workspace :: Build the Rust docs
+rake:test                Testing        declared exact  safe        .          rake test :: Run all tests
+dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server [long-running]
+composer:test            Testing        declared exact  safe        .          composer test :: Run Laravel tests
+docs                     Build          declared exact  safe        .          make docs :: Build the HTML documentation
+clean                    Build          declared exact  safe        .          make clean :: Delete _build/*
+install                  Other          declared exact  safe        .          make install :: Run the install make target
+help                     Other          declared exact  safe        .          make help :: Print a message
+k8s:validate             Quality        inferred high   safe        .          kubectl apply --dry-run=client -f k8s/ :: Validate Kubernetes manifests
+k8s:apply                Release        inferred medium external    .          kubectl apply -f k8s/ :: Apply resources to the cluster
+k8s:delete               Infrastructure inferred low    destructive .          kubectl delete -f k8s/ :: Delete resources from the cluster
+compile                  Build          inferred medium safe        .          npm run compile --workspaces --if-present :: Compile TypeScript sources in every workspace package
+## crates/util [util] Rust tools=cargo
+util:build               Build          inferred high   safe        hidden .          cargo build -p util :: Build the crate
+util:test                Testing        inferred high   safe        hidden .          cargo test -p util :: Run Rust tests for util
+util:check               Quality        inferred high   safe        hidden .          cargo check -p util :: Type-check the Rust project for util
+util:clippy              Quality        inferred medium safe        hidden .          cargo clippy -p util :: Lint Rust source with Clippy for util
+util:fmt                 Quality        inferred medium safe        hidden .          cargo fmt -p util :: Format Rust source
+util:bench               Testing        inferred low    safe        hidden .          cargo bench -p util :: Run Rust benchmarks
+util:doc                 Build          inferred low    safe        hidden .          cargo doc --no-deps -p util :: Build the Rust docs
+## examples/demo [demo] JavaScript tools=npm
+demo                     Development    declared low    safe        examples/demo npm run dev :: Start the Vite development server [long-running]
+## mobile [mobile] Mobile tools=flutter
+mobile                   Development    inferred high   safe        mobile     flutter run :: Run the Flutter app [long-running,device]
+mobile:test              Testing        inferred high   safe        mobile     flutter test :: Run Flutter tests
+mobile:analyze           Quality        inferred high   safe        mobile     flutter analyze :: Analyze Dart source
+mobile:format            Quality        inferred medium safe        mobile     dart format . :: Run dart format
+mobile:build:apk         Build          inferred medium safe        mobile     flutter build apk :: Build the Android APK
+mobile:build:appbundle   Build          inferred low    safe        mobile     flutter build appbundle :: Build the Android App Bundle
+mobile:build:ios         Build          inferred low    safe        mobile     flutter build ios :: Build the iOS app
+mobile:pub:get           Other          inferred low    safe        mobile     flutter pub get :: Install Dart dependencies [download]
+## packages/lib [lib] JavaScript tools=npm
+lib:build                Build          declared exact  safe        packages/lib npm run build :: Build the package with tsup
+lib:test                 Testing        declared low    safe        packages/lib npm run test :: Run Vitest tests
+## packages/lib/test/apps/demo [demo] JavaScript tools=npm
+packages/lib/test/apps/demo Development    declared low    safe        packages/lib/test/apps/demo npm run dev :: Start the Vite development server [long-running]
+packages/lib/test/apps/demo:build Build          declared low    safe        packages/lib/test/apps/demo npm run build :: Build the app with Vite
+## packages/p1 [p1] JavaScript tools=npm
+p1:compile               Build          declared low    safe        packages/p1 npm run compile :: Compile TypeScript sources
+p1:test                  Testing        declared low    safe        packages/p1 npm run test :: Run Vitest tests
+## packages/p2 [p2] JavaScript tools=npm
+p2:compile               Build          declared low    safe        packages/p2 npm run compile :: Compile TypeScript sources
+p2:test                  Testing        declared low    safe        packages/p2 npm run test :: Run Vitest tests
+## packages/p3 [p3] JavaScript tools=npm
+p3:compile               Build          declared low    safe        packages/p3 npm run compile :: Compile TypeScript sources
+p3:test                  Testing        declared low    safe        packages/p3 npm run test :: Run Vitest tests
+## packages/p4 [p4] JavaScript tools=npm
+p4:compile               Build          declared low    safe        packages/p4 npm run compile :: Compile TypeScript sources
+p4:test                  Testing        declared low    safe        packages/p4 npm run test :: Run Vitest tests
+## packages/p5 [p5] JavaScript tools=npm
+p5:compile               Build          declared low    safe        packages/p5 npm run compile :: Compile TypeScript sources
+p5:test                  Testing        declared low    safe        packages/p5 npm run test :: Run Vitest tests

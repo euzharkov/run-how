@@ -46,6 +46,46 @@ impl Risk {
     }
 }
 
+/// A practical note about what running the command involves. Derived from the command text
+/// alone, so only facts the text states: it never guesses at what code does at run time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Note {
+    /// Keeps running until stopped: a dev server, a watcher, following logs.
+    LongRunning,
+    /// Needs a phone, tablet, simulator or emulator attached.
+    Device,
+    /// Downloads something (packages, images, providers) without changing anything remote.
+    Download,
+    /// Changes the git working tree, history or tags.
+    Git,
+}
+
+impl Note {
+    /// A single-width glyph that every default monospace font on macOS, Linux and Windows
+    /// draws: only Mathematical Operators (U+22xx), basic Arrows (U+219x) and the common
+    /// Geometric Shapes (●■▲◆) are safe. Blocks like Miscellaneous Technical, OCR or the
+    /// less common Geometric Shapes (`▯`, `◷`) show as boxes in some fonts, and emoji are
+    /// double width and break the columns.
+    pub fn icon(self) -> &'static str {
+        match self {
+            Note::LongRunning => "∞",
+            Note::Device => "⊙",
+            Note::Download => "↓",
+            Note::Git => "∆",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Note::LongRunning => "long-running",
+            Note::Device => "device",
+            Note::Download => "download",
+            Note::Git => "git",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Category {
@@ -121,7 +161,7 @@ pub struct Action {
     pub name: String,
     /// Short plain-English description (target: under ~60 characters).
     pub description: String,
-    /// The native command that `rhow <id>` would execute.
+    /// The native command the project would run for this action (shown, never executed).
     pub command: String,
     /// Directory the command runs in, relative to the repository root (`.` for the root).
     pub working_directory: String,
@@ -133,6 +173,8 @@ pub struct Action {
     pub tool: &'static str,
     /// Internal / private / lifecycle actions that only show with `--all`.
     pub hidden: bool,
+    /// What running it involves (long-running, device, download, git). See [`Note`].
+    pub notes: Vec<Note>,
     /// The command text to analyse when it differs from `command`
     /// (e.g. the npm script body behind `npm run test`).
     #[serde(skip)]
@@ -140,6 +182,10 @@ pub struct Action {
     /// Explicit description supplied by the project (Just comments, Taskfile `desc`, …).
     #[serde(skip)]
     pub explicit_description: bool,
+    /// Analysis recognised nothing in the command (or only `echo`): the description is a
+    /// "Run <program>" fallback that explains nothing, and the listing leaves it out.
+    #[serde(skip)]
+    pub opaque: bool,
 }
 
 impl Action {
@@ -157,8 +203,10 @@ impl Action {
             category: Category::Other,
             tool: "",
             hidden: false,
+            notes: Vec::new(),
             raw: None,
             explicit_description: false,
+            opaque: false,
         }
     }
 
@@ -250,6 +298,7 @@ pub struct ToolVersion {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Project {
+    /// The directory name (`owner` for `apps/owner`); the repository name for the root.
     pub name: String,
     /// Path relative to the repository root, `.` for the root project.
     pub path: String,
@@ -267,6 +316,40 @@ impl Project {
     }
 }
 
+/// One `run` step of a CI job, explained like an action.
+#[derive(Debug, Clone, Serialize)]
+pub struct CiStep {
+    /// The step's `name`, when it has one.
+    pub name: Option<String>,
+    /// The shell text exactly as written (may span several lines).
+    pub command: String,
+    pub description: String,
+    pub risk: Risk,
+    pub notes: Vec<Note>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct CiJob {
+    /// The job id (`test`) or its display name when given.
+    pub name: String,
+    /// `runs-on` / `image` / `stage`, whatever the system uses to say where it runs.
+    pub runs_on: Option<String>,
+    pub steps: Vec<CiStep>,
+}
+
+/// A CI pipeline definition: a GitHub Actions workflow file or the GitLab CI file.
+#[derive(Debug, Clone, Serialize)]
+pub struct CiPipeline {
+    /// `github-actions` or `gitlab-ci`.
+    pub system: &'static str,
+    /// Path relative to the repository root.
+    pub file: String,
+    pub name: String,
+    /// What starts it (`push main`, `pull_request`, `schedule`).
+    pub triggers: Vec<String>,
+    pub jobs: Vec<CiJob>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Repo {
     pub root: PathBuf,
@@ -274,6 +357,8 @@ pub struct Repo {
     pub projects: Vec<Project>,
     /// Environment suggestions that are not project tasks (e.g. `colima start`).
     pub suggestions: Vec<Action>,
+    /// CI pipelines found in the repository, as a structure of jobs and run steps.
+    pub ci: Vec<CiPipeline>,
 }
 
 impl Repo {

@@ -1,0 +1,9 @@
+%w(a b).each do |fw|
+  desc "Run tests for #{fw}"
+  task "#{fw}:test" do
+  end
+end
+
+desc "Run all tests"
+task :test do
+end

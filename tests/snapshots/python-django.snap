@@ -1,12 +1,13 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [python-django] Python tools=django,poetry
-dev                      Development    inferred high   safe        .          poetry run python manage.py runserver :: Start the Django development server
+dev                      Development    inferred high   safe        .          poetry run python manage.py runserver :: Start the Django development server [long-running]
 migrate                  Database       inferred high   safe        .          poetry run python manage.py migrate :: Apply Django database migrations
 makemigrations           Database       inferred high   safe        .          poetry run python manage.py makemigrations :: Create Django migrations from model changes
-shell                    Development    inferred medium safe        .          poetry run python manage.py shell :: Open the Django shell
+shell                    Development    inferred medium safe        .          poetry run python manage.py shell :: Open the Django shell [long-running]
 collectstatic            Build          inferred low    safe        .          poetry run python manage.py collectstatic --noinput :: Collect Django static files
 createsuperuser          Database       inferred low    safe        .          poetry run python manage.py createsuperuser :: Create a Django admin user
 test                     Testing        inferred high   safe        .          poetry run pytest :: Run Python tests

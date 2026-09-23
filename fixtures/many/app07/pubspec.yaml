@@ -1,0 +1,4 @@
+name: app07
+dependencies:
+  flutter:
+    sdk: flutter

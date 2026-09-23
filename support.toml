@@ -1,0 +1,258 @@
+# The rhow support matrix: which tool versions this build has been verified against.
+#
+# This file is the single source of truth. The binary embeds it at compile time, `rhow support`
+# prints it, and the "Version support" table in README.md is generated from it (a test fails
+# when the two drift apart and prints the table to paste in).
+#
+# To declare support for a newer version: bump `max` (and `verified`, the sentence people see).
+# `compare` says how a repository's declared value is judged against `max`:
+#   at-most      the declared value, component by component, must not exceed `max`
+#   lower-bound  same, after stripping a simple `>=`, `^`, `~`, `=` prefix; compound
+#                constraints (`>=3.9,<4`, `||`, hyphen ranges) are reported as "unclear"
+#   dotnet-tfm   `netN.N` target frameworks only; `net48` and `netstandard*` are "unclear"
+
+[[tool]]
+id = "cargo-edition"
+name = "Rust / Cargo"
+category = "Rust"
+config = "Cargo.toml `edition` (own or inherited from `[workspace.package]`)"
+max = [2024]
+compare = "at-most"
+verified = "editions 2015-2024"
+
+[[tool]]
+id = "go"
+name = "Go"
+category = "Go"
+config = "the `go` directive in go.mod / go.work"
+max = [1, 26]
+compare = "at-most"
+verified = "up to Go 1.26"
+
+[[tool]]
+id = "dotnet-tfm"
+name = ".NET"
+category = ".NET"
+config = "`<TargetFramework(s)>` in .csproj/.fsproj/.vbproj"
+max = [10, 0]
+compare = "dotnet-tfm"
+verified = "net5.0-net10.0 (net48 and netstandard* recognised but not version-checked)"
+
+[[tool]]
+id = "python"
+name = "Python"
+category = "Python"
+config = "`project.requires-python` in pyproject.toml"
+max = [3, 14]
+compare = "lower-bound"
+verified = "up to Python 3.14 (compound constraints like `>=3.9,<4` are left unclear)"
+
+[[tool]]
+id = "taskfile"
+name = "Taskfile"
+category = "Taskfile"
+config = "`version:` in Taskfile.yml"
+max = [3]
+compare = "at-most"
+verified = "schema version 3"
+
+[[tool]]
+id = "node"
+name = "Node.js"
+category = "JavaScript"
+config = "`engines.node` in package.json"
+max = [24]
+compare = "lower-bound"
+verified = "up to Node 24"
+
+[[tool]]
+id = "npm"
+name = "npm"
+category = "JavaScript"
+config = "the `packageManager` field in package.json"
+max = [11]
+compare = "at-most"
+verified = "up to npm 11"
+
+[[tool]]
+id = "pnpm"
+name = "pnpm"
+category = "JavaScript"
+config = "the `packageManager` field in package.json, pnpm-workspace.yaml"
+max = [10]
+compare = "at-most"
+verified = "up to pnpm 10"
+
+[[tool]]
+id = "yarn"
+name = "Yarn"
+category = "JavaScript"
+config = "the `packageManager` field in package.json"
+max = [4]
+compare = "at-most"
+verified = "up to Yarn 4 (Berry)"
+
+[[tool]]
+id = "bun"
+name = "Bun"
+category = "JavaScript"
+config = "the `packageManager` field in package.json, bun.lock(b)"
+max = [1]
+compare = "at-most"
+verified = "up to Bun 1"
+
+[[tool]]
+id = "ruby"
+name = "Ruby"
+category = "Ruby"
+config = ".ruby-version"
+max = [4, 0]
+compare = "at-most"
+verified = "up to Ruby 4.0"
+
+[[tool]]
+id = "php"
+name = "PHP"
+category = "PHP"
+config = "`require.php` in composer.json"
+max = [8, 5]
+compare = "lower-bound"
+verified = "up to PHP 8.5"
+
+[[tool]]
+id = "terraform"
+name = "Terraform"
+category = "Infrastructure"
+config = "`required_version` in a `terraform {}` block"
+max = [1, 13]
+compare = "lower-bound"
+verified = "up to Terraform 1.13"
+
+[[tool]]
+id = "tofu"
+name = "OpenTofu"
+category = "Infrastructure"
+config = "`required_version` in a `terraform {}` block"
+max = [1, 10]
+compare = "lower-bound"
+verified = "up to OpenTofu 1.10"
+
+[[tool]]
+id = "gradle"
+name = "Gradle"
+category = "JVM"
+config = "gradle/wrapper/gradle-wrapper.properties `distributionUrl`"
+max = [9, 1]
+compare = "at-most"
+verified = "up to Gradle 9.1"
+
+[[tool]]
+id = "bazel"
+name = "Bazel"
+category = "Bazel"
+config = ".bazelversion"
+max = [8, 3]
+compare = "at-most"
+verified = "up to Bazel 8.3"
+
+# Ecosystems rhow discovers that have no single version to compare. Listed for visibility.
+
+[[other]]
+name = "Make"
+category = "Make"
+config = "Makefile / GNUmakefile"
+
+[[other]]
+name = "Just"
+category = "Just"
+config = "justfile"
+
+[[other]]
+name = "Docker / Compose"
+category = "Infrastructure"
+config = "Dockerfile, compose.yml"
+
+[[other]]
+name = "Kubernetes"
+category = "Infrastructure"
+config = "Helm charts, Kustomize, plain manifests"
+
+[[other]]
+name = "Pulumi"
+category = "Infrastructure"
+config = "Pulumi.yaml"
+
+[[other]]
+name = "Ansible"
+category = "Infrastructure"
+config = "ansible.cfg, playbooks"
+
+[[other]]
+name = "Nx / Turborepo / Rush / moon"
+category = "JavaScript"
+config = "nx.json, turbo.json, rush.json, moon.yml"
+
+[[other]]
+name = "Deno"
+category = "Deno"
+config = "deno.json(c)"
+
+[[other]]
+name = "Maven"
+category = "JVM"
+config = "pom.xml"
+
+[[other]]
+name = "Swift / Xcode"
+category = "Mobile"
+config = "Package.swift, .xcodeproj/.xcworkspace"
+
+[[other]]
+name = "Fastlane"
+category = "Mobile"
+config = "fastlane/Fastfile"
+
+[[other]]
+name = "Flutter / Dart"
+category = "Mobile"
+config = "pubspec.yaml"
+
+[[other]]
+name = "Expo / React Native"
+category = "Mobile"
+config = "package.json dependencies"
+
+[[other]]
+name = "Elixir / Mix"
+category = "Other"
+config = "mix.exs"
+
+[[other]]
+name = "Zig"
+category = "Other"
+config = "build.zig"
+
+[[other]]
+name = "CMake"
+category = "Other"
+config = "CMakeLists.txt"
+
+[[other]]
+name = "Haskell"
+category = "Other"
+config = "stack.yaml, cabal.project"
+
+[[other]]
+name = "Scala / sbt"
+category = "Other"
+config = "build.sbt"
+
+[[other]]
+name = "Clojure"
+category = "Other"
+config = "deps.edn, project.clj"
+
+[[other]]
+name = "Pants"
+category = "Bazel"
+config = "pants.toml"

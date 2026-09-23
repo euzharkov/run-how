@@ -17,12 +17,6 @@ impl Discoverer for Php {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has("composer.json") || dir.has("artisan")
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        let v: Value = serde_json::from_str(&dir.read("composer.json")?).ok()?;
-        v.get("name")?
-            .as_str()
-            .map(|s| s.rsplit('/').next().unwrap_or(s).to_string())
-    }
     fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let composer: Option<Value> = base
@@ -68,6 +62,9 @@ impl Discoverer for Php {
                         format!("composer {rest}")
                     }
                     Some(rest) => rest.to_string(),
+                    // `Composer\Config::disableProcessTimeout` and friends are directives to
+                    // Composer itself, not commands.
+                    None if x.starts_with("Composer\\") && x.contains("::") => String::new(),
                     None => x.to_string(),
                 }
             };
@@ -85,6 +82,7 @@ impl Discoverer for Php {
                         .iter()
                         .filter_map(|x| x.as_str())
                         .map(expand)
+                        .filter(|s| !s.is_empty())
                         .collect::<Vec<_>>()
                         .join(" && "),
                     _ => continue,

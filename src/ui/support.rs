@@ -9,7 +9,13 @@ use serde::Serialize;
 fn compat_marker(style: &Style, c: Compat) -> String {
     match c {
         Compat::Supported => String::new(),
-        Compat::Newer => format!("  {}", style.yellow("⚠ newer than verified")),
+        Compat::Newer => {
+            if style.color {
+                format!("  {}", style.yellow("● newer than verified"))
+            } else {
+                "  [newer than verified]".to_string()
+            }
+        }
         Compat::Unclear => format!("  {}", style.dim("? unclear")),
     }
 }
@@ -20,16 +26,16 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
     let mut o = String::new();
     o.push_str(&style.bold("Toolsets this build of rhow has been verified against"));
     o.push('\n');
-    let name_w = support::REGISTRY
+    let name_w = support::registry()
         .iter()
-        .map(|e| width(e.name))
+        .map(|e| width(&e.name))
         .max()
         .unwrap_or(4)
         .clamp(4, 24);
-    for e in support::REGISTRY {
+    for e in support::registry() {
         o.push_str(&format!(
             "  {}  {}\n",
-            style.cyan(&pad(e.name, name_w)),
+            style.cyan(&pad(&e.name, name_w)),
             e.verified
         ));
     }
@@ -37,7 +43,7 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
     o.push('\n');
     o.push_str(&style.bold("Also discovered, with no single version to check"));
     o.push('\n');
-    let others: Vec<&str> = support::OTHER.iter().map(|e| e.name).collect();
+    let others: Vec<&str> = support::others().iter().map(|e| e.name.as_str()).collect();
     o.push_str(&wrap(&others.join(", "), 96, "  "));
     o.push('\n');
 
@@ -51,7 +57,7 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
     o.push('\n');
     let name_w = findings
         .iter()
-        .map(|f| width(f.name))
+        .map(|f| width(&f.name))
         .max()
         .unwrap_or(4)
         .clamp(4, 24);
@@ -69,7 +75,7 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
         };
         o.push_str(&format!(
             "  {}  {}  {}{}{}\n",
-            style.cyan(&pad(f.name, name_w)),
+            style.cyan(&pad(&f.name, name_w)),
             pad(&f.value, val_w),
             style.dim(&f.source),
             project,
@@ -79,7 +85,7 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
     if findings.iter().any(|f| f.compat == Compat::Newer) {
         o.push('\n');
         o.push_str(&style.dim(
-            "⚠ marks a version newer than this build of rhow has been verified against.\n\
+            "A marked version is newer than this build of rhow has been verified against.\n\
              It will very likely still work; new syntax in that version may not be recognised yet.",
         ));
         o.push('\n');
@@ -115,50 +121,18 @@ fn wrap(items: &str, width: usize, indent: &str) -> String {
 }
 
 #[derive(Serialize)]
-struct RegistryEntryJson {
-    id: &'static str,
-    name: &'static str,
-    category: &'static str,
-    config: &'static str,
-    verified: &'static str,
-}
-
-#[derive(Serialize)]
-struct OtherJson {
-    name: &'static str,
-    category: &'static str,
-    config: &'static str,
-}
-
-#[derive(Serialize)]
 struct Envelope {
     version: &'static str,
-    registry: Vec<RegistryEntryJson>,
-    other: Vec<OtherJson>,
+    registry: &'static [support::Entry],
+    other: &'static [support::Other],
     findings: Vec<Finding>,
 }
 
 pub fn render_json(repo: Option<&Repo>) -> String {
     let env = Envelope {
         version: env!("CARGO_PKG_VERSION"),
-        registry: support::REGISTRY
-            .iter()
-            .map(|e| RegistryEntryJson {
-                id: e.id,
-                name: e.name,
-                category: e.category,
-                config: e.config,
-                verified: e.verified,
-            })
-            .collect(),
-        other: support::OTHER
-            .iter()
-            .map(|e| OtherJson {
-                name: e.name,
-                category: e.category,
-                config: e.config,
-            })
-            .collect(),
+        registry: support::registry(),
+        other: support::others(),
         findings: repo.map(support::check).unwrap_or_default(),
     };
     serde_json::to_string_pretty(&env).unwrap_or_else(|_| "{}".into())

@@ -4,7 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="Discover how to run and operate any repository"
 arch=('x86_64' 'aarch64')
-url="https://github.com/line-19/rhow"
+url="https://github.com/euzharkov/run-how"
 license=('MIT')
 provides=('rhow')
 conflicts=('rhow')
@@ -14,7 +14,9 @@ sha256sums_x86_64=('REPLACE_WITH_SHA256')
 sha256sums_aarch64=('REPLACE_WITH_SHA256')
 
 package() {
-  cd "rhow-$pkgver-"*
+  # Name the directory exactly: a glob would also match the downloaded tarball makepkg
+  # links into $srcdir. $CARCH is x86_64 or aarch64, matching the release target triples.
+  cd "$srcdir/rhow-$pkgver-$CARCH-unknown-linux-musl"
   install -Dm755 rhow "$pkgdir/usr/bin/rhow"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

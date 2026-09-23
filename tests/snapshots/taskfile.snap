@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [taskfile] Taskfile tools=task
@@ -12,8 +13,8 @@ migrate                  Database       declared exact  safe        .          t
 _hidden                  Other          declared exact  safe        hidden .          task _hidden :: Print a message
 internal-task            Other          declared exact  safe        hidden .          task internal-task :: Print a message
 services                 Infrastructure declared exact  safe        .          task services :: Bring up local infrastructure
-docs:serve               Development    declared exact  safe        .          task docs:serve :: Serve the docs site
+docs:serve               Development    declared exact  safe        .          task docs:serve :: Serve the docs site [long-running]
 docs:build               Build          declared exact  safe        .          task docs:build :: Build the MkDocs site
 ## docs [docs] Taskfile tools=task
-docs                     Development    declared exact  safe        docs       task serve :: Serve the docs site
+docs                     Development    declared exact  safe        docs       task serve :: Serve the docs site [long-running]
 docs:task:build          Build          declared exact  safe        docs       task build :: Build the MkDocs site

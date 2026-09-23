@@ -1,13 +1,14 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [ruby-rails] Ruby tools=rake,rails,ruby
 import                   Other          declared exact  safe        .          bundle exec rake import :: Import the product catalogue from CSV
 reports:weekly           Other          declared exact  safe        .          bundle exec rake reports:weekly :: Send the weekly sales report
-dev                      Development    inferred high   safe        .          bin/dev :: Start the Rails app and its dev processes
-server                   Development    inferred medium safe        .          bin/rails server :: Start the Rails server
-console                  Development    inferred high   safe        .          bin/rails console :: Open the Rails console
+dev                      Development    inferred high   safe        .          bin/dev :: Start the Rails app and its dev processes [long-running]
+server                   Development    inferred medium safe        .          bin/rails server :: Start the Rails server [long-running]
+console                  Development    inferred high   safe        .          bin/rails console :: Open the Rails console [long-running]
 db:migrate               Database       inferred high   safe        .          bin/rails db:migrate :: Apply Rails migrations
 db:seed                  Database       inferred high   safe        .          bin/rails db:seed :: Seed the database
 db:prepare               Database       inferred medium safe        .          bin/rails db:prepare :: Create the database and apply migrations

@@ -134,13 +134,14 @@ impl Discoverer for Iac {
                 out.actions.push(
                     a(format!("{p}:validate"), t("validate"))
                         .inferred_desc(format!("Validate the {name} configuration"))
-                        .cat(Category::Quality),
+                        .cat(Category::Quality)
+                        .confidence(Confidence::Low),
                 );
                 out.actions.push(
                     a(format!("{p}:fmt"), t("fmt -recursive"))
                         .inferred_desc(format!("Format {name} files"))
                         .cat(Category::Quality)
-                        .confidence(Confidence::Medium),
+                        .confidence(Confidence::Low),
                 );
                 if dir.has(".tflint.hcl") {
                     out.actions.push(
@@ -270,6 +271,13 @@ impl Discoverer for Iac {
                             .cat(Category::Quality),
                     );
                 }
+            }
+        }
+        // Five or more Terraform/Pulumi roots under one project is a module library or a test
+        // corpus, not five deployments: keep them, but out of the default view.
+        if dirs.len() >= 5 {
+            for a in &mut out.actions {
+                a.confidence = Confidence::Low;
             }
         }
         out

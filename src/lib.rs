@@ -7,18 +7,20 @@
 //! * [`analyze`]  — static analysis of shell command strings (tokenising, tool recognition).
 //! * [`explain`]  — deterministic plain-English descriptions built from the analysis.
 //! * [`risk`]     — classification of destructive / external actions.
+//! * [`notes`]    — practical notes: long-running, device, network, git.
+//! * [`ci`]       — GitHub Actions and GitLab CI pipelines as a structure of jobs and steps.
 //! * [`runtime`]  — local runtime suggestions (e.g. Colima when Docker is missing).
-//! * [`exec`]     — running a discovered action through its native tool.
 //! * [`ui`]       — terminal and JSON rendering.
 //!
-//! Discovery never executes project code, never contacts a network service and never
-//! writes to the repository.
+//! `rhow` never executes project code, never contacts a network service and never writes to
+//! the repository. It shows commands; it is not a task runner.
 
 pub mod analyze;
+pub mod ci;
 pub mod discover;
-pub mod exec;
 pub mod explain;
 pub mod model;
+pub mod notes;
 pub mod repo;
 pub mod risk;
 pub mod runtime;

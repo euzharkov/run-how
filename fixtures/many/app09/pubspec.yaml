@@ -1,0 +1,4 @@
+name: app09
+dependencies:
+  flutter:
+    sdk: flutter

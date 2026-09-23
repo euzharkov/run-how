@@ -4,13 +4,14 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
+const http = require("http");
 const crypto = require("crypto");
 const zlib = require("zlib");
 const { execFileSync } = require("child_process");
 
 const pkg = require("./package.json");
 const version = pkg.version;
-const repo = "line-19/rhow";
+const repo = "euzharkov/run-how";
 
 const targets = {
   "darwin-arm64": "aarch64-apple-darwin",
@@ -29,11 +30,14 @@ if (!target) {
 const isWin = process.platform === "win32";
 const name = `rhow-${version}-${target}`;
 const archive = isWin ? `${name}.zip` : `${name}.tar.gz`;
-const base = `https://github.com/${repo}/releases/download/v${version}`;
+// RHOW_DOWNLOAD_BASE lets tests/install point this at a local mirror of GitHub Releases.
+const downloadBase = process.env.RHOW_DOWNLOAD_BASE || "https://github.com";
+const base = `${downloadBase}/${repo}/releases/download/v${version}`;
 
 function get(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { "user-agent": "rhow-npm" } }, (res) => {
+    const client = url.startsWith("http:") ? http : https;
+    client.get(url, { headers: { "user-agent": "rhow-npm" } }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) return resolve(get(res.headers.location));
       if (res.statusCode !== 200) return reject(new Error(`${url}: HTTP ${res.statusCode}`));
       const chunks = [];

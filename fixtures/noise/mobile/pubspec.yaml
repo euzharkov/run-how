@@ -1,0 +1,4 @@
+name: mobile
+dependencies:
+  flutter:
+    sdk: flutter

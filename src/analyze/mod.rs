@@ -135,7 +135,12 @@ fn tokenize(s: &str) -> Vec<Tok> {
                     }
                 }
             }
-            ' ' | '\t' | '\n' | '\r' => flush(&mut cur, &mut in_word, &mut out),
+            ' ' | '\t' | '\r' => flush(&mut cur, &mut in_word, &mut out),
+            '\n' => {
+                // A line break ends the command, like `;` (a `\`-continued line was joined above).
+                flush(&mut cur, &mut in_word, &mut out);
+                out.push(Tok::Op(";"));
+            }
             '&' if next == Some('&') => {
                 flush(&mut cur, &mut in_word, &mut out);
                 out.push(Tok::Op("&&"));
@@ -159,6 +164,29 @@ fn tokenize(s: &str) -> Vec<Tok> {
             }
             '#' if !in_word => break,
             '(' | ')' if !in_word => {}
+            '$' if next == Some('(') => {
+                // `$(...)` command substitution: keep it as one opaque word so the `|`, `;`
+                // or `&&` inside it do not split the surrounding command.
+                let mut depth = 0;
+                while i < chars.len() {
+                    match chars[i] {
+                        '(' => depth += 1,
+                        ')' => {
+                            depth -= 1;
+                            if depth == 0 {
+                                cur.push(')');
+                                i += 1;
+                                break;
+                            }
+                        }
+                        _ => {}
+                    }
+                    cur.push(chars[i]);
+                    i += 1;
+                }
+                in_word = true;
+                continue;
+            }
             '`' => {
                 // command substitution: keep as opaque text
                 cur.push(c);
@@ -217,14 +245,68 @@ pub fn parse(cmd: &str) -> Vec<Invocation> {
         let mut env = Vec::new();
         let mut iter = words.into_iter().peekable();
         while let Some(w) = iter.peek() {
-            if is_env_assignment(w) || w == "export" {
+            if w == "export" {
+                // `export FOO=bar` / `export $(cat .env)`: environment set-up, not a step.
+                env.push(iter.next().unwrap());
+                if let Some(v) = iter.next() {
+                    env.push(v);
+                }
+            } else if is_env_assignment(w) {
                 env.push(iter.next().unwrap());
             } else {
                 break;
             }
         }
-        let Some(program) = iter.next() else { continue };
-        if program == "exit" || program == "true" || program == "false" || program == "cd" {
+        let mut program = match iter.next() {
+            Some(p) => p,
+            None => continue,
+        };
+        // Shell control flow: `then cmd`, `do cmd`, `{ cmd` lead into a command; `if cond`,
+        // `for x in …`, `fi`, `done`, `set -e`, `cd dir` are not commands worth a step.
+        while matches!(program.as_str(), "then" | "else" | "do" | "{" | "(") {
+            match iter.next() {
+                Some(p) => program = p,
+                None => break,
+            }
+        }
+        if matches!(
+            program.as_str(),
+            "exit"
+                | "true"
+                | "false"
+                | "cd"
+                | "set"
+                | "if"
+                | "elif"
+                | "while"
+                | "until"
+                | "for"
+                | "case"
+                | "fi"
+                | "done"
+                | "esac"
+                | "then"
+                | "else"
+                | "do"
+                | "{"
+                | "}"
+                | "("
+                | ")"
+                | ":"
+                | "source"
+                | "."
+                | "shift"
+                | "return"
+                | "break"
+                | "continue"
+                | "local"
+                | "readonly"
+                | "declare"
+                | "typeset"
+                | "unset"
+                | "trap"
+                | "wait"
+        ) {
             continue;
         }
         out.push(Invocation {
@@ -1195,6 +1277,25 @@ fn peel(inv: &Invocation) -> Peeled {
                     args,
                 });
             }
+            "nx" if args.first().map(String::as_str) == Some("exec") => {
+                // `nx exec -- <command>` runs the command with Nx caching around it.
+                let inner: Vec<String> = args
+                    .iter()
+                    .skip(1)
+                    .skip_while(|a| a.starts_with('-') && *a != "--")
+                    .skip_while(|a| *a == "--")
+                    .cloned()
+                    .collect();
+                if inner.is_empty() {
+                    return Peeled::Tool(Invocation {
+                        env: vec![],
+                        program: prog,
+                        args,
+                    });
+                }
+                prog = norm_program(&inner[0]);
+                args = inner[1..].to_vec();
+            }
             "sh" | "bash" | "zsh" | "pwsh" | "powershell" | "cmd" => {
                 // sh -c "cmd" → analyse the inner command
                 if let Some(i) = args
@@ -1205,13 +1306,11 @@ fn peel(inv: &Invocation) -> Peeled {
                         return Peeled::Many(vec![inner.clone()]);
                     }
                 }
-                let vf = ["-ExecutionPolicy", "-File", "-NoProfile"];
                 let pos: Vec<String> = args
                     .iter()
                     .filter(|a| !a.starts_with('-') || a.as_str() == "-File")
                     .cloned()
                     .collect();
-                let _ = vf;
                 if let Some(script) = pos.iter().find(|p| !p.starts_with('-')) {
                     return Peeled::Tool(Invocation {
                         env: vec![],
@@ -1277,7 +1376,26 @@ fn analyze_into(
                     continue;
                 }
                 let resolved = resolver(family, &name);
-                if resolved.is_none() && family == "js" {
+                // `pnpm eslint .` runs a binary from node_modules; `npm test` with no script
+                // table in reach must stay "the test script", not the shell `test` builtin.
+                let generic_script = matches!(
+                    name.as_str(),
+                    "test"
+                        | "["
+                        | "which"
+                        | "where"
+                        | "start"
+                        | "build"
+                        | "dev"
+                        | "serve"
+                        | "clean"
+                        | "install"
+                        | "check"
+                        | "format"
+                        | "preview"
+                        | "run"
+                );
+                if resolved.is_none() && family == "js" && !generic_script {
                     if let Some(sum) = tools::summarize(&name, &args) {
                         out.steps.push(Step {
                             text: sum.text,
@@ -1418,6 +1536,29 @@ mod tests {
         assert_eq!(inv[0].env, ["NODE_ENV=production", "FOO=bar baz"]);
         assert_eq!(inv[0].program, "node");
         assert_eq!(inv[0].args, ["-e", r#"console.log("x && y")"#]);
+    }
+
+    #[test]
+    fn newlines_split_and_control_words_are_skipped() {
+        assert_eq!(progs("npm ci\nnpm test\n"), ["npm", "npm"]);
+        assert_eq!(
+            progs("set -euo pipefail\nif [ -f x ]; then cargo build; fi\nfor f in a b; do echo $f; done"),
+            ["cargo", "echo"]
+        );
+        let a = analyze("npm test", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run the test script");
+    }
+
+    #[test]
+    fn substitutions_and_exports_do_not_split_commands() {
+        assert_eq!(
+            progs("export $(grep -v '^#' .env | xargs) && echo \"type is $T\""),
+            ["echo"]
+        );
+        let inv = parse("FOO=$(cat a | head -1) tool --x");
+        assert_eq!(inv.len(), 1);
+        assert_eq!(inv[0].program, "tool");
+        assert_eq!(inv[0].env, ["FOO=$(cat a | head -1)"]);
     }
 
     #[test]

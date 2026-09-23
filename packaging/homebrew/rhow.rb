@@ -2,28 +2,28 @@
 # publish this in a `homebrew-tap` repository as Formula/rhow.rb.
 class Rhow < Formula
   desc "Discover how to run and operate any repository"
-  homepage "https://github.com/line-19/rhow"
+  homepage "https://github.com/euzharkov/run-how"
   version "0.1.0"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/line-19/rhow/releases/download/v#{version}/rhow-#{version}-aarch64-apple-darwin.tar.gz"
+      url "https://github.com/euzharkov/run-how/releases/download/v#{version}/rhow-#{version}-aarch64-apple-darwin.tar.gz"
       sha256 "REPLACE_WITH_SHA256"
     end
     on_intel do
-      url "https://github.com/line-19/rhow/releases/download/v#{version}/rhow-#{version}-x86_64-apple-darwin.tar.gz"
+      url "https://github.com/euzharkov/run-how/releases/download/v#{version}/rhow-#{version}-x86_64-apple-darwin.tar.gz"
       sha256 "REPLACE_WITH_SHA256"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/line-19/rhow/releases/download/v#{version}/rhow-#{version}-aarch64-unknown-linux-musl.tar.gz"
+      url "https://github.com/euzharkov/run-how/releases/download/v#{version}/rhow-#{version}-aarch64-unknown-linux-musl.tar.gz"
       sha256 "REPLACE_WITH_SHA256"
     end
     on_intel do
-      url "https://github.com/line-19/rhow/releases/download/v#{version}/rhow-#{version}-x86_64-unknown-linux-musl.tar.gz"
+      url "https://github.com/euzharkov/run-how/releases/download/v#{version}/rhow-#{version}-x86_64-unknown-linux-musl.tar.gz"
       sha256 "REPLACE_WITH_SHA256"
     end
   end

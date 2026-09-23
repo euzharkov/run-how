@@ -28,7 +28,39 @@ Each archive contains a `rhow-<version>-<target>/` directory with the binary, `R
 | WinGet | Manifest generated with `wingetcreate` at release time | `packaging/winget/` |
 | AUR | `rhow-bin` PKGBUILD from the musl archives | `packaging/aur/PKGBUILD` |
 | Nix | `buildRustPackage` derivation | `packaging/nix/default.nix` |
-| npm | `@line-19/rhow`: `postinstall` downloads and verifies the native binary; `bin/rhow.js` execs it. Node is only a launcher | `packaging/npm/` |
+| npm | `@euzharkov/rhow`: `postinstall` downloads and verifies the native binary; `bin/rhow.js` execs it. Node is only a launcher | `packaging/npm/` |
+
+## Testing the installers without touching your machine
+
+Every Linux channel above downloads a release archive, checks it against `SHA256SUMS`, and
+installs it. `tests/install/` exercises exactly that inside Docker, from the working tree, with
+no network dependency on a real GitHub release:
+
+```bash
+tests/install/run.sh              # all channels
+tests/install/run.sh npm brew     # a subset
+```
+
+`tests/install/Dockerfile` builds and packages rhow like the release workflow, then serves
+the files from an nginx container under the same paths GitHub uses. `install.sh` and the npm
+`install.js` accept `RHOW_DOWNLOAD_BASE` / `RHOW_API_BASE` so they can be pointed at that
+mirror; the Homebrew formula and PKGBUILD are copied with their URL and checksum rewritten.
+Each channel runs in its own throwaway container and ends with the same smoke test: the
+installed binary reports the version from `Cargo.toml` and discovers a sample project.
+
+| Case | Image | What it proves |
+|---|---|---|
+| `curl-debian` | `debian:bookworm-slim` | `curl \| sh`, "latest" resolved through the API |
+| `curl-alpine` | `alpine:3` | the wget fallback, explicit version and install dir, a bad checksum is refused |
+| `npm` | `node:22-alpine` | `npm pack` + `npm install -g`, postinstall download, launcher exit codes |
+| `cargo` | `rust:1-alpine` | `cargo install --path` with the locked dependencies |
+| `brew` | `homebrew/brew` | the tap formula installs and its `test do` block passes |
+| `aur` | `archlinux:base-devel` | the PKGBUILD builds with `makepkg` and installs with `pacman` |
+
+Homebrew and Arch publish amd64 images only, so on an Apple Silicon host those two run under
+emulation and the mirror also carries an x86_64 archive cross-linked with `rust-lld`. Not
+covered: the Windows channels (Scoop, WinGet), Nix, and `cargo binstall`. CI runs the whole set
+on every push through `.github/workflows/ci.yml`.
 
 Release checklist:
 

@@ -111,11 +111,18 @@ impl Discoverer for Ruby {
         for f in ["Rakefile", "rakefile", "Rakefile.rb"] {
             let Some(text) = base.read(f) else { continue };
             for (name, desc) in rake_tasks(&text) {
+                // A task built in a Ruby loop (`task "#{framework}:test"`) has no single name
+                // to type; keep it out of the default view.
+                let templated =
+                    name.contains("#{") || desc.as_deref().is_some_and(|d| d.contains("#{"));
                 declared.push(name.clone());
                 let mut a = Action::new(&name, be(&format!("rake {name}"))).tool("rake");
                 match desc {
                     Some(d) => a = a.desc(d),
                     None => a = a.inferred_desc(format!("Run the {name} Rake task")),
+                }
+                if templated {
+                    a = a.confidence(Confidence::Low);
                 }
                 out.actions.push(a);
             }

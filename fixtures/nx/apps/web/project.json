@@ -5,7 +5,11 @@
     "serve": { "executor": "@nx/vite:dev-server" },
     "build": { "executor": "@nx/vite:build", "metadata": { "description": "Production bundle" } },
     "test": { "executor": "@nx/vitest:test" },
-    "lint": { "executor": "@nx/eslint:lint" },
+    "lint": { "options": { "quiet": true } },
+    "format": {},
+    "release-check": {},
+    "maybe-deploy": {},
+    "unknown-thing": {},
     "e2e": { "executor": "@nx/playwright:playwright" },
     "deploy": { "executor": "nx:run-commands", "options": { "command": "wrangler deploy" } },
   }

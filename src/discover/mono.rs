@@ -74,8 +74,45 @@ pub fn read_jsonc(dir: &DirInfo, file: &str) -> Option<Value> {
     serde_json::from_str(&strip_jsonc(&dir.read(file)?)).ok()
 }
 
-fn nx_targets(dir: &DirInfo) -> Vec<(String, Option<String>, Option<String>)> {
-    // (target, description, executor/command)
+/// One Nx target after merging the project's definition over `nx.json` `targetDefaults`.
+struct NxTarget {
+    name: String,
+    description: Option<String>,
+    /// `Some("nx-executor:<executor>")` or the run-commands text; `None` when nothing is known.
+    cmd: Option<String>,
+    /// The project defined nothing of its own (`"lint": {}` or options only): the target is
+    /// the workspace default applied to this project.
+    inherited: bool,
+}
+
+fn command_text(cfg: &Value) -> Option<String> {
+    let opts = cfg.get("options")?;
+    if let Some(c) = opts.get("command").and_then(|c| c.as_str()) {
+        return Some(c.to_string());
+    }
+    // `nx:run-commands` runs its `commands` in sequence by default; take all of them so the
+    // description and risk reflect the whole target. Comment-only entries are skipped, since
+    // a leading `#` would otherwise end the shell tokenizer's view of everything after it.
+    let arr = opts.get("commands")?.as_array()?;
+    let parts: Vec<String> = arr
+        .iter()
+        .filter_map(|item| {
+            item.as_str().map(|s| s.to_string()).or_else(|| {
+                item.get("command")
+                    .and_then(|c| c.as_str())
+                    .map(|s| s.to_string())
+            })
+        })
+        .filter(|c| !c.trim_start().starts_with('#') && !c.trim().is_empty())
+        .collect();
+    if parts.is_empty() {
+        None
+    } else {
+        Some(parts.join(" && "))
+    }
+}
+
+fn nx_targets(dir: &DirInfo, defaults: Option<&Value>) -> Vec<NxTarget> {
     let mut out = Vec::new();
     let Some(v) = read_jsonc(dir, "project.json") else {
         return out;
@@ -84,44 +121,55 @@ fn nx_targets(dir: &DirInfo) -> Vec<(String, Option<String>, Option<String>)> {
         return out;
     };
     for (name, cfg) in t {
-        let desc = cfg
+        let default = defaults.and_then(|d| d.get(name));
+        let description = cfg
             .get("metadata")
             .and_then(|m| m.get("description"))
             .and_then(|d| d.as_str())
             .map(|s| s.to_string());
-        let opts = cfg.get("options");
-        // `nx:run-commands` most often runs several commands in sequence (its default is not
-        // parallel); take every one of them, not just the first, so the description and risk
-        // reflect the whole target instead of only its first step.
-        let cmd = opts
-            .and_then(|o| o.get("command"))
-            .and_then(|c| c.as_str())
-            .map(|s| s.to_string())
-            .or_else(|| {
-                opts.and_then(|o| o.get("commands"))
-                    .and_then(|c| c.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|item| {
-                                item.as_str().map(|s| s.to_string()).or_else(|| {
-                                    item.get("command")
-                                        .and_then(|c| c.as_str())
-                                        .map(|s| s.to_string())
-                                })
-                            })
-                            .collect::<Vec<_>>()
-                            .join(" && ")
-                    })
-                    .filter(|s| !s.is_empty())
-            })
-            .or_else(|| {
-                cfg.get("executor")
-                    .and_then(|e| e.as_str())
-                    .map(|e| format!("nx-executor:{e}"))
-            });
-        out.push((name.clone(), desc, cmd));
+        let own_executor = cfg.get("executor").and_then(|e| e.as_str());
+        let own_cmd = command_text(cfg);
+        let inherited = own_executor.is_none() && own_cmd.is_none();
+        let executor = own_executor.or_else(|| {
+            default
+                .and_then(|d| d.get("executor"))
+                .and_then(|e| e.as_str())
+        });
+        let cmd = own_cmd
+            .or_else(|| default.and_then(command_text))
+            .or_else(|| executor.map(|e| format!("nx-executor:{e}")));
+        out.push(NxTarget {
+            name: name.clone(),
+            description,
+            cmd,
+            inherited,
+        });
     }
     out
+}
+
+/// Targets a developer reaches for by hand. Anything else that a project merely inherits
+/// from the workspace defaults is pipeline plumbing, shown once at the root and hidden here.
+const CORE_TARGETS: &[&str] = &[
+    "build",
+    "test",
+    "lint",
+    "typecheck",
+    "type-check",
+    "format",
+    "e2e",
+    "serve",
+    "start",
+    "dev",
+    "clean",
+    "check",
+];
+
+fn nx_project_name(dir: &DirInfo) -> Option<String> {
+    read_jsonc(dir, "project.json")?
+        .get("name")?
+        .as_str()
+        .map(|s| s.to_string())
 }
 
 impl Discoverer for Mono {
@@ -139,12 +187,6 @@ impl Discoverer for Mono {
             || dir.has("moon.yml")
             || dir.has_dir(".moon")
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        read_jsonc(dir, "project.json")?
-            .get("name")?
-            .as_str()
-            .map(|s| s.to_string())
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let scripts_here: Vec<String> = base
@@ -160,29 +202,47 @@ impl Discoverer for Mono {
 
         // ---- Nx -------------------------------------------------------------------------
         if base.has("project.json") {
-            let name = self
-                .project_name(base)
-                .unwrap_or_else(|| base.name().to_string());
+            let name = nx_project_name(base).unwrap_or_else(|| base.name().to_string());
             let root = ctx
                 .ancestors(base)
                 .into_iter()
                 .find(|a| a.has("nx.json"))
                 .unwrap_or(base);
-            for (target, desc, cmd) in nx_targets(base) {
+            let defaults =
+                read_jsonc(root, "nx.json").and_then(|v| v.get("targetDefaults").cloned());
+            for t in nx_targets(base, defaults.as_ref()) {
+                let target = t.name;
                 let mut a = Action::new(&target, format!("nx run {name}:{target}"))
                     .tool("nx")
                     .cwd(root.rel.clone());
-                if let Some(d) = desc {
+                if let Some(d) = t.description {
                     a = a.desc(d);
                 }
-                match cmd {
+                match t.cmd {
                     Some(c) if c.starts_with("nx-executor:") => {
                         let ex = c.trim_start_matches("nx-executor:");
-                        let (text, cat) = executor_desc(ex, &target);
-                        a = a.inferred_desc(text).cat(cat);
+                        if ex == "nx:noop" {
+                            // A dependency-graph anchor with no work of its own.
+                            a = a.hidden();
+                        }
+                        let opts = nx_options(
+                            read_jsonc(base, "project.json").as_ref(),
+                            defaults.as_ref(),
+                            &target,
+                        );
+                        let (text, cat, risk) = executor_desc(ex, &target, &opts);
+                        a = a.inferred_desc(text).cat(cat).risk(risk);
                     }
                     Some(c) => a = a.raw(c),
-                    None => {}
+                    // Nothing known about it anywhere: keep it, but not in the default view.
+                    None => {
+                        a = a
+                            .inferred_desc(format!("Run the {target} target"))
+                            .confidence(Confidence::Low)
+                    }
+                }
+                if t.inherited && !CORE_TARGETS.contains(&target.as_str()) {
+                    a = a.hidden();
                 }
                 out.actions.push(a);
             }
@@ -203,12 +263,30 @@ impl Discoverer for Mono {
                 .filter(|t| !t.starts_with('@') && !t.contains(':'))
             {
                 if free(t) {
-                    out.actions.push(
-                        Action::new(t, format!("nx run-many -t {t}"))
-                            .tool("nx")
-                            .inferred(Confidence::Medium)
-                            .inferred_desc(format!("Run {t} across all Nx projects")),
-                    );
+                    let conf = if CORE_TARGETS.contains(&t.as_str()) {
+                        Confidence::Medium
+                    } else {
+                        Confidence::Low
+                    };
+                    // Explain it from what `targetDefaults` says the target does; when Nx
+                    // says nothing, the command already says all there is.
+                    let default = v.get("targetDefaults").and_then(|d| d.get(t));
+                    let executor = default
+                        .and_then(|d| d.get("executor"))
+                        .and_then(|e| e.as_str());
+                    let mut a = Action::new(t, format!("nx run-many -t {t}"))
+                        .tool("nx")
+                        .inferred(conf);
+                    if let Some(cmd) = default.and_then(command_text) {
+                        a = a.raw(cmd);
+                    } else if let Some(ex) = executor.filter(|e| *e != "nx:noop") {
+                        let opts = nx_options(None, v.get("targetDefaults"), t);
+                        let (text, cat, risk) = executor_desc(ex, t, &opts);
+                        a = a.inferred_desc(text).cat(cat).risk(risk);
+                    } else if executor == Some("nx:noop") {
+                        a = a.hidden();
+                    }
+                    out.actions.push(a);
                 }
             }
             out.actions.push(
@@ -377,7 +455,50 @@ impl Discoverer for Mono {
     }
 }
 
-fn executor_desc(ex: &str, target: &str) -> (String, Category) {
+/// The target's `options`, the project's own over the workspace `targetDefaults`.
+fn nx_options(project: Option<&Value>, defaults: Option<&Value>, target: &str) -> Value {
+    let mut merged = serde_json::Map::new();
+    for src in [defaults, project.and_then(|p| p.get("targets"))] {
+        if let Some(o) = src
+            .and_then(|t| t.get(target))
+            .and_then(|t| t.get("options"))
+            .and_then(|o| o.as_object())
+        {
+            for (k, v) in o {
+                merged.insert(k.clone(), v.clone());
+            }
+        }
+    }
+    Value::Object(merged)
+}
+
+fn executor_desc(ex: &str, target: &str, options: &Value) -> (String, Category, Risk) {
+    let options = Some(options);
+    let platform = options
+        .and_then(|o| o.get("platform"))
+        .and_then(|p| p.as_str())
+        .unwrap_or("");
+    let local = options
+        .and_then(|o| o.get("local"))
+        .and_then(|l| l.as_bool())
+        .unwrap_or(false);
+    let fix = options
+        .and_then(|o| o.get("fix"))
+        .and_then(|l| l.as_bool())
+        .unwrap_or(false);
+    let (text, cat, risk) = executor_desc_inner(ex, target, platform, local);
+    if fix && text == "Check source code with ESLint" {
+        return ("Fix lint issues with ESLint".to_string(), cat, risk);
+    }
+    (text, cat, risk)
+}
+
+fn executor_desc_inner(
+    ex: &str,
+    target: &str,
+    platform: &str,
+    local: bool,
+) -> (String, Category, Risk) {
     let e = ex.rsplit(':').next().unwrap_or(ex);
     let pkg = ex.split(':').next().unwrap_or("");
     let fw = if pkg.contains("next") {
@@ -415,12 +536,102 @@ fn executor_desc(ex: &str, target: &str) -> (String, Category) {
     } else {
         target.to_string()
     };
+    let safe = |t: String, c: Category| (t, c, Risk::Safe);
+    if pkg.contains("angular") {
+        match e {
+            "application" | "browser" | "browser-esbuild" | "ng-packagr" => {
+                return safe("Build the Angular app".into(), Category::Build)
+            }
+            "dev-server" => {
+                return safe(
+                    "Start the Angular development server".into(),
+                    Category::Development,
+                )
+            }
+            "karma" | "jest" | "web-test-runner" => {
+                return safe("Run Angular unit tests".into(), Category::Testing)
+            }
+            "extract-i18n" => {
+                return safe(
+                    "Extract i18n messages from the Angular app".into(),
+                    Category::Build,
+                )
+            }
+            "server" | "prerender" | "app-shell" => {
+                return safe("Build the Angular server bundle".into(), Category::Build)
+            }
+            _ => {}
+        }
+    }
+    if pkg.contains("expo") {
+        let os = match platform {
+            "ios" => "iOS",
+            "android" => "Android",
+            _ => "",
+        };
+        match e {
+            "start" => {
+                return safe(
+                    "Start the Expo development server".into(),
+                    Category::Development,
+                )
+            }
+            "run" if !os.is_empty() => {
+                return safe(
+                    format!("Build and run the app on {os}"),
+                    Category::Development,
+                )
+            }
+            "run" => {
+                return safe(
+                    "Build and run the app on a device".into(),
+                    Category::Development,
+                )
+            }
+            "build" if local => {
+                return safe("Build the app locally with EAS".into(), Category::Build)
+            }
+            "build" => {
+                return (
+                    "Build the app with EAS Build".into(),
+                    Category::Build,
+                    Risk::External,
+                )
+            }
+            "update" => {
+                return (
+                    "Publish an over-the-air update with EAS".into(),
+                    Category::Release,
+                    Risk::External,
+                )
+            }
+            "submit" => {
+                return (
+                    "Submit the app to the app stores".into(),
+                    Category::Release,
+                    Risk::External,
+                )
+            }
+            "prebuild" => {
+                return safe(
+                    "Generate the native projects with Expo prebuild".into(),
+                    Category::Build,
+                )
+            }
+            "export" => return safe("Export the app bundle with Expo".into(), Category::Build),
+            "install" => return safe("Install dependencies with Expo".into(), Category::Other),
+            "ensure-symlink" => {
+                return safe("Ensure the Expo workspace symlink".into(), Category::Other)
+            }
+            _ => {}
+        }
+    }
     match e {
         "dev-server" | "serve" | "server" | "start" | "node" | "run-ios" | "run-android"
-        | "storybook" => (format!("Serve {subject}{with}"), Category::Development),
+        | "storybook" => safe(format!("Serve {subject}{with}"), Category::Development),
         "build" | "package" | "bundle" | "export" | "compile" | "tsc" | "rollup" | "esbuild"
-        | "webpack" | "vite" | "tsup" => (format!("Build{with}"), Category::Build),
-        "test" | "jest" | "vitest" | "mocha" => (
+        | "webpack" | "vite" | "tsup" => safe(format!("Build{with}"), Category::Build),
+        "test" | "jest" | "vitest" | "mocha" => safe(
             format!(
                 "Run {} tests",
                 if pkg.contains("jest") {
@@ -438,22 +649,25 @@ fn executor_desc(ex: &str, target: &str) -> (String, Category) {
             Category::Testing,
         ),
         "playwright" | "cypress" | "e2e" | "detox" => {
-            ("Run end-to-end tests".to_string(), Category::Testing)
+            safe("Run end-to-end tests".to_string(), Category::Testing)
         }
-        "lint" | "eslint" | "stylelint" => (
+        "lint" | "eslint" | "stylelint" => safe(
             "Check source code with ESLint".to_string(),
             Category::Quality,
         ),
-        "typecheck" => ("Check TypeScript types".to_string(), Category::Quality),
+        "typecheck" => safe("Check TypeScript types".to_string(), Category::Quality),
         // Reached only when the executor is run-commands/run-script but no command text
         // could be extracted at all (e.g. it is defined solely under a per-environment
         // `configurations` override rather than the target's base `options`).
-        "run-commands" | "run-script" => (format!("Run the {target} task"), Category::Other),
-        "docker-build" => ("Build the Docker image".to_string(), Category::Build),
-        "publish" | "npm-publish" | "release" => {
-            ("Publish the package".to_string(), Category::Release)
-        }
-        _ => (
+        "run-commands" | "run-script" => safe(format!("Run the {target} task"), Category::Other),
+        "docker-build" => safe("Build the Docker image".to_string(), Category::Build),
+        "publish" | "npm-publish" | "release" => (
+            "Publish the package".to_string(),
+            Category::Release,
+            Risk::External,
+        ),
+        "noop" => safe(format!("Run the {target} dependencies"), Category::Other),
+        _ => safe(
             format!("Run the {target} target ({e})"),
             crate::explain::name_hint(target)
                 .map(|h| h.category)

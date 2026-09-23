@@ -1,14 +1,15 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [npm-basic] JavaScript tools=npm,sh
-dev                      Development    declared exact  safe        .          npm run dev :: Start the Vite development server
+dev                      Development    declared exact  safe        .          npm run dev :: Start the Vite development server [long-running]
 build                    Build          declared exact  safe        .          npm run build :: Compile TypeScript sources, then build the app with Vite
-preview                  Development    declared exact  safe        .          npm run preview :: Preview the production build with Vite
+preview                  Development    declared exact  safe        .          npm run preview :: Preview the production build with Vite [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Vitest tests
 test:e2e                 Testing        declared exact  safe        .          npm run test:e2e :: Run Playwright end-to-end tests
-test:watch               Testing        declared exact  safe        .          npm run test:watch :: Run Vitest tests in watch mode
+test:watch               Testing        declared exact  safe        .          npm run test:watch :: Run Vitest tests in watch mode [long-running]
 lint                     Quality        declared exact  safe        .          npm run lint :: Check source code with ESLint
 lint:fix                 Quality        declared exact  safe        .          npm run lint:fix :: Fix lint issues with ESLint
 typecheck                Quality        declared exact  safe        .          npm run typecheck :: Check TypeScript types
@@ -22,7 +23,7 @@ db:reset                 Database       declared exact  destructive .          n
 nuke                     Build          declared exact  destructive .          npm run nuke :: Delete ~/.cache/thing
 release                  Release        declared exact  external    .          npm run release :: Publish the package to npm
 start                    Development    declared exact  safe        .          npm run start :: Run dist/server.js
-prepare                  Other          declared exact  safe        hidden .          npm run prepare :: Install Git hooks with Husky
+prepare                  Other          declared exact  safe        hidden .          npm run prepare :: Install Git hooks with Husky [git]
 pretest                  Quality        declared exact  safe        hidden .          npm run pretest :: Check source code with ESLint
 postinstall              Other          declared exact  safe        hidden .          npm run postinstall :: Apply local dependency patches
 sh:deploy                Release        inferred medium external    hidden .          ./scripts/deploy.sh :: Run scripts/deploy.sh

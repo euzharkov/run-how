@@ -1,18 +1,19 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [expo] JavaScript tools=expo,eas,detox,npm
-ios                      Development    inferred high   safe        .          npx expo run:ios :: Build and run the app on iOS
-android                  Development    inferred high   safe        .          npx expo run:android :: Build and run the app on Android
-web                      Development    inferred medium safe        .          npx expo start --web :: Start the Expo app in the browser
+ios                      Development    inferred high   safe        .          npx expo run:ios :: Build and run the app on iOS [long-running,device]
+android                  Development    inferred high   safe        .          npx expo run:android :: Build and run the app on Android [long-running,device]
+web                      Development    inferred medium safe        .          npx expo start --web :: Start the Expo app in the browser [long-running]
 prebuild                 Build          inferred low    safe        .          npx expo prebuild :: Generate native iOS and Android projects
 doctor                   Quality        inferred low    safe        .          npx expo-doctor :: Check the Expo project for common issues
 eas:build                Build          inferred high   external    .          npx eas build :: Build the app with EAS Build
-eas:build:local          Build          inferred low    external    .          npx eas build --local :: Build the app locally with EAS
+eas:build:local          Build          inferred low    safe        .          npx eas build --local :: Build the app locally with EAS
 eas:update               Release        inferred medium external    .          npx eas update :: Publish an over-the-air update with EAS
 eas:submit               Release        inferred medium external    .          npx eas submit :: Submit the app to the app stores
-test:e2e                 Testing        inferred high   safe        .          npx detox test :: Run Detox end-to-end tests
-start                    Development    declared exact  safe        .          npm run start :: Start the Expo development server
+test:e2e                 Testing        inferred high   safe        .          npx detox test :: Run Detox end-to-end tests [device]
+start                    Development    declared exact  safe        .          npm run start :: Start the Expo development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests in watch mode
 lint                     Quality        declared exact  safe        .          npm run lint :: Run expo lint

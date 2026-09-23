@@ -58,8 +58,6 @@ fn segment_risk(toks: &[&str]) -> Risk {
     if toks.is_empty() {
         return Risk::Safe;
     }
-    let joined = toks.join(" ");
-
     // ---- destructive -------------------------------------------------------------------
     let destructive = [
         &["down", "-v"][..],
@@ -198,10 +196,19 @@ fn segment_risk(toks: &[&str]) -> Risk {
         &["skaffold", "dev"],
         &["argocd", "app", "sync"],
     ];
+    let dry_run = toks.iter().any(|t| t.starts_with("--dry-run"));
     for pat in external {
         if seq(toks, pat) {
             // `git push` inside a `-f` check already handled; tokens like "aws" must be the program.
             if pat.len() == 1 && toks[0] != pat[0] {
+                continue;
+            }
+            // `kubectl apply --dry-run=client`, `helm install --dry-run`: nothing leaves the machine.
+            if dry_run && (has(toks, "kubectl") || has(toks, "helm")) {
+                continue;
+            }
+            // `eas build --local` (also behind `npx`/`bunx`) builds on this machine.
+            if has(toks, "eas") && has(toks, "--local") {
                 continue;
             }
             return Risk::External;
@@ -220,7 +227,6 @@ fn segment_risk(toks: &[&str]) -> Risk {
             return Risk::External;
         }
     }
-    let _ = joined;
     Risk::Safe
 }
 
@@ -272,6 +278,10 @@ mod tests {
             "docker compose up -d",
             "docker compose down",
             "kubectl kustomize k8s/overlays/dev",
+            "kubectl apply --dry-run=client -f k8s/",
+            "eas build --local --profile development",
+            "bunx eas build --local",
+            "helm install --dry-run app ./chart",
             "curl https://example.com",
             "terraform plan",
             "git status",

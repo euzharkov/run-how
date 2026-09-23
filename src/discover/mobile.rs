@@ -73,27 +73,6 @@ impl Discoverer for Mobile {
             || dir.has("pubspec.yaml")
             || (dir.has_dir("fastlane") && dir.path.join("fastlane/Fastfile").is_file())
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        if let Some(x) = dir
-            .dirs
-            .iter()
-            .find(|d| d.ends_with(".xcworkspace"))
-            .or_else(|| dir.dirs.iter().find(|d| d.ends_with(".xcodeproj")))
-        {
-            return Some(
-                x.rsplit_once('.')
-                    .map(|(s, _)| s.to_string())
-                    .unwrap_or(x.clone()),
-            );
-        }
-        if let Some(text) = dir.read("pubspec.yaml") {
-            return text
-                .lines()
-                .find_map(|l| l.strip_prefix("name:"))
-                .map(|s| s.trim().to_string());
-        }
-        None
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let macos = ctx.host_os == "macos";

@@ -79,6 +79,9 @@ fixture_tests!(
     haskell,
     scala,
     clojure,
+    noise,
+    many,
+    ci,
 );
 
 #[test]
@@ -155,9 +158,8 @@ fn discovery_is_read_only() {
 fn declared_versions_are_extracted_and_compared() {
     use rhow::support::{self, Compat};
 
-    // Baselines: the existing fixtures use edition 2021, Go 1.22, net8.0, Taskfile schema 3,
-    // Node >=18, pnpm 9.x/9.12, Terraform >= 1.6 — all at or below what `support::REGISTRY`
-    // has been verified against, so nothing here should read as "newer".
+    // The existing fixtures declare versions at or below what `support::REGISTRY` has been
+    // verified against, so nothing here should read as "newer".
     let checks: &[(&str, &[(&str, &str)])] = &[
         ("cargo", &[("cargo-edition", "2021")]),
         ("go", &[("go", "1.22")]),
@@ -213,17 +215,17 @@ fn newer_than_verified_versions_are_flagged() {
     );
     let findings = support::check(&repo);
     let expect: &[(&str, &str)] = &[
-        ("cargo-edition", "2024"),
-        ("go", "1.26"),
-        ("dotnet-tfm", "net10.0"),
+        ("cargo-edition", "2027"),
+        ("go", "1.28"),
+        ("dotnet-tfm", "net11.0"),
         ("taskfile", "4"),
-        ("python", ">=3.15"),
-        ("node", ">=24"),
-        ("pnpm", "10.0.0"),
-        ("php", "^8.5"),
-        ("ruby", "3.5.0"),
-        ("bazel", "8.0.0"),
-        ("gradle", "9.0"),
+        ("python", ">=3.16"),
+        ("node", ">=26"),
+        ("pnpm", "11.0.0"),
+        ("php", "^8.6"),
+        ("ruby", "4.1.0"),
+        ("bazel", "9.0.0"),
+        ("gradle", "10.0"),
         ("terraform", ">= 2.0"),
     ];
     for (tool, value) in expect {

@@ -1,5 +1,6 @@
 //! Repository root detection and read-only directory scanning.
 
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -24,7 +25,66 @@ pub const IGNORED_DIRS: &[&str] = &[
     "bower_components",
     "jspm_packages",
     "testdata",
+    // Test inputs, never projects in their own right.
+    "fixtures",
+    "__fixtures__",
+    "test-fixtures",
+    "__snapshots__",
+    "__mocks__",
 ];
+
+/// Directory names whose contents are demonstrations or test subjects rather than the
+/// project itself (`examples/`, `test/apps/`, `playground/`). Projects found below them are
+/// still discovered, but everything they offer is low confidence: shown with `--all`, not by
+/// default, and they never claim helper directories (Docker, Kubernetes, Terraform).
+pub fn is_demoted_segment(name: &str) -> bool {
+    matches!(
+        name,
+        "test"
+            | "tests"
+            | "__tests__"
+            | "spec"
+            | "specs"
+            | "e2e"
+            | "example"
+            | "examples"
+            | "sample"
+            | "samples"
+            | "demo"
+            | "demos"
+            | "playground"
+            | "playgrounds"
+            | "bench"
+            | "benches"
+            | "benchmarks"
+            | "template"
+            | "templates"
+    ) || name.ends_with("-tests")
+        || name.ends_with("_tests")
+        || name.ends_with("-fixtures")
+        || name.ends_with("_fixtures")
+}
+
+/// Is any segment of a relative path (not the root itself) a demoted directory?
+pub fn is_demoted_path(rel: &str) -> bool {
+    rel != "." && rel.split('/').any(is_demoted_segment)
+}
+
+/// Generated platform runners inside a mobile app (`android/`, `ios/`, `macos/`, `linux/`,
+/// `windows/`, `web/` next to a `pubspec.yaml` or an Expo/React Native app config). They
+/// carry Gradle, Xcode and CMake projects of their own that are not what a developer runs.
+pub const PLATFORM_DIRS: &[&str] = &["android", "ios", "macos", "linux", "windows", "web"];
+
+pub fn is_mobile_app_dir(dir: &DirInfo) -> bool {
+    dir.has("pubspec.yaml")
+        || (dir.has("package.json")
+            && (dir.has("app.json")
+                || dir.files.iter().any(|f| {
+                    f.starts_with("app.config.")
+                        || f.starts_with("metro.config.")
+                        || f.starts_with("react-native.config.")
+                })))
+}
 
 const MAX_DEPTH: usize = 10;
 const MAX_DIRS: usize = 25_000;
@@ -189,22 +249,41 @@ pub fn is_ignored_dir(name: &str) -> bool {
     name.starts_with('.') || IGNORED_DIRS.contains(&name)
 }
 
+/// Relative path → position in the scanned list, so ancestor walks are O(depth) instead of
+/// O(depth × directories).
+pub fn index(dirs: &[DirInfo]) -> HashMap<String, usize> {
+    dirs.iter()
+        .enumerate()
+        .map(|(i, d)| (d.rel.clone(), i))
+        .collect()
+}
+
+/// The parent of a relative path (`a/b` → `a`, `a` → `.`); `None` for the root.
+pub fn parent_rel(rel: &str) -> Option<&str> {
+    if rel == "." {
+        return None;
+    }
+    Some(match rel.rfind('/') {
+        Some(p) => &rel[..p],
+        None => ".",
+    })
+}
+
 /// Index of the nearest ancestor (or self) of `idx` in `dirs` that satisfies `pred`.
-pub fn nearest(dirs: &[DirInfo], idx: usize, pred: impl Fn(usize) -> bool) -> Option<usize> {
+pub fn nearest(
+    dirs: &[DirInfo],
+    index: &HashMap<String, usize>,
+    idx: usize,
+    pred: impl Fn(usize) -> bool,
+) -> Option<usize> {
     let mut rel = dirs[idx].rel.as_str();
     loop {
-        if let Some(i) = dirs.iter().position(|d| d.rel == rel) {
+        if let Some(&i) = index.get(rel) {
             if pred(i) {
                 return Some(i);
             }
         }
-        if rel == "." {
-            return None;
-        }
-        rel = match rel.rfind('/') {
-            Some(p) => &rel[..p],
-            None => ".",
-        };
+        rel = parent_rel(rel)?;
     }
 }
 

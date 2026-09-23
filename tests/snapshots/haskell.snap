@@ -1,10 +1,11 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [haskell] Other tools=stack,haskell
 build                    Build          inferred high   safe        .          stack build :: Build with Stack
 test                     Testing        inferred high   safe        .          stack test :: Run tests with Stack
 run                      Development    inferred medium safe        .          stack run :: Run the executable with Stack
-repl                     Development    inferred low    safe        .          stack ghci :: Open GHCi with the project loaded
+repl                     Development    inferred low    safe        .          stack ghci :: Open GHCi with the project loaded [long-running]
 lint                     Quality        inferred medium safe        .          hlint . :: Check Haskell source with HLint

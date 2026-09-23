@@ -1,0 +1,4 @@
+name: app03
+dependencies:
+  flutter:
+    sdk: flutter

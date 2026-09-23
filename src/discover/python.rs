@@ -234,18 +234,6 @@ impl Discoverer for Python {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(MARKERS)
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        let py: Value = toml::from_str(&dir.read("pyproject.toml")?).ok()?;
-        py.get("project")
-            .and_then(|p| p.get("name"))
-            .or_else(|| {
-                py.get("tool")
-                    .and_then(|t| t.get("poetry"))
-                    .and_then(|p| p.get("name"))
-            })
-            .and_then(|n| n.as_str())
-            .map(|s| s.to_string())
-    }
     fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let py: Option<Value> = base

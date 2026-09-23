@@ -4,6 +4,16 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# Pull requests from forks get a read-only token; nothing here needs more.
+permissions:
+  contents: read
+
+# A new push to the same PR cancels the run that is still going for the old one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -27,3 +37,11 @@ jobs:
       - run: cargo test --all-targets
       - name: Smoke test the binary
         run: cargo run -- -C fixtures/polyglot --no-runtime --json
+
+  install:
+    name: Installer channels (Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test every install channel against a local release mirror
+        run: tests/install/run.sh

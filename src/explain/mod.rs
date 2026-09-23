@@ -317,12 +317,20 @@ pub fn finalize(a: &mut Action, resolver: Resolver) {
     let analysis = analyze::analyze(&text, resolver);
     if a.description.is_empty() {
         a.description = describe(&analysis, &a.name);
+        a.opaque = analysis.steps.iter().all(|s| {
+            s.unknown
+                || matches!(
+                    s.tool.as_deref(),
+                    Some("echo") | Some("cat") | Some("sleep")
+                )
+        }) && !analysis.steps.is_empty();
     }
     if a.category == Category::Other {
         a.category = categorize(&analysis, &a.name);
     }
     let r = risk::classify(&text, &analysis);
     a.risk = a.risk.max(r);
+    a.notes = crate::notes::classify(&text, &analysis);
     // Name-based external hint only for opaque commands ("deploy": "./deploy.sh").
     if a.risk == Risk::Safe && analysis.is_opaque() && a.source == ActionSource::Declared {
         let lower = a.name.to_ascii_lowercase();

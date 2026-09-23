@@ -1,0 +1,1 @@
+{ "name": "@noise/p3", "scripts": { "compile": "tsc -p .", "test": "vitest run" } }

@@ -16,8 +16,8 @@ Key `Action` fields:
 | Field | Meaning |
 |---|---|
 | `id` | Globally unique CLI name. Root actions keep their name; nested project actions are prefixed (`api:test`). A nested project's `run`/`dev` collapses to the project name when free |
-| `command` | The exact native command `rhow <id>` executes |
-| `working_directory` | Relative to the repo root; workspace members run from the workspace root with a filter |
+| `command` | The exact native command the project would run; `rhow <id>` shows it, never runs it |
+| `working_directory` | Relative to the repo root. A workspace member's scripts are shown as run inside the member (`pnpm run dev` in `apps/web`), which is how the per-project listing reads |
 | `source` | `declared` (the project wrote it down) or `inferred` (ecosystem convention) |
 | `confidence` | `exact` for declared; `high`/`medium`/`low` for inferred. `low` is hidden without `--all` |
 | `risk` | `safe`, `external`, `destructive` |
@@ -26,7 +26,9 @@ Key `Action` fields:
 ## Discovery
 
 `repo::scan` performs one read-only walk (max depth 10, ignoring `node_modules`, `target`,
-`dist`, hidden directories, …) and caches every directory listing in a `DirInfo`.
+`dist`, `bin`, hidden directories, …) and caches every directory listing in a `DirInfo`.
+`Context` indexes the listing by relative path, so ancestor walks are O(depth), and caches
+parsed JSON manifests so workspace lookups parse each `package.json` once.
 
 `discover::discover` then:
 
@@ -41,9 +43,23 @@ Key `Action` fields:
    or `make test` during analysis.
 5. Finalises each action: description (unless explicit), category (unless set), risk (max of
    adapter, analysis and textual heuristics).
-6. Assigns ids. Declared actions win collisions; an inferred action that loses its natural id is
-   hidden because the project already exposes that name.
-7. Optionally probes the local machine for runtime suggestions (Colima etc.).
+6. Hides what the default view does not need (all still available with `--all`):
+   - same-name or same-meaning actions from two tools in one project (declared beats inferred,
+     earlier adapter wins; same-tool variants such as `test:watch` are never touched);
+   - inferred non-Development actions of a nested project that its nearest ancestor project
+     already offers with the same name and tool (workspace fan-out);
+   - a declared script repeated with the same explanation in five or more nested packages;
+     the root gains one inferred "run it in all packages" action for it instead;
+   - when more than twelve nested projects have actions, their inferred non-Development
+     actions (convention, not declaration);
+   - every action of a project under a demoted directory (`test/`, `examples/`, `fixtures/`,
+     `playground/`, `benches/`, `*-tests/`, …), which is set to low confidence.
+   Directories named `android/`, `ios/`, `macos/`, `linux/`, `windows/`, `web/` inside a
+   Flutter, Expo or React Native app are shadowed entirely: nothing below them is detected.
+7. Assigns ids. Declared actions win collisions; an inferred action that loses its natural id is
+   hidden because the project already exposes that name. The built-in subcommands (`why`,
+   `support`) are reserved, so a script with one of those names gets a tool-prefixed id.
+8. Optionally probes the local machine for runtime suggestions (Colima etc.).
 
 ### Adding an ecosystem
 
@@ -58,10 +74,36 @@ impl Discoverer for Gradle {
 }
 ```
 
-and register it in `discover::all()`. Never spawn a process in `detect`/`discover`.
-Add tool knowledge to `analyze/tools.rs` (not a new adapter) when a *command* needs explaining.
-Planned next: Gradle, Maven, Rake, Composer, Nx/Turborepo/Lerna/Rush project graphs, Bazel,
-Pants, moon, Terraform/OpenTofu, Pulumi, Ansible, NUKE, Cake.
+and register it in `discover::all()`. Never spawn a process in `detect`/`discover`. Projects
+are named after their directory, never after a manifest: manifests disagree with each other
+and the file structure is the identity every tool shares.
+Add tool knowledge to `analyze/tools/<family>.rs` (not a new adapter) when a *command* needs
+explaining; `tools::summarize` chains the per-family tables in order.
+Not covered yet: Rake as its own adapter, Pants, moon, NUKE, Cake.
+
+## Identity and presentation
+
+**A project is its directory.** Every nested project is named after the directory it lives in
+(`owner` for `apps/owner`) and shown under its path. rhow never names a project after a manifest.
+Manifests disagree with each other (`package.json` says `boatsetterowners`, Nx's `project.json`
+says `owner`, a `.csproj` says something else again), each tool has its own idea of a name, and
+any rule that picks one becomes a priority list that people argue about. The file structure is
+the one identity every tool and every developer already shares, and it is what you `cd` into.
+The root project is named after the repository directory.
+
+**The listing is grouped by project, not by action type.** The question a developer asks is
+"what can I do in this project", so the terminal view is one block per project, root first,
+each headed by its path. Inside a block the actions are ordered by type (development, testing,
+quality, build, database, infrastructure, release, other) so related lines sit together, with
+no sub-headers. A repository with a single project shows no headers at all: the actions,
+ordered by type, with a blank line between types.
+
+**The line is the command.** Each row is the native command exactly as the developer would
+type it inside that project's directory (`pnpm run dev` in `apps/web`, not
+`pnpm --filter web dev` from the root), followed by the explanation and, when it applies, the
+risk marker. Column width is computed per block so one long command does not push every block's
+text right. Action ids (`web:test`) still exist for `--json` and `rhow why <id>`, but they are
+not what the listing shows; `rhow why '<command>'` accepts the command text as printed.
 
 ## Analysis
 
@@ -82,11 +124,57 @@ Precedence: explicit description → command analysis → action-name heuristics
 Several steps combine to `Run linting, type checks, and tests` when every step has a noun,
 otherwise `A, then b`, otherwise the most significant step plus `(+N more steps)`.
 
-## Risk
+## Labels
 
-`risk::classify` takes the maximum of tool-level evidence and token-sequence patterns on the
-raw text. `rm -rf` of build outputs (`dist`, `coverage`, `.turbo`, …) is cleanup; anything
-else recursive is destructive. Name-based hints (`deploy`) apply only to opaque commands.
+Two independent classifiers run on every action's analysis text (the script body, the Make
+recipe, or the command itself) and on CI steps. Both read only the command text and the tools
+recognised during analysis. Neither infers what a program does at run time.
+
+**Risk** (`risk::classify`, `model::Risk`) is one of `Safe < External < Destructive`, ordered so
+`max()` picks the most severe. Evidence combines from three sources: the knowledge table
+(`tools::summarize` returns a risk per recognised invocation), token-sequence patterns on the
+raw text (`risk::textual`, e.g. `["down", "-v"]`, `["terraform", "destroy"]`, `["git", "push"]`),
+and adapter hints (an Expo `eas build` action is external by construction). An adapter can raise
+risk, never lower it. `rm -rf` of a known build output (`tools::is_build_output`) is `Safe`
+cleanup; any other recursive delete is `Destructive`. `kubectl apply --dry-run` and
+`helm --dry-run` are exempt from the external patterns. A name-based hint (`deploy`, `publish`)
+applies only when the command is opaque and declared. The classifier prefers silence to a wrong
+label.
+
+**Notes** (`notes::classify`, `model::Note`) are zero or more of, in this order:
+
+| Note | Evidence |
+|---|---|
+| `LongRunning` | any recognised step of `Kind::Dev`; `--watch`/`-w` on build and test tools; `watch` subcommands; `tail -f`, `logs -f`; watchers (`nodemon`, `watchexec`, `air`); `compose up` without `-d`; `storybook dev`; `flutter run`; `expo start`/`run:*` |
+| `Device` | `expo run:*`, `flutter run/install/drive`, `react-native run-*`, Gradle `installDebug`/`connectedAndroidTest`, `xcodebuild` with a simulator destination, `maestro`, `detox test`, `adb`, `xcrun simctl` |
+| `Download` | package installs and adds across ecosystems, `docker pull`, `git fetch/pull/clone`, `curl`/`wget`, system package managers, `terraform init`, `helm repo/pull`, `pre-commit install`, `playwright install`; only when the risk is below `External` |
+| `Git` | `git` subcommands that change the tree, history or tags; `gh pr`/`release`; `npm version`; `cargo release`; `changeset version/publish`; release tools; hook installers (`husky`, `lefthook`, `pre-commit`) |
+
+Runners in front of the tool (`npx`, `bunx`, `pnpm exec`, `bun x`) are peeled before matching.
+`npx`/`bunx` themselves are not a download: they run the installed binary when present.
+
+**Rendering.** `ui::trailer` prints the risk (a coloured `●` plus the word, or `[word]` without
+colour) followed by each note as `glyph word`. Glyphs come only from Unicode blocks every
+default monospace font draws (Mathematical Operators, basic Arrows, common Geometric Shapes);
+see AGENTS.md. A description whose meaningful words all appear in the command is omitted
+(`ui::restates`), so a line never explains what it already shows.
+
+**Not labelled, by decision:** environment variables or credentials read inside code,
+dependencies between actions, duration.
+
+## CI
+
+`ci::discover` parses `.github/workflows/*.yml` and `.gitlab-ci.yml` into
+`CiPipeline → CiJob → CiStep`. A step is a `run` block (or a GitLab `script` line) explained by
+the same analysis as an action, with script references resolved through the root project's
+scripts. `rhow --ci` renders the structure; `--json` includes it under `ci`. Hidden directories
+are otherwise skipped by the scan, so this reads those two locations directly, read-only.
+
+## Presentation flags
+
+By default a project's commands are listed in the order the project declares them. `--group`
+orders them by type (`ui::GROUP_ORDER`: development, build, release, testing, quality, database,
+infrastructure, other), with a blank line between types in a single-project repository.
 
 ## Safety
 
@@ -95,5 +183,7 @@ Discovery reads files. It never writes, never runs `npm`, `gradle`, `cargo metad
 
 ## Performance
 
-One directory walk, static parsing only, no caching. Fixture repositories discover in
-well under a millisecond each; a directory of several large projects in ~60 ms.
+One directory walk, static parsing only, a path index and a manifest cache per scan. Fixture
+repositories discover in well under a millisecond each. On a synthetic tree of 8,000
+directories the whole run takes about 0.25 s, almost all of it in the filesystem walk itself;
+CPU time stays around 20 ms, and the cost grows linearly with the number of directories.

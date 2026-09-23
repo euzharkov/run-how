@@ -1,9 +1,9 @@
 {
-  "name": "@line-19/rhow",
+  "name": "@euzharkov/rhow",
   "version": "0.1.0",
   "description": "Discover how to run and operate any repository (native Rust binary, Node is only the launcher)",
   "license": "MIT",
-  "repository": "github:line-19/rhow",
+  "repository": "github:euzharkov/run-how",
   "bin": { "rhow": "bin/rhow.js" },
   "files": ["bin", "install.js"],
   "scripts": { "postinstall": "node install.js" },

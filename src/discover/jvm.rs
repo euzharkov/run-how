@@ -151,17 +151,6 @@ impl Discoverer for Jvm {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(GRADLE_BUILD) || dir.has_any(GRADLE_SETTINGS) || dir.has("pom.xml")
     }
-    fn project_name(&self, dir: &DirInfo) -> Option<String> {
-        let text = dir.read("pom.xml")?;
-        let art = text
-            .split("<artifactId>")
-            .nth(1)?
-            .split('<')
-            .next()?
-            .trim()
-            .to_string();
-        Some(art)
-    }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let windows = ctx.host_os == "windows";

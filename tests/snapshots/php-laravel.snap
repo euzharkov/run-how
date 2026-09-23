@@ -1,9 +1,10 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [php-laravel] Php tools=composer,artisan,php
-dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server
+dev                      Development    declared exact  safe        .          composer dev :: Start the Laravel development server [long-running]
 test                     Testing        declared exact  safe        .          composer test :: Run PHP tests
 analyse                  Quality        declared exact  safe        .          composer analyse :: Static analysis with PHPStan
 stan:strict              Quality        declared exact  safe        .          composer stan:strict :: Analyse PHP code with PHPStan (level 8)

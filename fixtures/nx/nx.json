@@ -1,1 +1,14 @@
-{ "targetDefaults": { "build": {}, "test": {}, "lint": {}, "e2e": {} } }
+{
+  "targetDefaults": {
+    "build": {},
+    "test": {},
+    "lint": { "executor": "@nx/eslint:lint" },
+    "e2e": {},
+    "format": { "executor": "nx:run-commands", "options": { "command": "prettier --write \"{projectRoot}/**/*.ts\"" } },
+    "release-check": {
+      "executor": "nx:run-commands",
+      "options": { "commands": ["# read the environment first", "export $(grep -v '^#' .env | xargs)", "echo \"deployment type is $DEPLOYMENT_TYPE\""] }
+    },
+    "maybe-deploy": { "executor": "nx:noop", "dependsOn": ["release-check"] }
+  }
+}

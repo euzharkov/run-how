@@ -54,6 +54,102 @@ fn is_assignment(line: &str) -> bool {
     }
 }
 
+/// Simple `NAME = value` / `:=` / `?=` assignments, so `$(SPHINXBUILD) -b html` can be read
+/// as `sphinx-build -b html`. Later plain assignments override; `?=` only sets when unset.
+pub fn variables(text: &str) -> Vec<(String, String)> {
+    let mut vars: Vec<(String, String)> = Vec::new();
+    for line in join_continuations(text) {
+        let t = line.trim();
+        if t.starts_with('#') || t.starts_with('\t') || !is_assignment(t) {
+            continue;
+        }
+        let Some(eq) = t.find('=') else { continue };
+        let mut name = t[..eq].trim_end_matches([':', '?', '+', '!']).trim();
+        if let Some(rest) = name.strip_prefix("export ") {
+            name = rest.trim();
+        }
+        if name.is_empty() || !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+            continue;
+        }
+        let conditional = t[..eq].trim_end().ends_with('?');
+        let append = t[..eq].trim_end().ends_with('+');
+        let value = t[eq + 1..].trim().to_string();
+        match vars.iter_mut().find(|(n, _)| n == name) {
+            Some((_, v)) if append => {
+                v.push(' ');
+                v.push_str(&value);
+            }
+            Some(_) if conditional => {}
+            Some((_, v)) => *v = value,
+            None => vars.push((name.to_string(), value)),
+        }
+    }
+    vars
+}
+
+/// Replace `$(NAME)` / `${NAME}` with the variable's value, a few levels deep. Function calls
+/// (`$(shell …)`, `$(foreach …)`) and automatic variables are left alone.
+pub fn expand(line: &str, vars: &[(String, String)]) -> String {
+    let mut out = line.to_string();
+    for _ in 0..5 {
+        let before = out.clone();
+        let mut res = String::new();
+        let mut rest = before.as_str();
+        while let Some(i) = rest.find('$') {
+            res.push_str(&rest[..i]);
+            let after = &rest[i + 1..];
+            let (open, close) = match after.chars().next() {
+                Some('(') => ('(', ')'),
+                Some('{') => ('{', '}'),
+                _ => {
+                    res.push('$');
+                    rest = after;
+                    continue;
+                }
+            };
+            let Some(end) = after.find(close) else {
+                res.push('$');
+                rest = after;
+                continue;
+            };
+            let name = &after[1..end];
+            let replacement = match name {
+                "MAKE" => Some("make".to_string()),
+                "RM" => Some("rm -f".to_string()),
+                "CC" => Some("cc".to_string()),
+                "CXX" => Some("c++".to_string()),
+                "CURDIR" | "PWD" => Some(".".to_string()),
+                _ if name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') => {
+                    vars.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone())
+                }
+                _ => None,
+            };
+            match replacement {
+                Some(v) => {
+                    res.push_str(&v);
+                    rest = &after[end + 1..];
+                }
+                None => {
+                    res.push('$');
+                    res.push(open);
+                    rest = &after[1..];
+                }
+            }
+        }
+        res.push_str(rest);
+        if res == out {
+            break;
+        }
+        out = res;
+    }
+    out
+}
+
+/// Does the line still contain a Make construct the shell analyser cannot read?
+fn unexpanded(line: &str) -> bool {
+    line.contains("$(") || line.contains("${")
+}
+
 pub fn parse(text: &str) -> Vec<Target> {
     let lines = join_continuations(text);
     let mut targets: Vec<Target> = Vec::new();
@@ -204,18 +300,23 @@ impl Discoverer for Make {
             return out;
         };
         let targets = parse(&text);
+        let vars = variables(&text);
         let has_phony = targets.iter().any(|t| t.phony);
         let all_deps: Vec<&str> = targets
             .iter()
             .flat_map(|t| t.deps.iter().map(String::as_str))
             .collect();
         for t in &targets {
-            let mut raw: Vec<String> = t
-                .recipe
+            let expanded: Vec<String> = t.recipe.iter().map(|r| expand(r, &vars)).collect();
+            // Lines that still hold `$(shell …)`, `$(foreach …)` or automatic variables would
+            // only produce nonsense like "Run $(foreach"; leave them out of the analysis.
+            let opaque = !expanded.is_empty() && expanded.iter().all(|r| unexpanded(r));
+            let mut raw: Vec<String> = expanded
                 .iter()
-                .map(|r| r.replace("$(MAKE)", "make").replace("${MAKE}", "make"))
+                .filter(|r| !unexpanded(r))
+                .cloned()
                 .collect();
-            if raw.is_empty() {
+            if raw.is_empty() && !opaque {
                 raw = t.deps.iter().map(|d| format!("make {d}")).collect();
             }
             let raw = raw.iter().take(8).cloned().collect::<Vec<_>>().join(" && ");
@@ -226,6 +327,8 @@ impl Discoverer for Make {
                 .raw(raw);
             if let Some(c) = &t.comment {
                 a = a.desc(c.clone());
+            } else if opaque {
+                a = a.inferred_desc(format!("Run the {} make target", t.name));
             }
             let internal = t.name.starts_with('_') || t.name.starts_with('.');
             let filey = looks_like_file(&t.name) && !t.phony;
@@ -250,6 +353,22 @@ impl Discoverer for Make {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn expands_simple_variables() {
+        let mk = "SPHINXBUILD ?= sphinx-build\nBUILDDIR = _build\nOPTS := -q\nOPTS += -W\n";
+        let vars = variables(mk);
+        assert_eq!(
+            expand("$(SPHINXBUILD) -b html $(OPTS) $(BUILDDIR)/html", &vars),
+            "sphinx-build -b html -q -W _build/html"
+        );
+        assert_eq!(expand("$(RM) -r $(BUILDDIR)/*", &vars), "rm -f -r _build/*");
+        assert_eq!(
+            expand("$(foreach c, $(BINS), x)", &vars),
+            "$(foreach c, $(BINS), x)"
+        );
+        assert!(unexpanded("cc $< -o $@ $(shell ls)"));
+    }
 
     #[test]
     fn parses_targets_and_comments() {

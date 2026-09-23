@@ -1,0 +1,4 @@
+name: app08
+dependencies:
+  flutter:
+    sdk: flutter

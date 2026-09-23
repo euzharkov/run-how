@@ -1,25 +1,26 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [pnpm-monorepo] JavaScript tools=pnpm
-dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev across packages with Turborepo
+dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev across packages with Turborepo [long-running]
 build                    Build          declared exact  safe        .          pnpm run build :: Run build across packages with Turborepo
 test                     Testing        declared exact  safe        .          pnpm run test :: Run test across packages with Turborepo
 lint                     Quality        declared exact  safe        .          pnpm run lint :: Run lint across packages with Turborepo
 check                    Quality        declared exact  safe        .          pnpm run check :: Run typecheck in all workspace packages
-release                  Release        declared exact  external    .          pnpm run release :: Publish packages with Changesets
+release                  Release        declared exact  external    .          pnpm run release :: Publish packages with Changesets [git]
 changeset                Release        declared exact  safe        .          pnpm run changeset :: Create a changeset entry
 ## apps/mobile [mobile] JavaScript tools=pnpm
-mobile                   Development    declared exact  safe        .          pnpm --filter mobile run start :: Start the Expo development server
-mobile:ios               Development    declared exact  safe        .          pnpm --filter mobile ios :: Build and run the app on iOS
-mobile:android           Development    declared exact  safe        .          pnpm --filter mobile android :: Build and run the app on Android
-mobile:test              Testing        declared exact  safe        .          pnpm --filter mobile run test :: Run Jest tests
+mobile                   Development    declared exact  safe        apps/mobile pnpm run start :: Start the Expo development server [long-running]
+mobile:ios               Development    declared exact  safe        apps/mobile pnpm run ios :: Build and run the app on iOS [long-running,device]
+mobile:android           Development    declared exact  safe        apps/mobile pnpm run android :: Build and run the app on Android [long-running,device]
+mobile:test              Testing        declared exact  safe        apps/mobile pnpm run test :: Run Jest tests
 ## apps/web [web] JavaScript tools=pnpm
-web                      Development    declared exact  safe        .          pnpm --filter web dev :: Start the Vite development server
-web:build                Build          declared exact  safe        .          pnpm --filter web build :: Build the app with Vite
-web:test                 Testing        declared exact  safe        .          pnpm --filter web run test :: Run Vitest tests
-web:lint                 Quality        declared exact  safe        .          pnpm --filter web lint :: Check source code with ESLint
-web:typecheck            Quality        declared exact  safe        .          pnpm --filter web typecheck :: Check Vue and TypeScript types
-## packages/config [@shop/config] JavaScript tools=pnpm
-config:lint              Quality        declared exact  safe        .          pnpm --filter @shop/config lint :: Check source code with ESLint
+web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start the Vite development server [long-running]
+web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build the app with Vite
+web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
+web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Check source code with ESLint
+web:typecheck            Quality        declared exact  safe        apps/web   pnpm run typecheck :: Check Vue and TypeScript types
+## packages/config [config] JavaScript tools=pnpm
+config:lint              Quality        declared exact  safe        packages/config pnpm run lint :: Check source code with ESLint

@@ -1,0 +1,4 @@
+name: app06
+dependencies:
+  flutter:
+    sdk: flutter

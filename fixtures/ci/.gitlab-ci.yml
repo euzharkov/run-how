@@ -1,0 +1,11 @@
+stages: [test, deploy]
+.node:
+  image: node:22
+unit:
+  stage: test
+  script:
+    - npm ci
+    - npm test
+pages:
+  stage: deploy
+  script: npx wrangler deploy

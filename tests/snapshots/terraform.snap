@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
 ## . [terraform] JavaScript tools=npm,terraform
@@ -8,12 +9,12 @@ tf:dev:init              Infrastructure inferred medium safe        .          t
 tf:dev:plan              Infrastructure inferred high   external    .          terraform -chdir=infra/envs/dev plan :: Plan Terraform changes
 tf:dev:apply             Release        inferred high   external    .          terraform -chdir=infra/envs/dev apply :: Apply Terraform changes to infrastructure
 tf:dev:destroy           Infrastructure inferred low    destructive .          terraform -chdir=infra/envs/dev destroy :: Destroy Terraform-managed infrastructure
-tf:dev:validate          Quality        inferred high   safe        .          terraform -chdir=infra/envs/dev validate :: Validate the Terraform configuration
-tf:dev:fmt               Quality        inferred medium safe        .          terraform -chdir=infra/envs/dev fmt -recursive :: Format Terraform files
+tf:dev:validate          Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev validate :: Validate the Terraform configuration
+tf:dev:fmt               Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev fmt -recursive :: Format Terraform files
 tf:dev:lint              Quality        inferred medium safe        .          tflint --chdir=infra/envs/dev :: Lint Terraform files
 tf:prod:init             Infrastructure inferred medium safe        .          terraform -chdir=infra/envs/prod init :: Initialise the Terraform working directory
 tf:prod:plan             Infrastructure inferred high   external    .          terraform -chdir=infra/envs/prod plan :: Plan Terraform changes
 tf:prod:apply            Release        inferred high   external    .          terraform -chdir=infra/envs/prod apply :: Apply Terraform changes to infrastructure
 tf:prod:destroy          Infrastructure inferred low    destructive .          terraform -chdir=infra/envs/prod destroy :: Destroy Terraform-managed infrastructure
-tf:prod:validate         Quality        inferred high   safe        .          terraform -chdir=infra/envs/prod validate :: Validate the Terraform configuration
-tf:prod:fmt              Quality        inferred medium safe        .          terraform -chdir=infra/envs/prod fmt -recursive :: Format Terraform files
+tf:prod:validate         Quality        inferred low    safe        .          terraform -chdir=infra/envs/prod validate :: Validate the Terraform configuration
+tf:prod:fmt              Quality        inferred low    safe        .          terraform -chdir=infra/envs/prod fmt -recursive :: Format Terraform files

@@ -1,15 +1,15 @@
 # WinGet manifest sketch (multi-file manifests are generated with `wingetcreate` at release time).
-PackageIdentifier: line-19.rhow
+PackageIdentifier: euzharkov.rhow
 PackageVersion: 0.1.0
 PackageName: rhow
-Publisher: line-19
+Publisher: euzharkov
 License: MIT
 ShortDescription: Discover how to run and operate any repository
-PackageUrl: https://github.com/line-19/rhow
+PackageUrl: https://github.com/euzharkov/run-how
 Installers:
   - Architecture: x64
     InstallerType: zip
-    InstallerUrl: https://github.com/line-19/rhow/releases/download/v0.1.0/rhow-0.1.0-x86_64-pc-windows-msvc.zip
+    InstallerUrl: https://github.com/euzharkov/run-how/releases/download/v0.1.0/rhow-0.1.0-x86_64-pc-windows-msvc.zip
     InstallerSha256: REPLACE_WITH_SHA256
     NestedInstallerType: portable
     NestedInstallerFiles:
@@ -17,7 +17,7 @@ Installers:
         PortableCommandAlias: rhow
   - Architecture: arm64
     InstallerType: zip
-    InstallerUrl: https://github.com/line-19/rhow/releases/download/v0.1.0/rhow-0.1.0-aarch64-pc-windows-msvc.zip
+    InstallerUrl: https://github.com/euzharkov/run-how/releases/download/v0.1.0/rhow-0.1.0-aarch64-pc-windows-msvc.zip
     InstallerSha256: REPLACE_WITH_SHA256
     NestedInstallerType: portable
     NestedInstallerFiles:

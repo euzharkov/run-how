@@ -79,8 +79,9 @@ impl Discoverer for Scripts {
         true
     }
     fn attach_dir_names(&self) -> Option<&'static [&'static str]> {
+        // `bin/` is deliberately absent: it is in `repo::IGNORED_DIRS` and never scanned.
         Some(&[
-            "scripts", "script", "eng", "tools", "ci", "hack", "bin", "sh", "cmd",
+            "scripts", "script", "eng", "tools", "ci", "hack", "sh", "cmd",
         ])
     }
     fn discover(&self, ctx: &Context, base: &DirInfo, dirs: &[&DirInfo]) -> Discovery {

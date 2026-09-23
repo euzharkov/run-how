@@ -14,36 +14,52 @@ JavaScript, Python, Go, Rust, .NET, Make, Just, Taskfile, Docker, Kubernetes or 
 ```text
 $ rhow
 
-polyglot  ·  5 projects: Api, Api.Tests, web, ui, worker
+polyglot
 
-Development
-  dev             Run dev in web, then run the api project
-  api             Start the .NET Api web app
-  web             Start the Vite development server
-  worker          Run the Go worker program
+  pnpm run dev                                         Run dev in web, then run the api project  ∞ long-running
+  pnpm run test
+  pnpm run lint
+  pnpm run typecheck
+  pnpm run services                                    Start Docker services in the background
+  pnpm run kafka:topics                                List Kafka topics  [external]
+  pnpm run kafka:reset                                 Delete Kafka topics  [destructive]
+  pnpm run k8s:render                                  Render Kustomize manifests from k8s
+  pnpm run k8s:apply                                   Apply Kubernetes resources  [external]
+  pnpm run migrate                                     Apply EF Core migrations to the database
+  pnpm run reset                                       Stop Docker services and delete their volumes (+2 more steps)  [destructive]
+  docker compose -f docker/compose.yml up -d postgres  Start PostgreSQL
+  docker compose -f docker/compose.yml up -d kafka     Start local Kafka broker
+  docker compose -f docker/compose.yml logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f docker/compose.yml down            Stop and remove Docker services
+  ./scripts/setup.sh                                   Bootstrap a fresh development machine
 
-Testing
-  test            Run test in all workspace packages
-  api.tests:test  Run Api.Tests tests
-  web:test        Run Vitest tests
-  web:test:e2e    Run Playwright end-to-end tests
+apps/api
+  dotnet run                 Start the .NET Api web app
+  dotnet build               Build the Api project
+  dotnet publish -c Release  Publish Api for deployment
 
-Quality
-  lint            Run lint in all workspace packages
-  web:typecheck   Check TypeScript types
+apps/api.tests
+  dotnet test  Run Api.Tests tests
 
-Database
-  migrate         Apply EF Core migrations to the database
+apps/web
+  pnpm run dev        Start the Vite development server  ∞ long-running
+  pnpm run build      Build the app with Vite
+  pnpm run test       Run Vitest tests
+  pnpm run test:e2e   Run Playwright end-to-end tests
+  pnpm run lint       Check source code with ESLint
+  pnpm run typecheck  Check TypeScript types
 
-Infrastructure
-  services        Start Docker services in the background
-  postgres        Start PostgreSQL
-  kafka           Start local Kafka broker
-  k8s:render      Render Kustomize manifests from k8s
-  reset           Stop Docker services and delete their volumes (+2 more steps)  ⚠ destructive
+packages/ui
+  pnpm run build  Build the package with tsup
+  pnpm run test   Run Vitest tests
+  pnpm run lint   Check source code with ESLint
 
-Release
-  k8s:apply       Apply Kubernetes resources                                     ⚠ external
+services/worker
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go run .        Run the Go worker program
 ```
 
 `rhow` is not another task runner. It:
@@ -52,15 +68,16 @@ Release
 2. **Normalises** them into one model (`Action`), whatever tool declared them.
 3. **Explains** each action in short plain English, deterministically, without an LLM.
 4. **Distinguishes** explicitly declared commands from conventional inferred ones.
-5. **Flags** destructive and external actions before you run them.
-6. **Runs** the native underlying command on request (`rhow test` → `pnpm --filter api test`).
+5. **Flags** destructive and external actions so you know before you run them.
+6. **Shows** the exact native command behind each action (`rhow test` → `pnpm --filter api test`)
+   for you to run with the project's own tool. rhow itself never runs anything.
 
-Zero config. Read-only by default. Fast (a normal repository is discovered in a few milliseconds).
+Zero config. Read-only, always. Fast (a normal repository is discovered in a few milliseconds).
 
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/line-19/rhow/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/euzharkov/run-how/main/install.sh | sh
 ```
 
 The installer detects your OS and CPU, downloads the matching GitHub release, verifies its
@@ -71,32 +88,33 @@ Other channels (see [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md)):
 ```bash
 cargo install rhow            # from crates.io
 cargo binstall rhow           # prebuilt binary via cargo-binstall
-brew install line-19/tap/rhow # Homebrew tap
+brew install euzharkov/tap/rhow # Homebrew tap
 scoop install rhow            # Scoop (Windows)
-winget install line-19.rhow   # WinGet (Windows)
-npx @line-19/rhow             # npm launcher around the native binary
+winget install euzharkov.rhow   # WinGet (Windows)
+npx @euzharkov/rhow             # npm launcher around the native binary
 ```
 
 Prebuilt binaries for macOS (arm64, x64), Linux (arm64, x64, musl) and Windows (arm64, x64)
-are published on [GitHub Releases](https://github.com/line-19/rhow/releases) with a `SHA256SUMS` file.
+are published on [GitHub Releases](https://github.com/euzharkov/run-how/releases) with a `SHA256SUMS` file.
 
 ## Usage
 
 ```bash
 rhow                  # list actions grouped by category
 rhow --all            # include internal / low-confidence actions
+rhow --group          # order each project's commands by type: run, build, deploy, test, …
+rhow --ci             # CI pipelines (GitHub Actions, GitLab CI) as workflows, jobs and steps
 rhow --json           # the normalised model, for editors and scripts
-rhow test             # run the `test` action with its native tool
-rhow api:test -- -v   # append arguments to the underlying command
-rhow --dry-run deploy # print what would run
-rhow why db:reset     # where an action comes from and why it is flagged
+rhow why 'make test'  # where that command comes from and why it is flagged
+rhow why db:reset     # the same, by action id
 rhow support          # which tool versions this build has been verified against
-rhow -C path/to/repo  # inspect another directory
+rhow -C path/to/dir   # inspect exactly that directory
 ```
 
-Running `rhow` with no action never modifies the repository, installs dependencies, starts
-services, contacts a cluster or runs project scripts. Execution only happens when you name an
-action, and external or destructive actions ask for confirmation first (`--yes` skips it).
+`rhow` never modifies the repository, installs dependencies, starts services, contacts a
+cluster or runs project scripts. It is not a task runner: it shows you the command and what it
+does, and you run it with the tool the project already uses. That keeps rhow free of shell
+quoting, argument forwarding, environment handling and confirmation prompts.
 
 Output respects `NO_COLOR`, uses ANSI colour only on a TTY, and stays plain when piped.
 
@@ -132,15 +150,68 @@ becomes `Run linting, type checks, and tests`, and
 
 stays honest: `Run scripts/foo.mjs`.
 
-## Risk classification
+## Labels
 
-| Command | Risk |
-|---|---|
-| `rm -rf src`, `docker compose down -v`, `prisma migrate reset`, `terraform destroy`, `kubectl delete`, `git push --force` | destructive |
-| `npm publish`, `docker push`, `terraform apply`, `kubectl apply`, `git push`, `helm upgrade` | external |
-| `rm -rf dist`, `docker compose down`, `terraform plan`, `vitest run` | safe |
+Every command can carry up to two kinds of label after its explanation. Both come from the
+command text and the tools rhow recognises in it, never from running anything or guessing at
+what a program does internally.
 
-The classifier prefers a missing warning over a wrong one when confidence is low.
+### Risk: what it changes
+
+Exactly one of three levels, shown only when it is not `safe`.
+
+| Label | Meaning | Examples |
+|---|---|---|
+| *(none)* `safe` | local, reversible or read-only | `vitest run`, `rm -rf dist`, `docker compose down`, `terraform plan` |
+| `● external` | changes something outside your working copy: a registry, a cluster, a remote, a cloud account | `npm publish`, `docker push`, `terraform apply`, `kubectl apply`, `git push`, `helm upgrade` |
+| `● destructive` | deletes data or state you cannot trivially get back | `rm -rf src`, `docker compose down -v`, `prisma migrate reset`, `terraform destroy`, `kubectl delete`, `git push --force` |
+
+Risk is a maximum: tool knowledge, textual patterns and adapter hints combine and the most
+severe wins. Deleting a known build output (`dist`, `coverage`, `.turbo`, …) is cleanup, not
+destruction. When unsure the classifier stays silent; a missing warning beats a wrong one.
+
+### Notes: what running it involves
+
+Any number of these, in this order.
+
+| Label | Meaning | Examples |
+|---|---|---|
+| `∞ long-running` | keeps running until you stop it | `vite`, `tsc --watch`, `docker compose up`, `docker compose logs -f`, `flutter run` |
+| `⊙ device` | needs a phone, tablet, simulator or emulator attached | `expo run:ios`, `flutter run`, `./gradlew installDebug`, `maestro test` |
+| `↓ download` | fetches packages, images or providers; changes nothing remote | `npm install`, `pip install`, `docker pull`, `terraform init`, `pre-commit install` |
+| `∆ git` | changes the git working tree, history or tags | `git commit`, `git clean -fdx`, `npm version`, `changeset version`, `husky install` |
+
+`download` and `external` never appear together: external already implies the network, and
+the note is only for reads. A remote git read (`git fetch`) counts as external under the risk
+model, so it carries the risk label rather than the note.
+
+### What is deliberately not labelled
+
+- Environment variables or credentials a program needs. They are usually read inside code,
+  where rhow cannot see them, and a wrong note is worse than none.
+- Dependencies between actions ("run install first"). Out of scope.
+- Duration. Nothing in the files says how long a test suite takes.
+
+### Rendering
+
+In a colour terminal the risk is a yellow or red dot, `● external` / `● destructive`; without
+colour (`--color never`, `NO_COLOR`, a pipe) it is `[external]` / `[destructive]`, so the word
+carries the meaning, never the glyph. Note glyphs are single-width characters that every
+default monospace font on macOS, Linux and Windows draws. In `--json` the fields are
+`risk` (`safe`, `external`, `destructive`) and `notes` (`long-running`, `device`, `download`,
+`git`).
+
+## CI as a structure
+
+```bash
+rhow --ci
+```
+
+GitHub Actions workflows and `.gitlab-ci.yml` are shown as they are written: workflow, trigger,
+jobs, then each `run` step as a command with the same explanation, risk and notes as an action.
+`npm test` inside a workflow resolves through the root project's scripts, so it reads
+"Run Vitest tests" rather than "the test script". Nothing is evaluated: matrix expressions and
+shell conditionals are shown as text.
 
 ## Version support
 
@@ -158,23 +229,34 @@ static baseline, and flags anything past it as "newer than verified" instead of 
 explaining it as if nothing had changed. This is static and read-only like everything else in
 `rhow`: no version check ever runs a subprocess or contacts a registry.
 
-```text
-$ rhow support
+The matrix below is generated from [`support.toml`](support.toml), the single source of truth
+that the binary embeds and `rhow support` prints. A test fails if this table and the file
+disagree.
 
-Toolsets this build of rhow has been verified against
-  Rust / Cargo  editions 2015-2021; 2024 not yet verified
-  Go            up to Go 1.23
-  .NET          net5.0-net9.0 (net48 and netstandard* recognised but not version-checked)
-  ...
-
-Detected in shop
-  Rust / Cargo  2024    crates/api/Cargo.toml  ⚠ newer than verified
-  Go            1.22    go.mod
-```
+<!-- support-matrix:start -->
+| Tool | Verified against | Read from |
+|---|---|---|
+| Rust / Cargo | editions 2015-2024 | Cargo.toml `edition` (own or inherited from `[workspace.package]`) |
+| Go | up to Go 1.26 | the `go` directive in go.mod / go.work |
+| .NET | net5.0-net10.0 (net48 and netstandard* recognised but not version-checked) | `<TargetFramework(s)>` in .csproj/.fsproj/.vbproj |
+| Python | up to Python 3.14 (compound constraints like `>=3.9,<4` are left unclear) | `project.requires-python` in pyproject.toml |
+| Taskfile | schema version 3 | `version:` in Taskfile.yml |
+| Node.js | up to Node 24 | `engines.node` in package.json |
+| npm | up to npm 11 | the `packageManager` field in package.json |
+| pnpm | up to pnpm 10 | the `packageManager` field in package.json, pnpm-workspace.yaml |
+| Yarn | up to Yarn 4 (Berry) | the `packageManager` field in package.json |
+| Bun | up to Bun 1 | the `packageManager` field in package.json, bun.lock(b) |
+| Ruby | up to Ruby 4.0 | .ruby-version |
+| PHP | up to PHP 8.5 | `require.php` in composer.json |
+| Terraform | up to Terraform 1.13 | `required_version` in a `terraform {}` block |
+| OpenTofu | up to OpenTofu 1.10 | `required_version` in a `terraform {}` block |
+| Gradle | up to Gradle 9.1 | gradle/wrapper/gradle-wrapper.properties `distributionUrl` |
+| Bazel | up to Bazel 8.3 | .bazelversion |
+<!-- support-matrix:end -->
 
 **Maintaining this**: when you've verified `rhow` against a newer version of a tool, bump that
-tool's baseline in [`src/support/mod.rs`](src/support/mod.rs)'s `REGISTRY` — that one line is
-the entire support matrix. A value the comparator can't safely reduce to a number (a compound
+tool's `max` and `verified` in [`support.toml`](support.toml), run `cargo test`, and paste the
+table it prints into the block above. That file is the entire support matrix. A value the comparator can't safely reduce to a number (a compound
 range like `>=3.9,<4`, a pre-release tag) is reported as "unclear" rather than guessed at, the
 same false-negative-over-false-positive preference the risk classifier uses.
 
@@ -189,7 +271,6 @@ src/
   risk/       destructive / external classification
   runtime/    local runtime suggestions (Colima, OrbStack, Podman, Docker Desktop)
   support/    the version-support registry `rhow support` checks a repo against
-  exec/       running an action through its native tool
   ui/         terminal and JSON rendering
 ```
 
@@ -210,8 +291,9 @@ scripts, unknown scripts and destructive commands.
 
 ## Non-goals
 
-No LLM explanations, telemetry, cloud accounts, remote execution, plugins, favourites, history,
-configuration UI or full-screen dashboard. No `.rhow.yml` required, ever.
+Not a task runner: rhow never executes an action, forwards arguments or manages environment
+variables. No LLM explanations, telemetry, cloud accounts, remote execution, plugins,
+favourites, history, configuration UI or full-screen dashboard. No `.rhow.yml` required, ever.
 
 ## License
 

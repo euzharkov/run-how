@@ -1,5 +1,4 @@
 use clap::{Parser, ValueEnum};
-use rhow::exec::{self, ExecOptions};
 use rhow::ui::{self, ColorMode, RenderOptions, Style};
 use rhow::{discover, repo, Options};
 use std::path::PathBuf;
@@ -7,47 +6,51 @@ use std::process::ExitCode;
 
 /// Discover how to run and operate a repository.
 ///
-/// Run `rhow` inside any project to list its useful actions. Discovery is read-only:
-/// nothing is installed, started, or contacted until you explicitly run an action.
+/// Run `rhow` inside any project to list its useful actions with the command behind each
+/// one and a plain-English explanation. rhow only reads: it never installs, starts, runs
+/// or contacts anything. Copy the command it shows and run it with the project's own tool.
 #[derive(Parser, Debug)]
 #[command(name = "rhow", version, about, long_about = None, after_help = "\
 Examples:
   rhow                 List actions grouped by category
   rhow --all           Include low-confidence and internal actions
+  rhow --group         Order each project's commands by type (run, build, deploy, test, …)
+  rhow --ci            Show CI pipelines as workflows, jobs and steps
   rhow --json          Emit the normalised model as JSON
-  rhow test            Run the `test` action with its native tool
-  rhow api:test -- -v  Pass extra arguments to the underlying command
-  rhow why db:reset    Show where an action comes from and why it is flagged
+  rhow why 'make test'   Where that command comes from and why it is flagged
+  rhow why db:reset      The same, by action id
   rhow support         Show which tool versions this build has been verified against")]
 struct Cli {
-    /// Action to run (see `rhow` for the list), or `why <action>`.
+    /// `why <command or id>`, `support`, or an action id.
     action: Option<String>,
 
-    /// Extra arguments appended to the action's command.
-    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    /// The rest of `why <command>`; a quoted command or its bare words both work.
+    #[arg(hide = true, trailing_var_arg = true, allow_hyphen_values = true)]
     args: Vec<String>,
 
     /// Show every discovered action, including internal and low-confidence ones.
     #[arg(long, short = 'a')]
     all: bool,
 
+    /// Order each project's commands by type (run, build, deploy, test, …) instead of the
+    /// order the project declares them in.
+    #[arg(long, short = 'g')]
+    group: bool,
+
+    /// Show the CI pipelines (GitHub Actions, GitLab CI) as workflows, jobs and steps.
+    #[arg(long)]
+    ci: bool,
+
     /// Output the normalised model as JSON.
     #[arg(long)]
     json: bool,
-
-    /// Print the command that would run instead of running it.
-    #[arg(long, short = 'n')]
-    dry_run: bool,
-
-    /// Skip the confirmation prompt for external or destructive actions.
-    #[arg(long, short = 'y')]
-    yes: bool,
 
     /// Colour output.
     #[arg(long, value_enum, default_value_t = ColorArg::Auto)]
     color: ColorArg,
 
-    /// Directory to inspect (defaults to the current directory).
+    /// Directory to inspect, exactly as given. Without it, rhow starts from the current
+    /// directory and inspects the enclosing git repository.
     #[arg(short = 'C', long = "directory", value_name = "DIR")]
     directory: Option<PathBuf>,
 
@@ -73,7 +76,10 @@ fn main() -> ExitCode {
         eprintln!("rhow: {} is not a directory", start.display());
         return ExitCode::from(2);
     }
-    let root = repo::find_root(&start);
+    let root = match cli.directory {
+        Some(_) => start.canonicalize().unwrap_or(start),
+        None => repo::find_root(&start),
+    };
     let opts = Options {
         probe_runtime: !cli.no_runtime,
         ..Options::default()
@@ -89,10 +95,19 @@ fn main() -> ExitCode {
         None => {
             if cli.json {
                 println!("{}", ui::json::render(&repo));
+            } else if cli.ci {
+                print!("{}", ui::render_ci(&repo, &style));
             } else {
                 print!(
                     "{}",
-                    ui::render(&repo, &style, &RenderOptions { all: cli.all })
+                    ui::render(
+                        &repo,
+                        &style,
+                        &RenderOptions {
+                            all: cli.all,
+                            group: cli.group
+                        }
+                    )
                 );
             }
             ExitCode::SUCCESS
@@ -105,33 +120,38 @@ fn main() -> ExitCode {
             }
             ExitCode::SUCCESS
         }
-        Some("why") => {
-            let Some(id) = cli.args.first() else {
-                eprintln!("usage: rhow why <action>");
-                return ExitCode::from(2);
-            };
-            match ui::render_why(&repo, id, &style) {
-                Some(s) => {
-                    print!("{s}");
-                    ExitCode::SUCCESS
-                }
-                None => {
-                    eprintln!("rhow: no action named `{id}`");
-                    ExitCode::from(2)
-                }
-            }
+        Some("why") if cli.args.is_empty() => {
+            eprintln!("usage: rhow why <command or action id>");
+            ExitCode::from(2)
         }
+        Some("why") => show(&repo, &cli.args.join(" "), &style),
         Some(id) => {
-            let code = exec::run(
-                &repo,
-                id,
-                &cli.args,
-                &ExecOptions {
-                    dry_run: cli.dry_run,
-                    yes: cli.yes,
-                },
-            );
-            ExitCode::from(code.clamp(0, 255) as u8)
+            if !cli.args.is_empty() {
+                eprintln!(
+                    "rhow: shows commands, it does not run them; `rhow {id}` takes no arguments"
+                );
+                return ExitCode::from(2);
+            }
+            show(&repo, id, &style)
+        }
+    }
+}
+
+/// `rhow <action>`: the command behind an action, where it comes from and why it is flagged.
+fn show(repo: &rhow::Repo, id: &str, style: &Style) -> ExitCode {
+    match ui::render_why(repo, id, style) {
+        Some(s) => {
+            print!("{s}");
+            ExitCode::SUCCESS
+        }
+        None => {
+            eprintln!("rhow: no action named `{id}`.");
+            let close = ui::similar_ids(repo, id);
+            if !close.is_empty() {
+                eprintln!("Did you mean: {}", close.join(", "));
+            }
+            eprintln!("Run `rhow` to list available actions.");
+            ExitCode::from(2)
         }
     }
 }

@@ -1,0 +1,69 @@
+# Installer tests: each channel installs rhow inside a throwaway container from a local mirror
+# of GitHub Releases (the `release` service). Run them with tests/install/run.sh.
+x-case: &case
+  depends_on:
+    release:
+      condition: service_healthy
+  volumes:
+    - ../..:/src:ro
+  environment:
+    RHOW_DOWNLOAD_BASE: http://release
+    RHOW_API_BASE: http://release
+
+services:
+  release:
+    build:
+      context: ../..
+      dockerfile: tests/install/Dockerfile
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/repos/euzharkov/run-how/releases/latest"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  # curl | sh on a glibc distro; resolves "latest" through the API mirror.
+  curl-debian:
+    <<: *case
+    image: debian:bookworm-slim
+    command: sh /src/tests/install/cases/curl-debian.sh
+
+  # The wget fallback on a musl distro with an explicit version and install dir.
+  curl-alpine:
+    <<: *case
+    image: alpine:3
+    command: sh /src/tests/install/cases/curl-alpine.sh
+
+  # npm install -g of the packed tarball; postinstall downloads the native binary.
+  npm:
+    <<: *case
+    image: node:22-alpine
+    command: sh /src/tests/install/cases/npm.sh
+
+  # cargo install from the source tree (what crates.io users get). The registry and target
+  # volumes persist between runs so only rhow itself is recompiled.
+  cargo:
+    <<: *case
+    image: rust:1-alpine
+    volumes:
+      - ../..:/src:ro
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-target:/tmp/target
+    command: sh /src/tests/install/cases/cargo.sh
+
+  # Homebrew on Linux, installing the tap formula against the mirror. amd64 only upstream.
+  brew:
+    <<: *case
+    image: homebrew/brew
+    platform: linux/amd64
+    command: bash /src/tests/install/cases/brew.sh
+
+  # AUR PKGBUILD built with makepkg and installed with pacman. amd64 only upstream.
+  aur:
+    <<: *case
+    image: archlinux:base-devel
+    platform: linux/amd64
+    command: bash /src/tests/install/cases/aur.sh
+
+volumes:
+  cargo-registry:
+  cargo-target:
