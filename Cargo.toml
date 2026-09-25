@@ -10,7 +10,7 @@ homepage = "https://github.com/euzharkov/run-how"
 readme = "README.md"
 keywords = ["cli", "developer-tools", "task-runner", "monorepo", "discovery"]
 categories = ["command-line-utilities", "development-tools"]
-exclude = ["fixtures/", ".github/", "packaging/", "docs/"]
+exclude = ["fixtures/", ".github/", "packaging/", "docs/", "site/"]
 
 [[bin]]
 name = "rhow"
