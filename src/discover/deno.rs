@@ -16,7 +16,7 @@ impl Discoverer for Deno {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(&["deno.json", "deno.jsonc", "deno.lock"])
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let cfg = base
             .first_of(&["deno.json", "deno.jsonc"])
@@ -77,7 +77,7 @@ impl Discoverer for Deno {
         if free("check") {
             let entry = ["main.ts", "mod.ts", "src/main.ts"]
                 .iter()
-                .find(|f| base.path.join(f).is_file())
+                .find(|f| ctx.has_file(base, f))
                 .copied();
             if let Some(e) = entry {
                 out.actions.push(

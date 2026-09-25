@@ -1,0 +1,254 @@
+redis_redis  [Docker]
+
+  make all                         Run build make target
+  make Test
+  make containing
+  make '
+  make install                     Whether they are up to date, so it has to be on root's PATH
+  make clean                       Shell environment
+  make build                       Build [<name> ...|all|.|redis|core|none] — Redis core + selected modules
+  make bootstrap                   Bootstrap [<name> ...|all|.] — install per-module build/test prereqs
+  make deploy                      `make install`). Done directly by scripts/deploy.sh — no apply step
+  make uninstall                   `redis`/`none` uninstall core only. See scripts/uninstall.sh
+  make run                         Run [<name> ...|all|.|none] [ARGS="<redis-server flags>"]  ∞ long-running
+  make test                        Test [redis|all|<module> [<test_name>]] [TEST=<name>] — see scripts/test.sh
+  make modules-update              Idempotent clone/refresh per modules.yaml
+  make modules-shallow             Modules-shallow <name> [<name> ...] — re-clone selected modules with --depth 1
+  make tarball                     Reproducible Redis+modules source tarball
+  make sync-redis-conf             Contract (env vars, file layout, private-block stripping)
+  docker build -f … redis_redis .  Build Docker image from Dockerfile.noble
+  ./scripts/apply-redis-conf.sh    Apply-redis-conf.sh — regenerate redis-full.conf and overwrite redis.conf
+  ./scripts/bootstrap.sh           Bootstrap.sh — install per-module build/test prerequisites
+  ./scripts/build.sh               Build.sh — build Redis (src/) + selected modules
+  ./scripts/clean.sh               Clean.sh — clean Redis (src/) + selected modules
+  ./scripts/deploy.sh              Deploy.sh — build (via scripts/build.sh) then copy artifacts to $(PREFIX)  [external]
+  ./scripts/modules-shallow.sh     Modules-shallow.sh — re-clone given modules with --depth 1
+  ./scripts/modules-update.sh      Modules-update.sh — clone or refresh modules per modules.yaml
+  ./scripts/run.sh                 Run.sh — start src/redis-server with selected modules auto-loaded
+  ./scripts/sync-redis-conf.sh     Sync-redis-conf.sh — (re)generate $REDIS_GEN_CONF from $REDIS_CONF + modules.yaml
+  ./scripts/tarball.sh             Tarball.sh — build self-contained, reproducible Redis+modules tarball
+  ./scripts/test.sh                Test.sh — dispatch test execution
+  ./scripts/uninstall.sh           Uninstall.sh — remove what scripts/deploy.sh installed under $PREFIX
+
+deps
+  make default        Print message
+  make distclean      Run clean) in xxhash (+8 more steps)
+  make hiredis        Modifies these variables in its Makefile
+  make linenoise      Print message
+  make hdr_histogram  Print message
+  make fpconv         Print message
+  make tre            Print message
+  make xxhash         Print message
+  make lua            Print message
+  make jemalloc       Run lib/libjemalloc.a in jemalloc
+
+deps/fpconv
+  make clean  Delete *.o, then delete *.a
+
+deps/hdr_histogram
+  make clean  Delete *.o, then delete *.a
+
+deps/hiredis  [CMake]
+  cmake -S . -B build                Configure CMake project into build/
+  cmake --build build
+  make all                           Run hiredis-test make target (+3 more steps)
+  make dynamic
+  make static
+  make pkgconfig
+  make hiredis-example-libevent      Binaries:
+  make hiredis-example-libevent-ssl
+  make hiredis-example-libev
+  make hiredis-example-libhv
+  make hiredis-example-glib
+  make hiredis-example-ivykis
+  make hiredis-example-macosx
+  make hiredis-example-ssl
+  make hiredis-example-poll
+  make hiredis-example-ae            Print message
+  make hiredis-example-libuv         Dynamic link libuv.so
+  make hiredis-example-qt            Print message
+  make hiredis-example
+  make hiredis-example-push
+  make examples
+  make hiredis-test
+  make test
+  make check
+  make clean                         Delete libhiredis.dylib, libhiredis.a, libhiredis_ssl.dylib, libhiredis_ssl.a, hiredis-test, hi…  [destructive]
+  make dep
+  make install
+  make install-ssl
+  make 32bit                         Run default make target
+  make 32bit-vars
+  make gprof
+  make gcov                          Run CFLAGS+=-fprofile-arcs -ftest-coverage make target
+  make coverage                      Run test.sh, then create tmp/lcov, then run lcov, then run genhtml
+  make noopt
+  ./test.sh
+
+deps/jemalloc/msvc  [.NET]
+  dotnet build jemalloc_vc2015.sln    Build jemalloc_vc2015 solution
+  dotnet restore jemalloc_vc2015.sln  Restore NuGet packages  ↓ download
+  dotnet clean jemalloc_vc2015.sln    Delete .NET build outputs
+  dotnet build jemalloc_vc2017.sln    Build jemalloc_vc2017 solution
+  dotnet restore jemalloc_vc2017.sln  Restore NuGet packages  ↓ download
+  dotnet clean jemalloc_vc2017.sln    Delete .NET build outputs
+
+deps/linenoise
+  make linenoise_example
+  make clean              Delete linenoise_example and *.o
+
+deps/lua
+  make all
+  make clean
+  make test
+  make install  Create /usr/local/bin, then run install
+  make ranlib
+  make local    Create /usr/local/bin, then run install
+  make none     Print message
+  make dummy    Make may get confused with test/ and INSTALL in case-insensitive OS
+  make echo     Echo config parameters
+  make pecho    Echo private config parameters
+  make lecho    Uncomment last sed expression if you want nil instead of empty strings
+
+deps/lua/etc
+  make default   Print message
+  make min       Run cc, then run a.out
+  make noparser
+  make one
+  make strict
+  make clean     Delete a.out, core, core.*, *.o, and luac.out
+  .\luavs.bat    Script to build Lua under "Visual Studio .NET Command Prompt"
+
+deps/lua/src
+  make default
+  make all
+  make o
+  make a
+  make clean    Delete liblua.a, lua, luac, lapi.o, lcode.o, ldebug.o, ldo.o, ldump.o, lfunc.o, lgc.o, llex.o, …
+  make depend
+  make echo     Print message
+  make none     Print message
+  make aix
+  make ansi
+  make bsd
+  make freebsd
+  make generic
+  make linux
+  make macosx
+  make mingw
+  make posix
+  make solaris
+
+deps/tre
+  make check  Run $$test
+  make clean  Delete lib/regcomp.o, lib/regerror.o, lib/regexec.o, lib/tre-ast.o, lib/tre-compile.o, lib/tre-…
+
+deps/xxhash
+  make "Note
+  make default                  Generate CLI and libraries in release mode (default for `make`)
+  make all
+  make xxhsum                   Xxhsum is command line interface (CLI)
+  make xxhsum_and_links         Create symbolic link (+3 more steps)
+  make xxh32sum
+  make xxh64sum
+  make xxh128sum
+  make xxh3sum                  Create symbolic link
+  make xxhsum32                 Generate CLI in 32-bits mode
+  make dispatch                 Warning: dispatch only works for x86/x64 systems
+  make xxhsum_inlinedXXH
+  make libxxhash
+  make lib
+  make list                     List all Makefile targets
+  make help                     List documented targets
+  make clean                    Delete *.dSYM  [destructive]
+  make check                    Basic tests for xxhsum CLI, set RUN_ENV for emulated environments
+  make test-unicode             Run test_unicode make target
+  make test_sanity
+  make test-mem                 Run RUN_ENV make target (+5 more steps)  ∞ long-running
+  make test32                   Run xxhsum32
+  make test-xxhsum-c            Run xxhsum c tests
+  make fuzzer                   Intentional fail
+  make test-filename-escape     Run test_filename_escape make target
+  make test-cli-comment-line    Run test_cli_comment_line make target
+  make test-cli-ignore-missing  Run test_cli_ignore_missing make target
+  make armtest                  Run default make target (+2 more steps)
+  make arm64test                Run default make target (+2 more steps)
+  make clangtest                Run default make target (+4 more steps)
+  make gcc-og-test              Run default make target (+4 more steps)
+  make cxxtest                  Run default make target (+4 more steps)
+  make c90test                  Consequently, only XXH32 can be compiled
+  make noxxh3test               XXH64 requires long long support
+  make nostreamtest             XXH64 requires long long support
+  make nostdlibtest             XXH64 requires long long support
+  make usan                     Check CLI runtime for undefined behavior, using clang's sanitizer
+  make staticAnalyze            Check C source files using $(SCANBUILD) static analyzer
+  make cppcheck                 Check C source files using $(CPPCHECK) static analyzer
+  make namespaceTest            Ensure XXH_NAMESPACE redefines all public symbols
+  make man                      Generate man page from markdown source
+  make clean-man                Delete xxhsum.1
+  make preview-man
+  make test                     Run test-xxhsum-c make target (+13 more steps)
+  make test-multiInclude        This test checks that including "xxhash.h" multiple times and with different directives still c…
+  make test-inline-notexposed   Run nm, then run grep, then check environment
+  make test-inline              Run test_multiInclude make target (+3 more steps)
+  make test-all                 Run test_unicode make target (+16 more steps)
+  make test-tools               Run default make target, then run check make target
+  make test-xxh-nnn-sums
+  make listL120                 Extract lines >= 120 characters in *.{c,h}, by Takayuki Matsuoka (note: $$, for Makefile compat…
+  make trailingWhitespace
+  make lint-unicode
+  make install_libxxhash        Print message
+  make install_xxhsum           Print message
+  make install_man              Run ginstall, then create symbolic link
+  make install                  Install libraries, CLI, links and man pages
+  make uninstall                Uninstall libraries, CLI, links and man page
+
+modules
+  make all
+  make get_source
+  make prepare_source                      Run get_source make target, then run install-rust make target
+  make clean
+  make distclean
+  make pristine
+  make install
+  make setup_environment                   Run install-rust make target
+  make clean_environment                   Delete ~/.cargo, then run /usr/local/lib/rustlib/uninstall.sh  [destructive]
+  make install-rust                        Keep all of Rust stuff in one place
+  make uninstall-rust                      Delete ~/.cargo, then run /usr/local/lib/rustlib/uninstall.sh  [destructive]
+  ./docker-install-bundled-module-deps.sh  Docker image build ONLY — not invoked by `make deps`
+
+modules/vector-sets
+  make all        Default target
+  make expr-test
+  make clean      Clean rule
+
+src
+  make all               Print message
+  make module_tests
+  make persist-settings  Print message
+  make clean
+  make distclean         Run distclean) in deps, then run clean) in modules, then delete .make-*)
+  make test
+  make test-modules
+  make test-sentinel
+  make test-cluster
+  make check
+  make lcov
+  make bench
+  make 32bit             Run default make target
+  make gcov              Use -fprofile-update=atomic because IO threads can update counters concurrently
+  make noopt
+  make valgrind
+  make helgrind
+  make install           Create /usr/local/bin
+  make uninstall
+  ./mkreleasehdr.sh
+
+src/modules
+  make all
+  make clean  Delete *.xo and *.so  [destructive]
+
+tests/modules
+  make all
+  make 32bit
+  make clean

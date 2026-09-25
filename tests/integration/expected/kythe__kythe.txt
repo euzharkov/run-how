@@ -1,0 +1,46 @@
+kythe_kythe  [Node.js, Bazel, Go]
+
+  pnpm run build                   Compile TypeScript sources
+  pnpm run watch                   Compile TypeScript in watch mode  ∞ long-running
+  pnpm run browse                  Run indexer.js, then run browse
+  pnpm run test                    Run Bazel tests
+  pnpm run unit_test               Run Bazel tests
+  pnpm run fmt                     Format C/C++ sources with clang-format
+  go vet ./...                     Check Go source with go vet
+  go fmt ./...                     Format Go source
+  go mod tidy                      Tidy Go module dependencies  ↓ download
+  bazelisk build //...             Build all Bazel targets
+  bazelisk test //...              Run all Bazel tests
+  bazelisk query //...             List all Bazel targets
+  bazelisk clean                   Delete Bazel outputs
+  buildifier -r .                  Format BUILD and .bzl files
+  ./tools/check_bazel_versions.sh
+  ./tools/zcatext.sh
+
+kythe/cxx/indexer/cxx/docs/llvm-2014
+  make all
+  make view
+  make abstract.pdf
+  make clean
+
+kythe/release/appengine/default  [Go]
+  go run .     Run Go server program
+  ./deploy.sh    [external]
+
+kythe/release/cloudbuild/pre-commit  [Python, Docker]
+  docker build -t pre-commit .  Build Docker image
+
+kythe/typescript/languageserver/vscode-extension  [Node.js]
+  npm run vscode:prepublish  Compile TypeScript sources
+  npm run compile            Compile TypeScript sources
+  npm run watch              Compile TypeScript in watch mode  ∞ long-running
+  npm run update-vscode      Run node_modules/vscode/bin/install
+  npm run postinstall        Run node_modules/vscode/bin/install
+
+kythe/web/site  [Ruby]
+  ./build.sh
+  ./check_links_test.sh
+  ./serve.sh
+
+tools/platforms/configs/rbe_default/cc  [Bazel]
+  ./cc_wrapper.sh  Ship environment to C++ action

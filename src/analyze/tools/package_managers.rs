@@ -140,3 +140,32 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn js_package_managers() {
+        assert_eq!(sum("npm ci").text, "Install dependencies with npm");
+        assert_eq!(sum("npm ci").kind, Install);
+        assert_eq!(sum("npm publish").risk, External);
+        assert_eq!(
+            sum("npm audit fix").text,
+            "Fix vulnerable dependencies with npm audit"
+        );
+        assert_eq!(sum("pnpm install --frozen-lockfile").kind, Install);
+        assert_eq!(sum("pnpm publish -r").risk, External);
+        assert_eq!(sum("yarn npm publish").risk, External);
+        assert_eq!(sum("yarn").text, "Install dependencies with Yarn");
+        assert_eq!(sum("bun test").kind, Test);
+    }
+
+    #[test]
+    fn system_package_managers() {
+        assert_eq!(sum("apt-get install -y curl").kind, Install);
+        assert_eq!(sum("brew bundle").text, "Install the Brewfile packages");
+        assert_eq!(sum("brew update").risk, Safe);
+    }
+}

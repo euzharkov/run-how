@@ -1,0 +1,34 @@
+louislam_its-mytabs  [Deno, Docker]
+
+  deno task start                        Run backend/main.ts with Deno
+  deno task setup                        Run install-deps Deno task, then run build-frontend Deno task
+  deno task mpchc-controller             Run extra/mpchc-controller.ts with Deno
+  deno task dev                          Run build-frontend Deno task, then run npm:concurrently with Deno
+  deno task frontend-dev                 Run dev-frontend with Deno
+  deno task backend-dev                  Run backend/main.ts with Deno  ∞ long-running
+  deno task install-deps                 Run deno install
+  deno task test                         Run Deno tests
+  deno task e2e                          Run npm:@playwright/test with Deno
+  deno task e2e-all                      Run npm:@playwright/test with Deno
+  deno task fmt                          Run formatting and linting
+  deno task check                        Run formatting, linting, and type checks
+  deno task build-binary                 Run build-frontend Deno task, then run extra/build-binary.ts with Deno
+  deno task build-docker                 Run build-frontend Deno task, then run extra/build-docker.ts with Deno
+  deno task build-docker-nightly         Run build-frontend Deno task, then build Docker image
+  deno task build-frontend               Run build with Deno
+  deno task start-with-build             Run build-frontend Deno task, then run start Deno task
+  deno task build-mpchc-controller       Compile app with Deno
+  deno lint                              Check source code with Deno lint
+  docker build -t louislam_its-mytabs .  Build Docker image
+  docker compose up -d                   Start all Docker services
+  docker compose up -d app               Start app service (its-mytabs)
+  docker compose logs -f                 Follow Docker service logs  ∞ long-running
+  docker compose down                    Stop and remove Docker services
+
+frontend  [Node.js, Vite, Playwright, Deno]
+  npm run dev-frontend  Start Vite development server  ∞ long-running
+  npm run dev           Run dev Deno task
+  npm run build         Build app with Vite
+  npm run preview       Preview production build with Vite  ∞ long-running
+  npm run e2e           Run Playwright end-to-end tests
+  npm run e2e-all       Run Playwright end-to-end tests

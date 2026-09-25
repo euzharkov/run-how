@@ -25,6 +25,18 @@ pub(super) fn summarize(
                 s("gradle", "Publish artifacts with Gradle", Publish, External)
             }
             Some("check") => s("gradle", "Run Gradle checks", Lint, Safe),
+            Some("flywayClean") => s(
+                "gradle",
+                "Drop the database schema with Flyway",
+                Db,
+                Destructive,
+            ),
+            Some("flywayMigrate") => s(
+                "gradle",
+                "Apply pending migrations with Flyway",
+                Migrate,
+                Safe,
+            ),
             Some(x) => s("gradle", format!("Run the {x} Gradle task"), Other, Safe),
             None => s("gradle", "Run Gradle", Other, Safe),
         },
@@ -41,6 +53,18 @@ pub(super) fn summarize(
             Some("deploy") => s("maven", "Deploy artifacts with Maven", Publish, External),
             Some("clean") => s("maven", "Clean Maven build outputs", Clean, Safe),
             Some("compile") => s("maven", "Compile with Maven", Build, Safe),
+            Some("flyway:clean") => s(
+                "maven",
+                "Drop the database schema with Flyway",
+                Db,
+                Destructive,
+            ),
+            Some("flyway:migrate") => s(
+                "maven",
+                "Apply pending migrations with Flyway",
+                Migrate,
+                Safe,
+            ),
             Some(x) => s("maven", format!("Run Maven {x}"), Other, Safe),
             None => s("maven", "Run Maven", Other, Safe),
         },
@@ -378,5 +402,45 @@ pub(super) fn summarize(
         },
 
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn jvm_build_tools() {
+        // `./gradlew` reaches the table as `gradlew` after `peel` normalises the program.
+        assert_eq!(sum("gradlew build").text, "Build with Gradle");
+        assert_eq!(sum("gradlew test").kind, Test);
+        assert_eq!(sum("gradle publish").risk, External);
+        assert_eq!(sum("mvn -B verify").text, "Run Maven verification");
+        assert_eq!(sum("mvn deploy").risk, External);
+        assert_eq!(sum("mvn clean install").text, "Clean Maven build outputs");
+    }
+
+    #[test]
+    fn flyway_goals_and_tasks() {
+        let m = sum("mvn flyway:clean");
+        assert_eq!(m.risk, Destructive);
+        assert_eq!(m.text, "Drop the database schema with Flyway");
+        assert_eq!(sum("mvn flyway:migrate").risk, Safe);
+        assert_eq!(sum("mvn flyway:migrate").kind, Migrate);
+        assert_eq!(sum("gradlew flywayClean").risk, Destructive);
+        assert_eq!(sum("gradlew flywayMigrate").risk, Safe);
+        assert_eq!(sum("gradlew flywayInfo").risk, Safe);
+    }
+
+    #[test]
+    fn ruby_php_and_others() {
+        assert_eq!(sum("rails db:reset").risk, Destructive);
+        assert_eq!(sum("rails server").kind, Dev);
+        assert_eq!(sum("bundle exec rspec").text, "Run rspec with Bundler");
+        assert_eq!(sum("phpunit").text, "Run PHP tests");
+        assert_eq!(sum("mix ecto.reset").risk, Destructive);
+        assert_eq!(sum("mix phx.server").kind, Dev);
+        assert_eq!(sum("flutter test").kind, Test);
     }
 }

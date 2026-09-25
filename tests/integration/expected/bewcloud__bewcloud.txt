@@ -1,0 +1,35 @@
+bewcloud_bewcloud  [Deno, Docker, PostgreSQL]
+
+  deno task execute-with-permissions   Run app with Deno
+  deno task check                      Run formatting, linting, and type checks
+  deno task build                      Run build-tailwind Deno task (+2 more steps)
+  deno task build-babel                Run npm:@babel/cli@7.28.6/babel with Deno
+  deno task build-tailwind             Run deno install, then run npm:@tailwindcss/cli@4.3.3 with Deno
+  deno task preview                    Run execute-with-permissions Deno task
+  deno task test                       Run Deno tests
+  deno task migrate-db                 Run execute-with-permissions Deno task
+  deno task watch-app                  Run execute-with-permissions Deno task  ∞ long-running
+  deno task watch-babel                Run npm:@babel/cli@7.28.6/babel with Deno  ∞ long-running
+  deno task watch-tailwind             Run deno install, then run npm:@tailwindcss/cli@4.3.3 with Deno
+  deno task download-frontend-imports  Run download-frontend-imports.ts with Deno
+  deno task start
+  deno lint                            Check source code with Deno lint
+  make format                          Format source code with Deno
+  make test                            Run check Deno task, then run test Deno task
+  make build                           Run build Deno task
+  make download-frontend-imports       Run download-frontend-imports Deno task
+  make build-babel                     Run build-babel Deno task
+  make watch-babel                     Run watch-babel Deno task
+  make migrate-db                      Run migrate-db Deno task
+  make exec-db
+  make build-tailwind                  Run build-tailwind Deno task
+  make watch-tailwind                  Run watch-tailwind Deno task
+  make preview                         Run preview Deno task
+  docker build -t bewcloud_bewcloud .  Build Docker image
+  docker compose up -d                 Start all Docker services
+  docker compose up -d website         Start website service (bewcloud)
+  docker compose up -d postgresql      Start PostgreSQL
+  docker compose up -d radicale        Start radicale service (docker-radicale)
+  docker compose logs -f               Follow Docker service logs  ∞ long-running
+  docker compose down                  Stop and remove Docker services
+  docker compose down -v               Stop Docker services and delete their volumes  [destructive]

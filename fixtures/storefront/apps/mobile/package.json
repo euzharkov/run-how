@@ -1,0 +1,12 @@
+{
+  "name": "mobile",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": { "expo": "~52.0.0", "react-native": "0.76.0", "@storefront/ui": "workspace:*" },
+  "devDependencies": { "jest": "^29" }
+}

@@ -9,6 +9,9 @@ svc = "svc.cli:main"
 [dependency-groups]
 dev = ["pytest>=8", "ruff", "mypy", "pre-commit"]
 
+[tool.uv.workspace]
+members = ["packages/*"]
+
 [tool.ruff]
 line-length = 100
 

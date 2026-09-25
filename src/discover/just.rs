@@ -40,11 +40,30 @@ pub fn parse(text: &str) -> Vec<Recipe> {
     let mut pending_attr_doc: Option<String> = None;
     let mut current: Option<usize> = None;
     let mut aliases: Vec<(String, String)> = Vec::new();
+    // Inside `cat <<EOS … EOS` the lines are text, not commands.
+    let mut heredoc: Option<String> = None;
     for raw in text.lines() {
         let line = raw.trim_end();
         if line.starts_with(' ') || line.starts_with('\t') {
+            if let Some(t) = &heredoc {
+                if line.trim() == t {
+                    heredoc = None;
+                }
+                continue;
+            }
             if let Some(i) = current {
                 let mut b = line.trim().to_string();
+                if let Some(rest) = b.split("<<").nth(1) {
+                    let word: String = rest
+                        .trim_start_matches('-')
+                        .trim_start_matches(['\'', '"'])
+                        .chars()
+                        .take_while(|c| c.is_ascii_alphanumeric() || *c == '_')
+                        .collect();
+                    if !word.is_empty() {
+                        heredoc = Some(word);
+                    }
+                }
                 while b.starts_with('@') || b.starts_with('-') {
                     b.remove(0);
                 }
@@ -54,6 +73,7 @@ pub fn parse(text: &str) -> Vec<Recipe> {
             }
             continue;
         }
+        heredoc = None;
         let t = line.trim();
         if t.is_empty() {
             pending_doc = None;
@@ -183,9 +203,6 @@ impl Discoverer for Just {
                 .raw(raw);
             if let Some(d) = &r.doc {
                 a = a.desc(d.clone());
-            }
-            if r.private {
-                a = a.hidden();
             }
             if a.category == Category::Other {
                 if let Some(g) = &r.group {

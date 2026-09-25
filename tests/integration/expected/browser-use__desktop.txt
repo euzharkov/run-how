@@ -1,0 +1,106 @@
+browser-use_desktop  [Xcode, Node.js]
+
+  task default                     List all available tasks
+  task up                          Install deps and start app  ∞ long-running  ↓ download
+  task up:clean                    Wipe Vite cache then start app (use if HMR is acting up)  ∞ long-running  ↓ download
+  task reset:onboarding            Delete onboarding state, sessions, imported cookies, and WhatsApp auth  ∞ long-running
+  task reset:sessions              Delete sessions.db so next launch shows no sessions  ∞ long-running
+  task worktree:profile:path       Print this branch's isolated local userData path
+  task worktree:up                 Start app using this branch's isolated local userData profile  ∞ long-running
+  task worktree:profile:clean      Delete this branch's isolated local userData profile; requires FORCE=1
+  task db:worktree:copy            Copy sessions.db from FROM profile into this branch profile, then check schema
+  task db:worktree:doctor          Diagnose this branch profile's sessions.db schema against checkout
+  task windows:node:check          Windows: verify local development is using Node 20.x or 22.x  ↓ download
+  task windows:up                  Windows: install deps and start app  ∞ long-running  ↓ download
+  task windows:up:clean            Windows: wipe Vite cache then start app  ∞ long-running  ↓ download
+  task windows:start               Windows: start app without installing dependencies  ∞ long-running
+  task windows:reset:onboarding    Windows: delete onboarding state, sessions, imported cookies, and WhatsApp auth  ∞ long-running
+  task windows:reset:sessions      Windows: delete sessions.db so next launch shows no sessions  ∞ long-running
+  task windows:agent:run           Windows: submit task to running local app, e.g. task windows:agent:run PROMPT='open example.com…
+  task windows:logs:all            Windows: export all local app logs to single file, e.g. task windows:logs:all OUT=%USERPROFILE%…
+  task windows:logs:tail:all       Windows: tail all local app logs with colored human-readable formatting
+  task windows:logs:service        Windows: tail one local app log channel with colored formatting, e.g. task windows:logs:service…
+  task windows:logs:app            Windows: tail desktop app lifecycle logs
+  task windows:logs:main           Windows: tail desktop app lifecycle logs (legacy alias for windows:logs:app)
+  task windows:logs:browser        Windows: tail browser/WebContents logs
+  task windows:logs:renderer       Windows: tail verbose frontend renderer console logs
+  task windows:logs:engine         Windows: tail engine subprocess lifecycle logs
+  task windows:logs:resource       Windows: tail resource usage snapshots, e.g. task windows:logs:resource SESSION_ID=abc123
+  task windows:logs:agent          Windows: tail agent transcript events, e.g. task windows:logs:agent SESSION_ID=abc123
+  task windows:logs:errors         Windows: tail warnings and errors across all log files
+  task windows:logs:startup        Windows: tail browser startup timing logs with colored human-readable timing
+  task windows:logs:navigation     Windows: tail browser URL navigation timing logs with colored human-readable timing
+  task windows:logs:session        Windows: tail app/browser/engine log lines for one session, e.g. task windows:logs:session SESS…
+  task agent:run                   Submit task to running local app, e.g. task agent:run PROMPT='open example.com' ENGINE=codex
+  task lint                        Run eslint
+  task typecheck                   Tsc --noEmit
+  task db:schema:check             Verify tracked SessionDb schema identity manifest
+  task db:schema:update            Regenerate tracked SessionDb schema identity manifest
+  task logs:all                    Tail all local app logs with colored human-readable formatting  ∞ long-running
+  task logs:service                Tail one local app log channel with colored formatting, e.g. task logs:service SERVICE=browser
+  task logs:app                    Tail desktop app lifecycle logs
+  task logs:main                   Tail desktop app lifecycle logs (legacy alias for logs:app)
+  task logs:browser                Tail browser/WebContents logs
+  task logs:renderer               Tail verbose frontend renderer console logs
+  task logs:engine                 Tail engine subprocess lifecycle logs
+  task logs:resource               Tail resource usage snapshots, e.g. task logs:resource SESSION_ID=abc123
+  task logs:agent                  Tail agent transcript events, e.g. task logs:agent SESSION_ID=abc123
+  task logs:errors                 Tail warnings and errors across all log files  ∞ long-running
+  task logs:startup                Tail browser startup timing logs with colored human-readable timing
+  task logs:navigation             Tail browser URL navigation timing logs with colored human-readable timing
+  task logs:session                Tail app/browser/engine log lines for one session, e.g. task logs:session SESSION_ID=abc123  ∞ long-running
+  task package                     Build unpackaged app (electron-forge package)
+  task make                        Build platform installers (electron-forge make)
+  task linux:make:docker           Build Linux .deb, .rpm, and AppImage packages inside Docker
+  task linux:verify-artifacts      Verify Linux .deb, .rpm, AppImage, and update feed artifacts exist under app/out/make
+  task release:dev                 Unsigned ad-hoc build for local testing (fast, no Apple credentials)
+  task release:signed              Signed but NOT notarized — runs on your Mac with right-click bypass, not for public distribution
+  task release:full                Signed + notarized DMG for public distribution (slow — Apple notarization adds 5-30+ min)
+  task release:publish             Cut full GitHub release for all platforms. Auto-bumps patch from latest tag, or pass VERSION=X.…  [external]
+  task release:preview             Throwaway preview build from CURRENT branch — defaults to windows/unsigned for tester handoff. …  [external]
+  task release:dispatch            Manually run release.yml on MAIN for PLATFORM=all|mac|windows|linux. For previews from feature …  [external]
+  task notary:setup                One-time — store Apple notary credentials in macOS keychain so notary:* tasks work without env …  [external]
+  task notary:status               List recent Apple notarization submissions and their status  [external]
+  task notary:log                  Show detailed Apple log for submission, e.g. task notary:log ID=abc123-  [external]
+  task notary:wait                 Block until notarization submission finishes, e.g. task notary:wait ID=abc123-  [external]
+  task notary:staple               Manually attach notarization ticket to .app or .dmg, e.g. task notary:staple PATH=out/make/.../…
+  ./scripts/build-linux-docker.sh
+  ./scripts/issue-runner.sh
+  ./scripts/merge-all.sh           Sequentially rebase each PR branch on main, force push, squash merge
+
+app  [Node.js, Electron, Vitest, Playwright]
+  yarn start                         Start Electron app  ∞ long-running
+  yarn start:clean                   Delete node_modules/.vite, then start Electron app  ∞ long-running
+  yarn dev                           Start Electron app  ∞ long-running
+  yarn dev:settings                  Start Electron app  ∞ long-running
+  yarn package                       Package Electron app
+  yarn make                          Build Electron distributables
+  yarn run publish                   Publish Electron app  [external]
+  yarn lint                          Check source code with ESLint
+  yarn typecheck                     Check TypeScript types
+  yarn test                          Run Vitest tests
+  yarn test:watch                    Run Vitest tests
+  yarn test:coverage                 Run Vitest tests with coverage
+  yarn e2e                           Run Playwright end-to-end tests
+  yarn parity                        Run tests/parity/run-parity.ts
+  yarn parity:dry-run                Run tests/parity/run-parity.ts
+  yarn parity:capture-baseline       Run tests/parity/run-parity.ts
+  yarn visual:capture                Run Playwright end-to-end tests
+  yarn visual:diff                   Run tests/visual/diff.ts
+  yarn visual:qa                     Run Playwright end-to-end tests, then run tests/visual/diff.ts
+  yarn qa:review
+  yarn qa                            Run linting, type checks, and tests
+  yarn db:schema:check               Run {"module":"CommonJS"}, then run Vitest tests
+  yarn db:schema:update              Run {"module":"CommonJS"}
+  yarn dev:profile                   Run scripts/dev-profile.mjs
+  yarn start:reset-onboarding        Run scripts/reset-onboarding.mjs
+  yarn start:reset-sessions          Run scripts/reset-sessions.mjs
+  yarn sync-domain-skills            Run scripts/sync-domain-skills.mjs
+  yarn skills:eval                   Run scripts/evaluate-agent-skills.mjs
+  yarn eval:agent-skills             Run scripts/evaluate-agent-skills.mjs
+  yarn postinstall                   Run scripts/chmod-node-pty-helpers.mjs
+  ./scripts/build-dmg.sh             Scripts/build-dmg.sh — orchestrate full DMG build sequence
+  ./scripts/patch-electron-plist.sh  Patches dev-mode Electron binary so dock and menu bar show
+  ./scripts/release.sh               Scripts/release.sh — local release helper: build, sign, notarize, staple, verify  [external]
+  ./scripts/sign-python.sh           Scripts/sign-python.sh — codesign PyInstaller daemon binary with hardened runtime
+  ./scripts/verify-signing.sh        Scripts/verify-signing.sh — post-build signing verification

@@ -1,8 +1,9 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
-## . [bazel] Bazel tools=bazel
+## . [bazel] Bazel tools=bazel techs=Bazel
 build                    Build          inferred high   safe        .          bazelisk build //... :: Build all Bazel targets
 test                     Testing        inferred high   safe        .          bazelisk test //... :: Run all Bazel tests
 query                    Other          inferred low    safe        .          bazelisk query //... :: List all Bazel targets

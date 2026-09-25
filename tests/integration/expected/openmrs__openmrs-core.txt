@@ -1,0 +1,31 @@
+openmrs_openmrs-core  [JVM, Docker, Maven, MariaDB]
+
+  ./mvnw package                          Package all Maven modules
+  ./mvnw test                             Run Maven tests
+  ./mvnw verify                           Run Maven verification (integration tests)
+  ./mvnw install                          Install artifacts to local Maven repo
+  ./mvnw clean                            Delete Maven build outputs
+  ./mvnw spotless:apply                   Format code with Spotless
+  ./mvnw deploy                           Deploy artifacts to Maven repository  [external]
+  docker build -t openmrs_openmrs-core .  Build Docker image
+  docker compose up -d                    Start all Docker services
+  docker compose up -d db                 Start MariaDB
+  docker compose up -d api                Start api service (built from source)
+  docker compose logs -f                  Follow Docker service logs  ∞ long-running
+  docker compose build                    Build Docker service images
+  docker compose down                     Stop and remove Docker services
+  docker compose down -v                  Stop Docker services and delete their volumes  [destructive]
+  .\mvnw.cmd                              ----------------------------------------------------------------------------
+  .\mvnwDebug.cmd                         Licensed to Apache Software Foundation (ASF) under one
+  ./startup-dev.sh
+  ./startup-init.sh                       Configurable environment variables
+  ./startup.sh
+  ./wait-for-it.sh                        Use this script to test if given TCP host/port are available
+
+liquibase  [JVM]
+  ./scripts/create_liquibase_snapshots.sh
+  ./scripts/fix_liquibase_snapshots.sh
+  ./scripts/test_liquibase_snapshots.sh
+
+test-suite/module  [JVM, Maven]
+  mvn -pl module -am deploy  Deploy artifacts to Maven repository  [external]

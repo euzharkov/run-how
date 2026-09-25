@@ -1,0 +1,93 @@
+documenso_documenso  [Node.js, Turborepo, Docker]
+
+  npm run postinstall                       Apply local dependency patches
+  npm run build                             Run build across packages with Turborepo
+  npm run dev                               Run lingui compile, then run dev across packages with Turborepo  ∞ long-running
+  npm run dev:remix                         Run lingui compile, then run dev across packages with Turborepo  ∞ long-running
+  npm run dev:docs                          Run dev across packages with Turborepo  ∞ long-running
+  npm run dev:openpage-api                  Run dev across packages with Turborepo  ∞ long-running
+  npm run start                             Run start across packages with Turborepo  ∞ long-running
+  npm run lint                              Check lint and formatting with Biome
+  npm run lint:fix                          Fix lint and format issues with Biome
+  npm run lint:staged                       Fix lint and format issues with Biome
+  npm run format                            Format source code with Biome
+  npm run prepare                           Install Git hooks with Husky  ∆ git
+  npm run commitlint                        Check commit messages  ∆ git
+  npm run clean                             Run clean across packages with Turborepo, then delete node_modules
+  npm run d                                 Run dev across packages with Turborepo (+4 more steps)  ∞ long-running
+  npm run dx                                Start Docker services in background (+2 more steps)  ↓ download
+  npm run dx:up                             Start Docker services in background
+  npm run dx:down                           Stop and remove Docker services
+  npm run ci                                Run test:e2e across packages with Turborepo (+1 more step)
+  npm run prisma:generate
+  npm run prisma:migrate-dev
+  npm run prisma:migrate-deploy               [external]
+  npm run prisma:migrate-reset
+  npm run prisma:seed
+  npm run prisma:studio
+  npm run with:env
+  npm run reset:hard                        Install dependencies with npm (+3 more steps)  ↓ download
+  npm run precommit                         Install dependencies with npm, then stage files  ↓ download  ∆ git
+  npm run inngest:dev                         ∞ long-running
+  npm run make:version                      Bump package version  ∆ git
+  npm run translate                         Run lingui, then run lingui compile
+  npm run translate:extract
+  npm run translate:compile                 Run lingui compile
+  turbo run prebuild                        Run prebuild across packages with Turborepo
+  turbo run dev:test                        Run dev:test across packages with Turborepo  ∞ long-running
+  turbo run test:e2e                        Run test:e2e across packages with Turborepo
+  docker build -f docker/Dockerfile -t … .  Build Docker image
+  docker build -f … .                       Build Docker image from Dockerfile.chromium
+
+apps/docs  [Node.js, Next.js]
+  npm run build        Build Next.js app
+  npm run dev          Start Next.js development server  ∞ long-running
+  npm run start        Start Next.js production server  ∞ long-running
+  npm run types:check  Run fumadocs-mdx, then run next typegen, then check TypeScript types
+  npm run postinstall
+
+apps/openpage-api  [Node.js, Next.js]
+  npm run dev       Start Next.js development server  ∞ long-running
+  npm run build     Build Next.js app
+  npm run start     Start Next.js production server  ∞ long-running
+  npm run lint:fix  Lint Next.js app
+  npm run clean     Delete .next, then delete node_modules
+
+apps/remix  [Node.js, React Router]
+  npm run build
+  npm run build:app     Build React Router app (+2 more steps)
+  npm run build:server  Bundle with Rollup
+  npm run dev           Start React Router development server  ∞ long-running
+  npm run dev:billing   Run .bin/stripe-dev.sh
+  npm run start         Run build/server/main.js
+  npm run clean         Delete .react-router, then delete node_modules  [destructive]
+  npm run typecheck     Generate React Router route types, then compile TypeScript sources
+  npm run with:env
+
+packages/app-tests  [Node.js, Playwright]
+  npm run test:dev     Run Playwright end-to-end tests
+  npm run test-ui:dev  Open Playwright test UI
+  npm run test:e2e
+
+packages/email  [Node.js, React Router]
+  npm run dev            Start React Router development server  ∞ long-running
+  npm run preview:build  Build React Router app
+
+packages/lib  [Node.js, Vitest]
+  npm run test        Run Vitest tests
+  npm run test:watch  Run Vitest tests
+
+packages/prisma  [Node.js, Prisma]
+  npm run build                  Generate Prisma client
+  npm run prebuild               Generate Prisma client
+  npm run format                 Format Prisma schema
+  npm run post-install           Generate Prisma client
+  npm run prisma:generate        Generate Prisma client
+  npm run prisma:migrate-dev     Create and apply Prisma migrations
+  npm run prisma:migrate-deploy  Apply pending Prisma migrations
+  npm run prisma:migrate-reset   Reset database and re-apply migrations  [destructive]
+  npm run prisma:seed            Seed database
+  npm run prisma:studio          Open Prisma Studio
+
+packages/signing  [Node.js, Vitest]
+  npm run test  Run Vitest tests

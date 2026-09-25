@@ -3,10 +3,10 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [deno] Deno tools=deno
+## . [deno] Deno tools=deno techs=Deno
 dev                      Development    declared exact  safe        .          deno task dev :: Run main.ts with Deno [long-running]
 start                    Development    declared exact  safe        .          deno task start :: Run main.ts with Deno
-check                    Quality        declared exact  safe        .          deno task check :: Type-check the entrypoint
+check                    Quality        declared exact  safe        .          deno task check :: Type-check entrypoint
 test                     Testing        inferred high   safe        .          deno test :: Run Deno tests
 lint                     Quality        inferred high   safe        .          deno lint :: Check source code with Deno lint
 fmt                      Quality        inferred high   safe        .          deno fmt :: Format source code with Deno

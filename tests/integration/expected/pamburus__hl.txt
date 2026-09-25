@@ -1,0 +1,82 @@
+pamburus_hl  [Rust, Docker]
+
+  cargo doc --no-deps                 Build Rust docs
+  make build                          Build debug target
+  make ci                             Run continuous integration tests
+  make check-fmt                      Run code formatting tests
+  make check-schema                   Run schema validation tests
+  make fmt                            Automatically format code
+  make build-release                  Build release target
+  make install                        Install binary and man pages  ↓ download
+  make install-man-pages              Install man pages
+  make install-versioned              Install versioned binary  ↓ download
+  make test                           Run tests
+  make bench                          Run benchmarks
+  make usage                          Show usage of binary
+  make clean                          Clean build artifacts
+  make screenshots                    Create screenshots
+  make coverage                       Collect coverage
+  make skip-ignored                   Skip ignored tracked files
+  make no-skip-ignored                Undo skip-ignored
+  make contrib-build
+  make contrib-build-nightly
+  make contrib-coverage
+  make contrib-schema
+  make contrib-screenshots
+  just default                        Default recipe, executed on `just` without arguments
+  just build                          Build project in debug mode
+  just build-release                  Build project in release mode
+  just run                            Run Rust program
+  just test                           Run tests for all packages in workspace
+  just check                          Check code for errors without building executable
+  just lint                           Lint all code
+  just lint-rust                      • Lint Rust
+  just lint-markdown                  • Lint Markdown files
+  just clippy                         Run Rust linter (clippy)
+  just fix                            Automatically fix linting issues where possible
+  just fix-clippy                     Lint Rust source with Clippy for whole workspace
+  just fix-markdown                   Check Markdown files
+  just audit                          Check for security vulnerabilities in dependencies
+  just outdated                       Check for outdated dependencies
+  just fmt                            Format all Rust and Nix files
+  just fmt-rust                       Format Rust code
+  just fmt-nix                        Format Nix files
+  just fmt-toml                       Format TOML files
+  just fmt-check                      Check formatting without applying changes (for CI)
+  just fmt-check-rust                 Check Rust formatting
+  just fmt-check-nix                  Check Nix formatting  ↓ download
+  just ci                             Run all CI checks locally
+  just coverage                       Generate code coverage
+  just uncovered                      Show uncovered changed lines comparing to {{base}}
+  just check-schema                   Check schema validation
+  just regenerate-capnp               Regenerate Cap'n Proto bindings with pinned compiler
+  just install-versioned              Install binary and man pages and copy with versioned name
+  just install-man-pages              Install man pages
+  just release                        Build and publish new release  [external]
+  just version                        Show current version
+  just bump                           Bump version
+  just changes                        List changes since previous release
+  just previous-tag                   Show previous release tag
+  just nix-dev                        Nix-specific commands (require Nix to be installed)  ↓ download
+  just nix-check                      Run all Nix flake checks
+  just nix-update                     Update all Nix flake inputs
+  just nix-build                      Build all defined Nix package variants
+  just nix-deps                       Show dependency tree of Nix derivation
+  just usage                          Show `hl --help`
+  just usage-long                     Show `hl --help=long`
+  just mmd2svg                        Convert all Mermaid (.mmd) files to SVG
+  just nix-run-local-or-docker        Helper function to run command locally or in Docker if not installed
+  just run-nix                        Helper function to run nix commands locally or in Docker
+  just run-nixfmt                     Helper function to run nixfmt commands locally or in Docker
+  just build-nix-docker-image         Helper function to build NixOS docker image
+  just setup                          Helper recipe to ensure required tools are available for given task
+  just repository-state               Helper to evaluate repository state hash needed for version build metadata
+  ./scripts/cargo-update-filter.sh
+  ./scripts/cargo-update-to-table.sh
+
+benches/go  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download

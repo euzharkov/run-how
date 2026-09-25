@@ -1,0 +1,119 @@
+infinitered_reactotron  [Node.js, Nx]
+
+  yarn postinstall                          Run scripts/postinstall.sh
+  yarn clean                                Run scripts/clean.sh
+  yarn reset                                Run scripts/reset.sh
+  yarn generate:plugin
+  yarn start                                Run start in reactotron-app  ∞ long-running
+  yarn start:example                        Run start in example-app  ∞ long-running
+  yarn build                                Run build across Nx projects
+  yarn build:watch                            ∞ long-running
+  yarn build:dev                            Run build:dev across Nx projects
+  yarn lint                                 Run lint across Nx projects
+  yarn test                                 Run test across Nx projects
+  yarn ci:test                              Run ci:test across Nx projects
+  yarn ci:trust                             Run scripts/git-clone-fork-to-trusted-branch.sh
+  yarn typecheck                            Run typecheck across Nx projects
+  yarn format:write                         Run format:write across Nx projects
+  yarn format:check                         Run format:check across Nx projects
+  yarn release:tags                         Run version for affected Nx projects
+  yarn release:tags:local                   Run version for affected Nx projects
+  yarn release:artifacts
+  yarn release:tags:push
+  yarn copy-prettier-ignore
+  yarn remove-local-tags                    Create Git tag, then run xargs, then fetch changes from remote  [external]  ∆ git
+  yarn build-and-test:local                 Run test across Nx projects (+5 more steps)
+  yarn package:validate
+  nx run-many -t version
+  nx affected -t build test lint
+  nx graph                                  Open Nx project graph
+  ./scripts/git-clone-for … sted-branch.sh
+  yarn workspaces foreach -A run format     Format source code with Prettier in every workspace package
+  yarn workspaces foreach … run test:watch  Run Jest tests in watch mode in every workspace package
+  yarn workspaces foreach -A run prebuild   Delete dist in every workspace package
+  yarn workspaces foreach … prebuild:dev    Delete dist in every workspace package
+  yarn workspaces foreach -A run tsc        Compile TypeScript sources in every workspace package
+  yarn workspaces foreach -A run prepare    Run bob build in every workspace package
+
+apps/example-app  [Node.js, Expo, Maestro]
+  yarn expo-doctor           Check Expo project for common issues
+  yarn eas build             Build app with EAS Build  [external]
+  yarn eas build --local     Build app locally with EAS
+  yarn eas update            Publish over-the-air update with EAS  [external]
+  yarn eas submit            Submit app to app stores  [external]
+  yarn compile               Check TypeScript types
+  yarn lint                  Run linting and formatting
+  yarn patch                 Apply local dependency patches
+  yarn test:maestro          Run Maestro mobile end-to-end flows in .maestro/FavoritePodcast.yaml  ⊙ device
+  yarn adb                   Forward device port to host  ∞ long-running  ⊙ device
+  yarn postinstall           Apply local dependency patches
+  yarn bundle:visualize
+  yarn bundle:visualize:dev
+  yarn build:ios:sim         Build app locally with EAS
+  yarn build:ios:dev         Build app locally with EAS
+  yarn build:ios:prod        Build app locally with EAS
+  yarn build:android:sim     Build app locally with EAS
+  yarn build:android:dev     Build app locally with EAS
+  yarn build:android:prod    Build app locally with EAS
+  yarn start                 Start Expo development server  ∞ long-running
+  yarn android               Build and run app on Android  ∞ long-running  ⊙ device
+  yarn ios                   Build and run app on iOS  ∞ long-running  ⊙ device
+  yarn web                   Start Expo development server in browser  ∞ long-running
+  yarn bundle:web            Export Expo app bundle
+  yarn serve:web
+  yarn prebuild:clean        Generate native iOS and Android projects
+  yarn prebuild              Generate native iOS and Android projects
+
+apps/reactotron-app  [Node.js, Storybook, Fastlane, Nx]
+  yarn compile                   Compile TypeScript sources
+  yarn start                     Run electron-webpack dev  ∞ long-running
+  yarn build
+  yarn build:release             Run scripts/build.release.js
+  yarn release:artifacts         Run scripts/release.artifacts.js
+  yarn storybook                 Start Storybook  ∞ long-running
+  yarn build-storybook           Build static Storybook
+  bundle exec fastlane setup     Run setup Fastlane lane
+  nx run reactotron-app:version
+
+lib/eslint-plugin-reactotron  [Node.js, Nx]
+  nx run eslint-plugin-reactotron:version
+
+lib/reactotron-apisauce  [Node.js, Nx]
+  nx run reactotron-apisauce:version
+
+lib/reactotron-core-client  [Node.js, Nx]
+  nx run reactotron-core-client:version
+
+lib/reactotron-core-contract  [Node.js, Nx]
+  nx run reactotron-core-contract:version
+
+lib/reactotron-core-server  [Node.js, Nx]
+  yarn build:dev                         Delete dist, then run bob build
+  nx run reactotron-core-server:version
+
+lib/reactotron-core-ui  [Node.js, Storybook, Nx]
+  yarn start                         Start Storybook  ∞ long-running
+  yarn build-storybook               Build static Storybook
+  nx run reactotron-core-ui:version
+
+lib/reactotron-mcp  [Node.js]
+  yarn build  Build package with tsup
+
+lib/reactotron-mst  [Node.js, Nx]
+  nx run reactotron-mst:version
+
+lib/reactotron-react-js  [Node.js, Nx]
+  yarn ci:lint                        Check source code with ESLint
+  nx run reactotron-react-js:version
+
+lib/reactotron-react-native  [Node.js, Nx]
+  nx run reactotron-react-native:version
+
+lib/reactotron-react-native-mmkv  [Node.js, Nx]
+  nx run … e-mmkv:version
+
+lib/reactotron-redux  [Node.js, Nx]
+  nx run reactotron-redux:version
+
+scripts/template  [Node.js, Nx]
+  nx run reactotron-template:version

@@ -31,11 +31,12 @@ The user then runs the command with the project's own tool.
 These are decisions, not gaps. Do not reopen them in a pull request without a discussion first.
 
 - **Not a task runner.** rhow never executes an action, forwards arguments, manages
-  environment variables, or asks for confirmation. `rhow <action>` shows the command. This
-  keeps the tool free of shell quoting, exit-code plumbing and per-runner argument rules.
+  environment variables, or asks for confirmation. The listing shows the command. This keeps
+  the tool free of shell quoting, exit-code plumbing and per-runner argument rules.
 - **Not a writer.** Discovery never modifies the repository, installs dependencies, starts
   services, spawns a project tool (`npm`, `cargo metadata`, `kubectl`, `docker`) or touches
-  the network. `tests/fixtures.rs::discovery_is_read_only` guards this.
+  the network. `tests/fixtures.rs::discovery_is_read_only` (every fixture, before and after)
+  and `nothing_spawns_a_process_or_opens_a_socket` (the source) guard this.
 - **Not an LLM product.** Explanations are produced by a static knowledge table and a
   deterministic tokenizer. Same input, same output, offline, in milliseconds.
 - **Not configurable.** No `.rhow.yml`, no plugins, no favourites, no history, no dashboard.
@@ -49,15 +50,19 @@ These are decisions, not gaps. Do not reopen them in a pull request without a di
 ## 3. Principles for changes
 
 1. **Read-only, always.** Any change that reads a file through anything other than
-   `repo::DirInfo::read` / `read_text`, or that spawns a process, is wrong by construction.
+   `repo::DirInfo::read` / `read_text` / the `Context` caches, or that spawns a process, is
+   wrong by construction.
 2. **Nothing ecosystem-specific leaves its adapter.** Adapters may use any internal
    representation, but only `model::Action`, `Script` and `ToolVersion` come out.
 3. **Declared beats inferred.** A command the project wrote down wins id collisions and is
-   shown by default; an inferred one that loses its natural name is hidden.
+   shown by default; an inferred one that loses its natural name to an action that can stand
+   in for it (same ecosystem, or a generic runner such as `make`) is not reported.
    **A project is its directory.** Nested projects are named and titled by their path, never
    by a manifest name, so no tool's naming takes priority over another's.
 4. **Explanations state observable behaviour.** "Run Vitest tests", not "Runs the unit test
-   suite to validate correctness". Under about sixty characters.
+   suite to validate correctness". Under about sixty characters. No articles: "Build app with
+   Vite", not "Build the app with Vite". `explain::terse` enforces this on every description,
+   so write knowledge-table text naturally and let the pass drop `the`, `a` and `an`.
 5. **Risk is a maximum, never lowered.** Tool knowledge, textual patterns and adapter hints
    combine with `max()`. New patterns go in with a test that also shows a safe near-miss.
 6. **Every behaviour change is visible in a snapshot.** Fixture repositories under `fixtures/`
@@ -67,16 +72,21 @@ These are decisions, not gaps. Do not reopen them in a pull request without a di
    else; the README table is generated from it and a test enforces that.
 8. **Fast by construction.** One directory walk, an index for path lookups, a cache for parsed
    manifests, static parsing only. Discovery of a normal repository takes milliseconds.
-9. **The default view is the short list a developer would type.** Everything else exists but
-   sits behind `--all`. The rules that keep it short are general, never per-repository:
+9. **The listing is everything rhow reports, and nothing is said twice.** There is no hidden
+   tier and no `--all`: what another tool or an ancestor project already covers is not
+   reported at all, so the list stays the one a developer would type. The rules that keep it
+   short are general, never per-repository:
    - a workspace root offers `build`/`test`/`lint`/… once; the same inferred action is not
      repeated for every member (`tokio-util:test`, `api:clippy`);
    - a declared script that every workspace package repeats (`compile`, `test` in 200
      packages) is boilerplate: shown once at the root as "run in all packages", not per package;
-   - in a repository with many projects, inferred convention actions of nested projects yield
-     to their declared scripts and to each app's run action;
+   - in a repository with many projects, an inferred convention action that repeats across
+     nested projects (`cargo test` in every crate) is boilerplate; one that only a project or
+     two have (a Pulumi stack's `pulumi up`) is that project's own and stays;
    - two tools describing the same thing show once (`test` from `package.json` and the Nx
-     `test` target; `ios` and `run-ios`); declared beats inferred, earlier adapter wins;
+     `test` target; `ios` and `run-ios`); declared beats inferred, earlier adapter wins, and
+     Bazel or Pants beat a language convention at the root they build. Two tools of different
+     ecosystems do not describe the same thing: `yarn test` leaves `bundle exec rspec`;
    - inherited Nx targets (`"lint": {}` filled in by `targetDefaults`) show once at the root,
      not per project, unless they are core developer targets;
    - projects under `test/`, `examples/`, `fixtures/`, `playground/`, `benches/`, … are
@@ -90,6 +100,14 @@ These are decisions, not gaps. Do not reopen them in a pull request without a di
     changing discovery, run `rhow` on a few large real repositories (an Nx workspace, a Cargo
     workspace, a pnpm monorepo, a Flutter samples repo, a Go module tree) and read the output
     as its developer would. If a line makes no sense to them, it is a bug.
+    `tests/integration/` makes this repeatable: a Docker run checks rhow against three real
+    products per supported stack (listed in the README), each pinned to a commit, and compares
+    the default view with `tests/integration/expected/`. Those files are snapshots of real
+    repositories: a change that moves one must be explained, like any fixture snapshot.
+    Snapshots only catch change, so `tests/integration/must.txt` pins by hand the commands a
+    developer of each product would type; it is never re-recorded, and a command leaving the
+    default view is a regression. `--group`, `--ci` and `--json` are checked against the
+    listing: the same rows reordered, one row per CI step, the same actions.
 
 ## 4. Architecture in one screen
 
@@ -105,12 +123,13 @@ cwd ─► repo::find_root ─► repo::scan ─► discover (adapters) ─► e
 | `src/explain/`  | Descriptions: explicit → command analysis → name heuristics → `Run <program>`                                                                                       |
 | `src/risk/`     | `safe` / `external` / `destructive` from tool evidence plus textual patterns                                                                                        |
 | `src/support/`  | Embeds `support.toml`; compares a repository's declared versions against it                                                                                         |
+| `src/techs.rs`  | Names the technologies a project visibly uses (kind, tool families, recognised tools, Compose images) for the title tag                                            |
 | `src/runtime/`  | Suggestions about the local machine (Colima, OrbStack, Podman, Docker Desktop)                                                                                      |
-| `src/ui/`       | Terminal rendering, `--json`, `rhow support`, `rhow <action>`                                                                                                       |
+| `src/ui/`       | Terminal rendering, `--json`, `rhow support`                                                                                                                        |
 | `src/model.rs`  | `Repo → Project → Action`, plus `ToolVersion`                                                                                                                       |
 
 Key `Action` fields: `id` (unique CLI name, `api:test`), `command`, `working_directory`,
-`source` (declared/inferred), `confidence`, `risk`, `category`, `hidden`.
+`source` (declared/inferred), `confidence`, `risk`, `category`.
 
 Detailed rules for id assignment, attribution, analysis depth limits and the explanation
 grammar are in `docs/ARCHITECTURE.md`.
@@ -152,8 +171,9 @@ cargo test
 tests/install/run.sh        # when packaging, installers or the release layout changed
 ```
 
-CI (`.github/workflows/ci.yml`) runs the first three on Linux, macOS and Windows and the
-installer suite in Docker on Linux. `main` is protected by a ruleset: changes land only
+CI (`.github/workflows/ci.yml`) runs the first three on Linux, macOS and Windows, and the
+installer suite and the real-product integration run (`tests/integration/run.sh`) in Docker
+on Linux. `main` is protected by a ruleset: changes land only
 through a pull request with those checks green, merged by a maintainer by hand. Auto-merge
 is off.
 
@@ -163,7 +183,9 @@ directories takes about a quarter of a second, almost all of it filesystem time.
 ## 7. Conventions
 
 - Rust 2021, MSRV in `Cargo.toml`. No new dependencies without a reason in the PR.
-- Adapters never call `std::fs` directly; they go through `DirInfo`.
+- Adapters never call `std::fs`, `Path::is_file` or `Path::exists`; they go through `DirInfo`
+  and `Context` (`ctx.has_file`, `ctx.text`, `ctx.toml`, …). Ignored directories are listed
+  shallowly for exactly this reason.
 - Terminal glyphs must be single width and drawn by every default monospace font on macOS,
   Linux and Windows: Mathematical Operators (`∞ ∆ ⊙`), basic Arrows (`↓ ↑`) and the common
   Geometric Shapes (`● ■ ▲ ◆`) only. No emoji (double width, boxes on the legacy Windows
@@ -188,3 +210,8 @@ directories takes about a quarter of a second, almost all of it filesystem time.
 | 2026-09 | Noise rules: workspace fan-out, repeated package scripts, cross-tool duplicates, inherited Nx targets, demoted test/example trees, shadowed platform runners, Make variable expansion | Running on real monorepos produced 200 to 2,000 lines where a developer wants 20; each rule is general and pinned by `fixtures/noise` |
 | 2026-09 | Projects named by directory, listing grouped by project, rows are commands | Manifest names disagree across tools and force a priority list; the directory is the identity every tool shares, and developers ask "what can I do here", not "all tests everywhere" |
 | 2026-09 | Notes (`long-running`, `device`, `download`, `git`) and `--ci` pipeline structure; no environment-variable or credential guessing, no action dependency graph | Notes must be facts the command text states; requirements hidden in code are unknowable and a wrong note is worse than none. CI is shown as the structure it is, not as marks on actions |
+| 2026-09 | A declared action only shadows an inferred one of the same ecosystem (or a generic runner); Bazel/Pants beat language conventions at their root; an app that is the only project of its ecosystem keeps its convention actions in large repos | Real products hid their canonical commands: a Rails app's `yarn test` hid `bundle exec rspec`, `pnpm run build` hid `bazel build //...`, firezone's Elixir backend lost `mix test` |
+| 2026-09 | Listing rows are numbered; `rhow <row>` opens one | Ids like `build-prod-assemble-debug` are long to retype; a number is two keystrokes. Numbers are per invocation and follow the flags (`--all`, `--group`), ids stay the stable handle for scripts and `--json` |
+| 2026-09 | Removed the per-action view (`rhow <row>`, `rhow <id>`, `why`), the row numbers that fed it and the reserved ids; `support` is the only argument | The listing already shows the command, what it does, its risk and notes; the view added the directory twice and debug fields (source, confidence, `risk safe`) a developer has no use for |
+| 2026-09 | The directory is the positional argument (`rhow path/to/dir`, `rhow support path/to/dir`); `-C` stays as a hidden alias | Inspecting tools take the directory as an argument (`ls`, `tree`, `tokei`); `-C` is for tools whose arguments mean something else, which rhow's no longer do. A directory named `support` is `./support` |
+| 2026-09 | No `--all`, no hidden actions: what another action covers is not reported, everything else is listed (JSON schema 2 drops `hidden`) | rhow is for developers; a hidden tier meant deliberately keeping real commands (lifecycle hooks, `_private` recipes, low-confidence guesses) out of sight. Repeats (per-package copies, cross-tool twins) are dropped instead of hidden |

@@ -16,11 +16,7 @@ pub fn fastlane_lanes(text: &str) -> Vec<(Option<String>, String, Option<String>
     for raw in text.lines() {
         let l = raw.trim();
         if let Some(rest) = l.strip_prefix("desc ") {
-            pending = Some(
-                rest.trim()
-                    .trim_matches(|c| c == '"' || c == '\'')
-                    .to_string(),
-            );
+            pending = Some(super::unquote(rest).to_string());
         } else if let Some(rest) = l.strip_prefix("platform ") {
             platform = Some(
                 rest.trim()
@@ -54,6 +50,27 @@ pub fn fastlane_lanes(text: &str) -> Vec<(Option<String>, String, Option<String>
     out
 }
 
+/// The first simulator named by a `devices: ["iPhone 15"]` / `device: "iPhone 15"` option
+/// in a Fastfile (`scan`/`run_tests`), so the test destination is the one the project uses.
+fn fastlane_device(text: &str) -> Option<String> {
+    for l in text.lines() {
+        let l = l.split('#').next().unwrap_or("");
+        let Some(i) = l.find("devices:").or_else(|| l.find("device:")) else {
+            continue;
+        };
+        let rest = &l[i..];
+        // `devices: ["iPhone 15"]`, `device: "iPhone 15"`: the first quoted string.
+        let Some(name) = rest.split(['"', '\'']).nth(1) else {
+            continue;
+        };
+        let name = name.trim();
+        if !name.is_empty() {
+            return Some(name.to_string());
+        }
+    }
+    None
+}
+
 impl Discoverer for Mobile {
     fn id(&self) -> &'static str {
         "mobile"
@@ -71,7 +88,8 @@ impl Discoverer for Mobile {
             .any(|d| d.ends_with(".xcodeproj") || d.ends_with(".xcworkspace"))
             || dir.has("Package.swift")
             || dir.has("pubspec.yaml")
-            || (dir.has_dir("fastlane") && dir.path.join("fastlane/Fastfile").is_file())
+            // `fastlane/` is a listed directory; `discover` confirms the Fastfile inside it.
+            || dir.has_dir("fastlane")
     }
     fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
@@ -189,7 +207,7 @@ impl Discoverer for Mobile {
                         .inferred_desc("Format Dart source")
                         .cat(Category::Quality),
                 );
-                if base.path.join("bin/main.dart").is_file() {
+                if ctx.has_file(base, "bin/main.dart") {
                     out.actions.push(
                         Action::new("run", "dart run")
                             .tool("dart")
@@ -281,18 +299,31 @@ impl Discoverer for Mobile {
                     super::q(&scheme)
                 )
             };
-            let sim = "platform=iOS Simulator,name=iPhone 16";
+            // A build needs no particular simulator; a test run does. The device name is
+            // read from the Fastfile when it names one, otherwise it is a guess and sits
+            // behind `--all`.
             out.actions.push(
-                Action::new("build", x("build", sim))
+                Action::new("build", x("build", "generic/platform=iOS Simulator"))
                     .tool("xcode")
                     .inferred(conf)
                     .inferred_desc(format!("Build the {scheme} scheme for the iOS Simulator"))
                     .cat(Category::Build),
             );
+            let device = ctx
+                .child(base, "fastlane")
+                .and_then(|d| ctx.text(d, "Fastfile"))
+                .and_then(|ff| fastlane_device(&ff));
+            let (sim, test_conf) = match &device {
+                Some(d) => (format!("platform=iOS Simulator,name={d}"), conf),
+                None => (
+                    "platform=iOS Simulator,name=iPhone 16".to_string(),
+                    Confidence::Low,
+                ),
+            };
             out.actions.push(
-                Action::new("test", x("test", sim))
+                Action::new("test", x("test", &sim))
                     .tool("xcode")
-                    .inferred(conf)
+                    .inferred(test_conf)
                     .inferred_desc(format!("Run {scheme} tests in the iOS Simulator"))
                     .cat(Category::Testing),
             );
@@ -326,7 +357,10 @@ impl Discoverer for Mobile {
         }
 
         // ---- Fastlane -------------------------------------------------------------------------
-        if let Some(ff) = crate::repo::read_text(&base.path.join("fastlane/Fastfile")) {
+        if let Some(ff) = ctx
+            .child(base, "fastlane")
+            .and_then(|d| ctx.text(d, "Fastfile"))
+        {
             let bundler = base.has("Gemfile");
             for (platform, lane, desc) in fastlane_lanes(&ff) {
                 let (id, cmd) = match &platform {
@@ -384,5 +418,19 @@ mod tests {
         );
         assert_eq!(l[1].1, "beta");
         assert_eq!(l[2], (None, "bump".into(), None));
+    }
+}
+
+#[cfg(test)]
+mod device_tests {
+    use super::*;
+
+    #[test]
+    fn simulator_name_from_the_fastfile() {
+        assert_eq!(
+            fastlane_device("lane :test do\n  scan(devices: [\"iPhone 15\", \"iPad\"])\nend\n"),
+            Some("iPhone 15".into())
+        );
+        assert_eq!(fastlane_device("lane :test do\n  scan\nend\n"), None);
     }
 }

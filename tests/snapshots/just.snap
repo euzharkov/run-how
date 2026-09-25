@@ -3,12 +3,13 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [just] Just tools=just
+## . [just] Just tools=just techs=Rust,Docker
 default                  Other          declared exact  safe        .          just default :: Default: list recipes
-test                     Testing        declared exact  safe        .          just test :: Run the full test suite
+test                     Testing        declared exact  safe        .          just test :: Run full test suite
 check                    Quality        declared exact  safe        .          just check :: Check formatting and lints
-build                    Build          declared exact  safe        .          just build :: Build the Rust project in release mode
+build                    Build          declared exact  safe        .          just build :: Build Rust project in release mode
 publish                  Release        declared exact  external    .          just publish :: Publish to crates.io
-_setup                   Other          declared exact  safe        hidden .          just _setup :: Manage the Rust toolchain [download]
-db-reset                 Database       declared exact  destructive .          just db-reset :: Reset the local database
+_setup                   Other          declared exact  safe        .          just _setup :: Manage Rust toolchain [download]
+db-reset                 Database       declared exact  destructive .          just db-reset :: Reset local database
 watch                    Development    declared exact  safe        .          just watch :: Rebuild on change with cargo-watch [long-running]
+ai-help                  Other          declared exact  safe        .          just ai-help :: Print file, then print message

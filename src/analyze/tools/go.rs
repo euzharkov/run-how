@@ -207,3 +207,24 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn go_arms() {
+        assert_eq!(sum("go build ./...").text, "Build Go packages");
+        assert_eq!(sum("go build ./cmd/api").text, "Build cmd/api");
+        assert_eq!(
+            sum("go test -race ./...").text,
+            "Run Go tests with the race detector"
+        );
+        assert_eq!(sum("go test -bench=. ./...").kind, Bench);
+        assert_eq!(sum("go vet ./...").kind, Lint);
+        assert_eq!(sum("golangci-lint run").kind, Lint);
+        assert_eq!(sum("goreleaser release").risk, External);
+        assert_eq!(sum("air").kind, Dev);
+    }
+}

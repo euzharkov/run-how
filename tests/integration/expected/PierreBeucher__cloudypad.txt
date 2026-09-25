@@ -1,0 +1,45 @@
+PierreBeucher_cloudypad  [Node.js, Docker, Ansible]
+
+  pnpm run test                          Run Mocha tests
+  pnpm run build                         Copy ansible to dist/ansible (+2 more steps)
+  pnpm run copy-ansible                  Copy ansible to dist/ansible
+  task test-unit                         Run Mocha tests, then run default
+  task build-pnpm-tar                    Copy ansible to dist/ansible (+3 more steps)
+  task test-compile                      Compile TypeScript sources
+  task dev-docker-sunshine-to-vm         Run ansible/inventories/dev-vagrant.yml Ansible playbook (+4 more steps)  [external]
+  task dev-ansible-config                Run ansible/inventories/dev-vagrant.yml Ansible playbook  [external]
+  task dev-ansible-config-with-docker    Run ansible/inventories/dev-vagrant.yml Ansible playbook (+5 more steps)  [external]
+  task … ild-push-image                  Push Docker image to registry (+2 more steps)  [external]
+  task dev-docker-core-build-push-image  Push Docker image to registry (+2 more steps)  [external]
+  task test-circular-deps                Run circular deps tests
+  task test-integ-stable                 Stop Docker services and delete their volumes (+2 more steps)  [destructive]
+  task test-integ-setup                  Stop Docker services and delete their volumes (+1 more step)  [destructive]
+  task test-integ-cleanup                Stop Docker services and delete their volumes  [destructive]
+  task test-integ-s3-side-effects        Stop Docker services and delete their volumes (+2 more steps)  [destructive]
+  task test-integ-provider-aws           Run Mocha tests and run Mocha tests
+  task test-integ-provider-scaleway      Run Mocha tests and run Mocha tests
+  task test-integ-provider-azure         Run Mocha tests and run Mocha tests
+  task test-integ-provider-gcp           Run Mocha tests
+  task test-integ-provider-paperspace    Run Mocha tests and run Mocha tests
+  task test-integ-provider-dummy         Run Mocha tests
+  task test-integ-provider-linode        Run Mocha tests and run Mocha tests
+  task test-analytics-key-match
+  task test-install-script
+  task test-container-smoke-test         Run $CLOUDYPAD_BUILD_CORE_IMAGE_REGISTRY:$CLOUDYPAD_BUILD_CORE_IMAGE_TAG container (+2 more ste…
+  task test-doc-links                    Serve mdBook locally (+3 more steps)  ∞ long-running
+  task mdbook-serve                      Serve mdBook locally  ∞ long-running
+  task paperspace-client-gen             Delete {{, .PAPERSPACE_GENERATED_DIR, and }} (+3 more steps)  [destructive]
+  task build-core-container-local        Build Docker image
+  task build-core-container-ci           Build Docker image
+  task … current-as-dev                  Push Docker image to registry (+2 more steps)  [external]
+  task build-core-container-release      Build Docker image
+  task build-sunshine-container-local    Build Docker image
+  task build-sunshine-container-ci       Build Docker image
+  task … current-as-dev                  Push Docker image to registry (+2 more steps)  [external]
+  task build-sunshine-container-release  Build Docker image
+  task release-check-version             Print message
+  task release-create
+  docker build -t … .                    Build Docker image
+  ./cloudypad.sh                         Wrapper around CloudyPad container in which most operations are performed
+  ./install.sh                           Installation arguments
+  ./hack/update-wolf-images.sh

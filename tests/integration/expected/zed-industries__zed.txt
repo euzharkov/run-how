@@ -1,0 +1,117 @@
+zed-industries_zed  [Rust, Docker, MinIO]
+
+  cargo perf-compare                   Run Rust program for perf
+  cargo perf-test                      Run Rust tests
+  cargo xtask                          Run Rust program for xtask
+  cargo build --workspace
+  cargo test --workspace               Run Rust tests for whole workspace
+  cargo check --workspace              Type-check Rust project for whole workspace
+  cargo clippy --workspace             Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace                Format Rust source
+  cargo bench --workspace              Run Rust benchmarks
+  cargo doc --no-deps --workspace      Build Rust docs
+  docker compose up -d                 Start all Docker services
+  docker compose up -d blob_store      Start MinIO object storage
+  docker compose up -d livekit_server  Start livekit_server service (livekit-server)
+  docker compose logs -f               Follow Docker service logs  ∞ long-running
+  docker compose down                  Stop and remove Docker services
+  pwsh ./script/bootstrap.ps1
+  pwsh ./script/bundle-windows.ps1
+  pwsh … arger-than.ps1
+  pwsh ./script/clippy.ps1
+  pwsh … se-channel.ps1                  [external]
+  ./script/digital-ocean-db.sh
+  pwsh … ve-is-full.ps1
+  pwsh ./script/generate-licenses.ps1
+  pwsh ./script/get-crate-version.ps1
+  pwsh ./script/install-rustup.ps1
+  ./script/install.sh
+  ./script/mitm-proxy.sh
+  pwsh ./script/setup-dev-driver.ps1
+  pwsh ./script/setup-sccache.ps1
+  pwsh ./script/test-wsl-sandbox.ps1
+  ./script/uninstall.sh
+  pwsh ./script/upload-nightly.ps1
+
+crates/auto_update_helper  [Rust]
+  cargo run -p auto_update_helper  Run Rust program for auto_update_helper
+
+crates/cli  [Rust]
+  cargo run -p cli  Run Rust program for cli
+
+crates/collab  [Rust, Kubernetes]
+  cargo run -p collab                     Run Rust program for collab
+  cargo sqlx migrate run                  Apply pending sqlx migrations
+  kubectl apply --dry-run=client -f k8s/  Validate Kubernetes manifests
+  kubectl apply -f k8s/                   Apply resources to cluster  [external]
+  kubectl delete -f k8s/                  Delete resources from cluster  [destructive]
+
+crates/docs_preprocessor  [Rust]
+  cargo run -p docs_preprocessor  Run Rust program for docs_preprocessor
+
+crates/edit_prediction_cli  [Rust]
+  cargo run -p edit_prediction_cli  Run Rust program for edit_prediction_cli
+
+crates/edit_prediction_metrics  [Rust]
+  cargo run -p edit_prediction_metrics  Run Rust program for edit_prediction_metrics
+
+crates/editor_benchmarks  [Rust]
+  cargo run -p editor_benchmarks  Run Rust program for editor_benchmarks
+
+crates/eval_cli  [Rust, Docker]
+  cargo run -p eval_cli            Run Rust program for eval_cli
+  docker build -t eval_cli .       Build Docker image
+  docker build -f … -t eval_cli .  Build Docker image from Dockerfile.dockerignore
+
+crates/eval_cli/zed_eval  [Python]
+  zed-eval  Run zed-eval command (zed_eval.cli)
+  pytest    Run Python tests
+
+crates/extension_cli  [Rust]
+  cargo run -p extension_cli  Run Rust program for extension_cli
+
+crates/fs_benchmarks  [Rust]
+  cargo run -p fs_benchmarks  Run Rust program for fs_benchmarks
+
+crates/gpui_web/examples/hello_web  [Rust]
+  cargo run  Run Rust program
+
+crates/project_benchmarks  [Rust]
+  cargo run -p project_benchmarks  Run Rust program for project_benchmarks
+
+crates/remote_server  [Rust]
+  cargo run -p remote_server  Run Rust program for remote_server
+
+crates/sandbox  [Rust]
+  cargo run -p sandbox          Run Rust program for sandbox
+  ./bind_source_toctou_test.sh
+
+crates/schema_generator  [Rust]
+  cargo run -p schema_generator  Run Rust program for schema_generator
+
+crates/terminal_view  [Rust]
+  ./scripts/print256color.sh
+  ./scripts/truecolor.sh      Copied from: https://unix.stackexchange.com/a/696756
+
+crates/theme_importer  [Rust]
+  cargo run -p theme_importer  Run Rust program for theme_importer
+
+crates/worktree_benchmarks  [Rust]
+  cargo run -p worktree_benchmarks  Run Rust program for worktree_benchmarks
+
+crates/zed  [Rust]
+  cargo run -p zed  Run Rust program for zed
+
+script/danger  [Node.js]
+  pnpm run danger  Check TypeScript types, then run danger
+
+script/update_top_ranking_issues  [Python]
+  uv run ruff check .   Check Python source code with Ruff
+  uv run ruff format .  Format Python code with Ruff
+  uv run mypy .         Run static type checking with mypy
+
+tooling/perf  [Rust]
+  cargo run -p perf  Run Rust program for perf
+
+tooling/xtask  [Rust]
+  cargo run -p xtask  Run Rust program for xtask

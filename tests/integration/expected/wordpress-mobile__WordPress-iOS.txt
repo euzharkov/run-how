@@ -1,0 +1,48 @@
+wordpress-mobile_WordPress-iOS  [Swift]
+
+  swift build
+  swift test                                Run Swift tests
+  swiftlint                                 Check Swift source with SwiftLint
+  swift format -i -r .                      Format Swift source
+  bundle exec rake dependencies             Install required dependencies
+  bundle exec rake dependencies:check
+  bundle exec rake dependencies:ruby:check
+  bundle exec rake … :bundler:check
+  bundle exec rake … undler:install
+  bundle exec rake … s:bundle:check
+  bundle exec rake … bundle:install
+  bundle exec rake … dentials:apply
+  bundle exec rake … g_xcframeworks         Download and extract Gutenberg xcframeworks
+  bundle exec rake lint                     Checks source for style errors. Lints whole project, or only given paths: rake lint[path1,path2]
+  bundle exec rake lintfix                  Automatically fix linting errors where possible. Fixes whole project, or only given paths: rake…
+  bundle exec rake git:install_hooks        Install git hooks
+  bundle exec rake git:uninstall_hooks      Uninstall git hooks
+  bundle exec rake git:pre_commit
+  bundle exec rake git:post_merge
+  bundle exec rake git:post_checkout
+  bundle exec rake xcode                    Open project in Xcode
+  bundle exec rake init:oss                 Install and configure WordPress iOS and its dependencies - External Contributors
+  bundle exec rake init:developer           Install and configure WordPress iOS and its dependencies - Automattic Developers
+  bundle exec rake install:xcode:check
+  bundle exec rake … code_app:check
+  bundle exec rake … e_select:check
+  bundle exec rake … select:install
+  bundle exec rake install:tools:check_oss
+  bundle exec rake … heck_developer
+  bundle exec rake … homebrew:check
+  bundle exec rake … omebrew:prompt
+  bundle exec rake … mebrew:install
+  bundle exec rake … dons:check_oss
+  bundle exec rake … heck_developer
+  bundle exec rake credentials:setup
+  bundle exec rake credentials:prompt
+  bundle exec rake … et_app_secrets
+  bundle exec rake gpg_key:setup
+  bundle exec rake gpg_key:check
+  bundle exec rake gpg_key:install
+  bundle exec rake gpg_key:prompt
+  bundle exec rake gpg_key:generate_custom
+  bundle exec rake … nerate_default
+  bundle exec rake gpg_key:finish
+  make help                                 Show available targets
+  make dependencies                         Download and cache Gutenberg XCFrameworks

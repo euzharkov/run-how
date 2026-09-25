@@ -1,0 +1,74 @@
+dubinc_dub  [Node.js, Turborepo]
+
+  pnpm run build                Run build across packages with Turborepo
+  pnpm run build:packages       Run build in all workspace packages
+  pnpm run dev                  Run dev across packages with Turborepo  ∞ long-running
+  pnpm run lint                 Run lint across packages with Turborepo
+  pnpm run clean                Run clean across packages with Turborepo
+  pnpm run format               Format source code with Prettier
+  pnpm run prettier-check       Check formatting with Prettier
+  pnpm run publish-cli          Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run publish-embed-core   Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run publish-embed-react  Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run publish-tw           Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run publish-ui           Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run publish-utils        Run build across packages with Turborepo, then publish package to npm  [external]
+  pnpm run script               Print message
+  pnpm run test                 Run test across packages with Turborepo
+
+apps/web  [Node.js, Docker, Next.js, Playwright, Vitest]
+  pnpm run dev                            Run dotenv-flow, then start Next.js development server  ∞ long-running
+  pnpm run build                          Run dotenv-flow, then build Next.js app
+  pnpm run lint                           Lint Next.js app
+  pnpm run start                          Start Next.js production server  ∞ long-running
+  pnpm run script                         Run scripts/run.ts
+  pnpm run test                           Run dotenv-flow, then run Vitest tests
+  pnpm run test:e2e                       Run Playwright end-to-end tests
+  pnpm run test:e2e:ui                    Open Playwright test UI
+  pnpm run test:e2e:headed                Run Playwright end-to-end tests
+  pnpm run generate-openapi               Run scripts/generate-openapi.ts
+  pnpm run prisma:generate
+  pnpm run prisma:push
+  pnpm run prisma:studio
+  pnpm run prisma:format
+  docker compose up -d                    Start all Docker services
+  docker compose up -d ps-mysql           Start MySQL
+  docker compose up -d planetscale-proxy  Start planetscale-proxy service (ps-http-sim)
+  docker compose up -d mailhog            Start MailHog (test mail server)
+  docker compose logs -f                  Follow Docker service logs  ∞ long-running
+  docker compose down                     Stop and remove Docker services
+  docker compose down -v                  Stop Docker services and delete their volumes  [destructive]
+
+packages/cli  [Node.js]
+  pnpm run typecheck  Check TypeScript types
+  pnpm run clean      Delete dist
+  pnpm run start      Run dist/index.js
+
+packages/email  [Node.js]
+  pnpm run clean  Delete .turbo and node_modules
+  pnpm run dev    Run email dev  ∞ long-running
+
+packages/embeds/core  [Node.js]
+  pnpm run lint         Check source code with ESLint
+  pnpm run check-types  Check TypeScript types
+
+packages/embeds/react  [Node.js, Vite]
+  pnpm run lint            Check source code with ESLint
+  pnpm run check-types     Check TypeScript types
+  pnpm run preview         Start Vite development server  ∞ long-running
+  pnpm run prepublishOnly  Run prepublish.js
+
+packages/hubspot-app  [Node.js]
+  pnpm run hs
+
+packages/stripe-app  [Node.js, Jest]
+  npm run lint  Check source code with ESLint
+  npm run test  Run Jest tests
+
+packages/ui  [Node.js]
+  pnpm run lint         Check source code with ESLint
+  pnpm run check-types  Check TypeScript types
+
+packages/utils  [Node.js]
+  pnpm run lint         Check source code with ESLint
+  pnpm run check-types  Check TypeScript types

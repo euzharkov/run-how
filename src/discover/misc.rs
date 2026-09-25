@@ -31,7 +31,7 @@ impl Discoverer for Misc {
             || !dir.with_ext("cabal").is_empty()
             || !dir.with_ext("nimble").is_empty()
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let push = |out: &mut Discovery, a: Action| out.actions.push(a);
 
@@ -174,32 +174,67 @@ impl Discoverer for Misc {
 
         // ---- CMake --------------------------------------------------------------------------
         if let Some(cm) = base.read("CMakeLists.txt") {
-            let presets = base.has("CMakePresets.json");
-            if presets {
+            // `--preset <name>` only for a preset the project's `CMakePresets.json` names;
+            // a build or test preset is used only when one of that name exists too.
+            let presets = ctx.json(base, "CMakePresets.json");
+            let names = |kind: &str| -> Vec<String> {
+                presets
+                    .as_ref()
+                    .and_then(|p| p.get(kind))
+                    .and_then(|v| v.as_array())
+                    .map(|a| {
+                        a.iter()
+                            .filter(|p| !p.get("hidden").and_then(|h| h.as_bool()).unwrap_or(false))
+                            .filter_map(|p| p.get("name").and_then(|n| n.as_str()))
+                            .map(|s| s.to_string())
+                            .collect()
+                    })
+                    .unwrap_or_default()
+            };
+            let configure = names("configurePresets");
+            let preset = configure
+                .iter()
+                .find(|n| *n == "default")
+                .or_else(|| configure.first())
+                .cloned();
+            if let Some(preset) = preset {
                 push(
                     &mut out,
-                    Action::new("configure", "cmake --preset default")
+                    Action::new("configure", format!("cmake --preset {preset}"))
                         .tool("cmake")
-                        .inferred(Confidence::Medium)
-                        .inferred_desc("Configure with the default CMake preset")
+                        .inferred(Confidence::High)
+                        .inferred_desc(format!("Configure with the {preset} CMake preset"))
                         .cat(Category::Build),
                 );
-                push(
-                    &mut out,
-                    Action::new("build", "cmake --build --preset default")
-                        .tool("cmake")
-                        .inferred(Confidence::Medium)
-                        .inferred_desc("Build with the default CMake preset")
-                        .cat(Category::Build),
-                );
-                push(
-                    &mut out,
-                    Action::new("test", "ctest --preset default")
-                        .tool("cmake")
-                        .inferred(Confidence::Medium)
-                        .inferred_desc("Run CTest with the default preset")
-                        .cat(Category::Testing),
-                );
+                if names("buildPresets").contains(&preset) {
+                    push(
+                        &mut out,
+                        Action::new("build", format!("cmake --build --preset {preset}"))
+                            .tool("cmake")
+                            .inferred(Confidence::High)
+                            .inferred_desc(format!("Build with the {preset} CMake preset"))
+                            .cat(Category::Build),
+                    );
+                } else {
+                    push(
+                        &mut out,
+                        Action::new("build", "cmake --build build")
+                            .tool("cmake")
+                            .inferred(Confidence::Medium)
+                            .inferred_desc("Build the CMake project")
+                            .cat(Category::Build),
+                    );
+                }
+                if names("testPresets").contains(&preset) {
+                    push(
+                        &mut out,
+                        Action::new("test", format!("ctest --preset {preset}"))
+                            .tool("cmake")
+                            .inferred(Confidence::High)
+                            .inferred_desc(format!("Run CTest with the {preset} preset"))
+                            .cat(Category::Testing),
+                    );
+                }
             } else {
                 push(
                     &mut out,

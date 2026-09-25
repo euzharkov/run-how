@@ -171,8 +171,12 @@ pub struct Action {
     pub category: Category,
     /// Which tool family produced the action (`npm`, `make`, `cargo`, `compose`, …).
     pub tool: &'static str,
-    /// Internal / private / lifecycle actions that only show with `--all`.
-    pub hidden: bool,
+    /// Set during discovery when another action already covers this one (the same command
+    /// from a second tool, a per-package copy of a root command) or it cannot be run (a
+    /// Taskfile `internal` task, an Nx no-op). Discovery removes these before it returns,
+    /// so nothing outside `discover` ever sees one: rhow shows everything it reports.
+    #[serde(skip)]
+    pub redundant: bool,
     /// What running it involves (long-running, device, download, git). See [`Note`].
     pub notes: Vec<Note>,
     /// The command text to analyse when it differs from `command`
@@ -183,9 +187,13 @@ pub struct Action {
     #[serde(skip)]
     pub explicit_description: bool,
     /// Analysis recognised nothing in the command (or only `echo`): the description is a
-    /// "Run <program>" fallback that explains nothing, and the listing leaves it out.
-    #[serde(skip)]
+    /// "Run <program>" fallback that explains nothing, and the listing leaves it out. Kept
+    /// in JSON so a consumer can leave it out too.
     pub opaque: bool,
+    /// Technologies this action visibly involves (`Kafka`, `PostgreSQL`, `Vitest`): adapter
+    /// hints plus what command analysis recognised. Aggregated into [`Project::techs`].
+    #[serde(skip)]
+    pub techs: Vec<String>,
 }
 
 impl Action {
@@ -202,12 +210,23 @@ impl Action {
             risk: Risk::Safe,
             category: Category::Other,
             tool: "",
-            hidden: false,
+            redundant: false,
             notes: Vec::new(),
             raw: None,
             explicit_description: false,
             opaque: false,
+            techs: Vec::new(),
         }
+    }
+
+    /// A technology the adapter knows this action involves (the image behind a Compose
+    /// service, for instance). Nothing the command text does not show.
+    pub fn tech(mut self, t: impl Into<String>) -> Self {
+        let t = t.into();
+        if !self.techs.contains(&t) {
+            self.techs.push(t);
+        }
+        self
     }
 
     /// A description declared by the project itself; takes precedence over analysis.
@@ -222,7 +241,7 @@ impl Action {
 
     /// A description produced by the adapter from observable facts (not project-declared).
     pub fn inferred_desc(mut self, d: impl Into<String>) -> Self {
-        self.description = d.into();
+        self.description = crate::explain::terse(&d.into());
         self
     }
 
@@ -252,8 +271,8 @@ impl Action {
         self
     }
 
-    pub fn hidden(mut self) -> Self {
-        self.hidden = true;
+    pub fn redundant(mut self) -> Self {
+        self.redundant = true;
         self
     }
 
@@ -273,11 +292,6 @@ impl Action {
     /// The text that command analysis should look at.
     pub fn analysis_text(&self) -> &str {
         self.raw.as_deref().unwrap_or(&self.command)
-    }
-
-    /// Shown by default (without `--all`)?
-    pub fn is_primary(&self) -> bool {
-        !self.hidden && self.confidence != Confidence::Low
     }
 }
 
@@ -305,6 +319,10 @@ pub struct Project {
     pub kind: ProjectKind,
     /// Every tool family that contributed actions (`npm`, `make`, `compose`, …).
     pub tools: Vec<&'static str>,
+    /// The technologies the project visibly uses, most prominent first, at most five:
+    /// its language or platform, then what its commands and services name
+    /// (`[".NET", "Kafka", "Docker"]`). See [`crate::techs`].
+    pub techs: Vec<String>,
     pub actions: Vec<Action>,
     /// Versions/schemas this project declares for itself, for `rhow support` to check.
     pub versions: Vec<ToolVersion>,

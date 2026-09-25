@@ -1,0 +1,83 @@
+featurehub-io_featurehub  [JVM, Maven, Kubernetes, Helm]
+
+  mvn package                              Package all Maven modules
+  mvn test                                 Run Maven tests
+  mvn verify                               Run Maven verification (integration tests)
+  mvn install                              Install artifacts to local Maven repo
+  mvn clean                                Delete Maven build outputs
+  helm template … namespace-init           Render namespace-init Helm chart
+  helm lint … namespace-init               Validate namespace-init Helm chart
+  helm upgrade --install … namespace-init  Install or upgrade namespace-init Helm release  [external]
+  helm uninstall namespace-init            Uninstall namespace-init Helm release  [destructive]
+  ./build_all_and_test.sh
+  ./build_only.sh
+  ./make-apis.sh
+
+adks/e2e-sdk  [Node.js]
+  pnpm run clean       Delete target/dist
+  pnpm run build       Delete target/dist, then run node_modules/typescript/bin/tsc
+  pnpm run debug-test  Delete target/dist, then run node_modules/.bin/cucumber-js
+  pnpm run setup       Print message
+  pnpm run test        Delete target/dist, then run cucumber-js script
+  pnpm run e2e-test    Delete target/dist, then run cucumber-js
+  pnpm run lint        Fix lint issues with ESLint
+  pnpm run typecheck   Check TypeScript types
+  ./api-gen.sh         This generates APIs from codebase currently installed in Maven. It allows us to use "latest"
+  ./create-demo.sh
+  ./lots.sh
+  ./make-image.sh
+  ./run.sh
+
+admin-frontend  [JVM]
+  ./build-frontend.sh
+  ./cli-build.sh
+  ./pipeline-build.sh
+
+admin-frontend/open_admin_app  [Flutter, Maven]
+  flutter run              Run Flutter app  ∞ long-running  ⊙ device
+  flutter test             Run Flutter tests
+  flutter analyze          Analyze Dart source
+  dart format .
+  flutter build apk        Build Android APK
+  flutter build appbundle  Build Android App Bundle
+  flutter build web        Build web app
+  flutter pub get          Install Dart dependencies  ↓ download
+  make l10n                Run flutter gen-l10n
+  make api                 Clean Maven build outputs
+
+backend/eventing-kinesis  [JVM]
+  ./testing-setup.sh
+
+backend/mr  [JVM, Docker]
+  docker compose -f … up -d         Start all Docker services
+  docker compose -f … party-server  Start party-server service (mr)
+  docker compose -f … logs -f       Follow Docker service logs  ∞ long-running
+  docker compose -f … down          Stop and remove Docker services
+  docker compose -f … down -v       Stop Docker services and delete their volumes  [destructive]
+
+backend/mr-api  [JVM]
+  ./regen.sh
+
+backend/security-oauth  [JVM]
+  ./keycloak.sh
+  ./nginx.sh
+
+backend/webhook-feature-update/sinatra-example  [Ruby]
+  ./make-docker.sh
+
+doc-gen  [JVM]
+  ./entrypoint.sh
+
+e2e
+  ./make-image.sh
+  ./party-run.sh
+  ./run-demo.sh
+  ./run-docker.sh
+  ./run-party.sh
+  ./run.sh
+  ./tagged.sh
+
+infra/api-bucket  [Node.js, Pulumi]
+  pulumi preview  Preview Pulumi changes  [external]
+  pulumi up       Deploy Pulumi stack  [external]
+  pulumi destroy  Destroy Pulumi stack  [destructive]

@@ -186,3 +186,27 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn dotnet_arms() {
+        assert_eq!(sum("dotnet build").text, "Build the .NET project");
+        assert_eq!(sum("dotnet build Api.csproj").text, "Build Api");
+        assert_eq!(sum("dotnet test").kind, Test);
+        assert_eq!(
+            sum("dotnet run --project src/Api").text,
+            "Run the Api project"
+        );
+        assert_eq!(sum("dotnet watch").kind, Dev);
+        assert_eq!(
+            sum("dotnet format --verify-no-changes").text,
+            "Check .NET formatting"
+        );
+        assert_eq!(sum("dotnet nuget push pkg.nupkg").risk, External);
+        assert_eq!(sum("dotnet publish -c Release").risk, Safe);
+    }
+}

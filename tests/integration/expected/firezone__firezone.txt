@@ -1,0 +1,127 @@
+firezone_firezone  [Docker]
+
+  docker compose up -d                      Start all Docker services
+  docker compose up -d portal               Start portal service (built from source)
+  docker compose up -d portal-router        Start portal-router service
+  docker compose up -d elixir               Start elixir service (built from source)
+  docker compose up -d client-1             Start client-1 service
+  docker compose up -d client-1-router      Start client-1-router service
+  docker compose up -d secnetperf-client    Start secnetperf-client service (secnetperf)
+  docker compose up -d client-2             Start client-2 service
+  docker compose up -d client-2-router      Start client-2-router service
+  docker compose up -d gateway              Start gateway service (built from source)
+  docker compose up -d gateway-router       Start gateway-router service
+  docker compose up -d relay-1              Start relay-1 service
+  docker compose up -d relay-1-router       Start relay-1-router service
+  docker compose up -d relay-2              Start relay-2 service
+  docker compose up -d relay-2-router       Start relay-2-router service
+  docker compose up -d network-config       Start network-config service (xdp-pass)
+  docker compose up -d otel                 Start OpenTelemetry collector
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose build                      Build Docker service images
+  docker compose down                       Stop and remove Docker services
+  ./scripts/bump-versions.sh
+  ./scripts/firezone-client-gui-install.sh  Keep this synchronized with Linux GUI docs in firezone/website at `src/app/kb/client-apps/linux…
+  ./scripts/gateway-docker-upgrade.sh
+  ./scripts/gateway-systemd-install.sh
+  ./scripts/open-version-bump-pr.sh
+  ./scripts/sync-apt.sh                     Shell script for syncing APT repository metadata from set of `.deb` files
+  ./scripts/sync-rpm.sh                     Shell script for syncing RPM (DNF/YUM) repository metadata from set of `.rpm` files
+  ./scripts/tidy-dependabot-pr.sh           Tidies Dependabot pull request so its squash-merged commit message stays
+
+elixir  [Elixir, Docker]
+  mix phx.server            Start Phoenix server  ∞ long-running
+  mix test                  Run Elixir tests
+  mix format                Format Elixir source
+  mix compile               Compile Elixir project
+  mix credo --strict        Check Elixir source with Credo
+  mix dialyzer              Run Dialyzer type analysis
+  mix ecto.migrate          Apply Ecto migrations
+  mix ecto.setup            Create, migrate and seed database
+  mix ecto.reset            Drop and recreate database  [destructive]
+  mix deps.get              Fetch Elixir dependencies  ↓ download
+  iex -S mix                Open IEx shell with app loaded  ∞ long-running
+  docker build -t elixir .  Build Docker image
+
+kotlin/android  [JVM, Gradle]
+  ./gradlew clean
+  ./gradlew installDebug  Build and install debug app on device  ⊙ device
+  ./gradlew tasks         List all Gradle tasks
+  .\gradlew.bat           Copyright 2015 original author or authors
+
+kotlin/android/app  [JVM, Gradle]
+  ./gradlew :app:copyJacocoCli
+  ./gradlew :app:cargoBuild              Cross-compile connlib (Rust) for selected Android ABIs
+  ./gradlew :app:generateUniffiBindings  Generate Kotlin bindings using uniffi-bindgen
+  ./gradlew … }}Classes
+  ./gradlew :app:installDebug            Build and install debug app on device  ⊙ device
+  ./gradlew :app:ktlintCheck             Check Kotlin style with ktlint
+
+kotlin/android/dpc  [JVM, Gradle]
+  ./gradlew :dpc:installDebug  Build and install debug app on device  ⊙ device
+  ./gradlew :dpc:ktlintCheck   Check Kotlin style with ktlint
+
+rust  [Rust, Docker]
+  docker build -t rust .             Build Docker image
+  ./docker-init-client.sh
+  ./docker-init-gateway.sh
+  ./docker-init-http-test-server.sh
+  ./docker-init-relay.sh
+
+rust/gateway  [Rust]
+  cargo run -p firezone-gateway  Run Rust program for firezone-gateway
+
+rust/gui-client  [Node.js, Tauri]
+  pnpm run build
+  pnpm run build:win32
+  pnpm run build:darwin:linux
+  pnpm run build-debug
+  pnpm run build-debug:win32
+  pnpm run dev
+  pnpm run dev:win32
+  pnpm run dev:darwin:linux
+  pnpm run tauri
+  .\build-debug.bat            Compile Rust and bundle
+  .\build.bat                  Bundle web assets
+  .\dev.bat                    Start Tauri hot-reloading
+
+rust/gui-client/src-cli  [Rust]
+  cargo run -p firezone-cli  Run Rust program for firezone-cli
+
+rust/gui-client/src-tauri  [Rust]
+  cargo run -p firezone-gui-client  Run Rust program for firezone-gui-client
+
+rust/headless-client  [Rust]
+  cargo run -p firezone-headless-client  Run Rust program for firezone-headless-client
+
+rust/relay/ebpf-turn-router  [Rust]
+  cargo run -p ebpf-turn-router  Run Rust program for ebpf-turn-router
+
+rust/relay/server  [Rust]
+  cargo run -p firezone-relay  Run Rust program for firezone-relay
+
+rust/tests/fuzz  [Rust]
+  cargo run -p fuzz  Run Rust program for fuzz
+
+rust/tests/gui-smoke-test  [Rust]
+  cargo run -p gui-smoke-test  Run Rust program for gui-smoke-test
+
+rust/tests/http-test-server  [Rust]
+  cargo run -p http-test-server  Run Rust program for http-test-server
+
+rust/tests/loadtest  [Rust]
+  cargo run -p firezone-loadtest  Run Rust program for firezone-loadtest
+
+rust/tools/tidy-dependabot-pr  [Rust]
+  cargo run -p tidy-dependabot-pr  Run Rust program for tidy-dependabot-pr
+
+rust/tools/uniffi-bindgen  [Rust]
+  cargo run -p uniffi-bindgen  Run Rust program for uniffi-bindgen
+
+swift/apple  [Xcode]
+  xcodebuild -project … build     Build Firezone scheme for iOS Simulator  ⊙ device
+  xcodebuild -project … 16' test  Run Firezone tests in iOS Simulator  ⊙ device
+
+swift/apple/FirezoneKit  [Swift]
+  swift build
+  swift test   Run Swift tests
