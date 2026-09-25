@@ -11,8 +11,17 @@ cargo clippy --all-targets -- -D warnings
 cargo test
 ```
 
-CI runs the same three commands on Linux, macOS and Windows, then the installer tests in
-Docker (`tests/install/run.sh`). You can run those locally too if you have Docker.
+CI runs the same three commands on Linux, macOS and Windows, then the installer tests and the
+real-product integration test in Docker (`tests/install/run.sh`, `tests/integration/run.sh`). You can run those locally too if you have Docker.
+
+Before changing discovery or explanations, also run the real-product integration test
+(`tests/integration/run.sh`, Docker only): it checks rhow against ~100 real repositories
+pinned to commits and diffs each default view against `tests/integration/expected/`. CI runs
+it too, but locally you see the diff sooner. A moved expected output is a behaviour change to
+explain in the commit, accepted with `UPDATE_EXPECTED=1 tests/integration/run.sh <owner/repo>`.
+Re-recording never touches `tests/integration/must.txt`: if a command there leaves the
+default view, rhow regressed, whatever the new expected output says. See the README's
+"Tests" section.
 
 ## What a good change looks like
 
