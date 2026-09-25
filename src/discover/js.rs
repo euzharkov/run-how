@@ -28,30 +28,15 @@ impl Pm {
     }
 }
 
-const LIFECYCLE: &[&str] = &[
-    "prepare",
-    "prepublish",
-    "prepublishOnly",
-    "prepack",
-    "postpack",
-    "publish",
-    "postpublish",
-    "preinstall",
-    "install",
-    "postinstall",
-    "preuninstall",
-    "uninstall",
-    "postuninstall",
-    "preversion",
-    "version",
-    "postversion",
-    "dependencies",
-    "prerestart",
-    "postrestart",
-];
-
 fn read_pkg(ctx: &Context, dir: &DirInfo) -> Option<Rc<Value>> {
     ctx.json(dir, "package.json")
+}
+
+/// The version an `.nvmrc` / `.node-version` pins: its first line, without a leading `v`.
+/// Aliases (`lts/*`, `node`, `stable`) name no version and are left out.
+fn node_version_file(text: &str) -> Option<String> {
+    let v = text.lines().next()?.trim().trim_start_matches('v');
+    (v.chars().next().is_some_and(|c| c.is_ascii_digit())).then(|| v.to_string())
 }
 
 fn pm_from_field(pkg: &Value) -> Option<Pm> {
@@ -149,20 +134,6 @@ const YARN_BUILTINS_FOR_RUN: [&str; 28] = [
     "global",
 ];
 
-fn is_lifecycle(name: &str, scripts: &[&str]) -> bool {
-    if LIFECYCLE.contains(&name) {
-        return true;
-    }
-    for pre in ["pre", "post"] {
-        if let Some(rest) = name.strip_prefix(pre) {
-            if scripts.contains(&rest) || LIFECYCLE.contains(&rest) {
-                return true;
-            }
-        }
-    }
-    false
-}
-
 impl Discoverer for Js {
     fn id(&self) -> &'static str {
         "js"
@@ -193,6 +164,14 @@ impl Discoverer for Js {
             .and_then(|v| v.as_str())
         {
             out.version("node", node, "package.json");
+        } else if let Some((v, f)) = [".nvmrc", ".node-version"]
+            .iter()
+            .find_map(|f| ctx.text(base, f).map(|t| (t, *f)))
+            .and_then(|(t, f)| node_version_file(&t).map(|v| (v, f)))
+        {
+            out.version("node", v, f);
+        } else if let Some((v, src)) = super::tool_version(ctx, base, "nodejs") {
+            out.version("node", v, src);
         }
         // A workspace member's scripts are shown the way they are run inside that package
         // (`pnpm dev` in apps/web), which is how a per-project listing reads. The
@@ -343,7 +322,7 @@ impl Discoverer for Js {
                         .cat(Category::Development),
                 );
             }
-            if base.has_dir("ios") && base.path.join("ios/Podfile").is_file() {
+            if ctx.has_file(base, "ios/Podfile") {
                 out.actions.push(
                     Action::new("pods", "pod install --project-directory=ios")
                         .tool("cocoapods")
@@ -415,7 +394,6 @@ impl Discoverer for Js {
         let Some(scripts) = pkg.get("scripts").and_then(|s| s.as_object()) else {
             return out;
         };
-        let names: Vec<&str> = scripts.keys().map(|k| k.as_str()).collect();
         for (name, val) in scripts {
             let Some(body) = val.as_str() else { continue };
             let wire: Option<String> = if body.trim() == "wireit" {
@@ -434,12 +412,24 @@ impl Discoverer for Js {
             if let Some(d) = descriptions(name) {
                 a = a.desc(d);
             }
-            // Lifecycle hooks and `_private` / `.private` scripts are not meant to be typed.
-            if is_lifecycle(name, &names) || name.starts_with('_') || name.starts_with('.') {
-                a = a.hidden();
-            }
             out.actions.push(a);
         }
         out
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    #[test]
+    fn nvmrc_when_engines_are_absent() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let node = ctx.dir_at("node").unwrap();
+        let d = Js.discover(&ctx, node, &[node]);
+        let v = d.versions.iter().find(|v| v.tool == "node").unwrap();
+        assert_eq!((v.value.as_str(), v.source.as_str()), ("20.10.0", ".nvmrc"));
+        assert_eq!(node_version_file("lts/*\n"), None);
     }
 }

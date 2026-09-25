@@ -1,0 +1,111 @@
+IntersectMBO_cardano-node  [Docker, Haskell]
+
+  cabal test                                Run tests with Cabal
+  cabal run                                 Run executable with Cabal
+  make help                                 Print documentation
+  make lint                                 Run CI version of hlint
+  make hlint                                Run CI version of hlint  ↓ download
+  make haddock-hoogle
+  make haddocks
+  make hoogle                               Run nix-shell, then run cabal update, then run cabal haddock
+  make host-hlint                           Run system (not Nix) version of hlint
+  make stylish-haskell                      Apply stylish-haskell on all *.hs files
+  make cabal-hashes                           ↓ download
+  make cli
+  make node                                 Build with Cabal
+  make trace-documentation                  Run executable with Cabal
+  make trace-schemas-regenerate             Regenerate trace schemas, apply overrides, validate
+  make trace-schemas-overrides-check        Check whether all schema overrides are applied  ↓ download
+  make trace-schemas-overrides-coverage     Fail when generated schema files change without matching override sidecars (use RANGE=origin/ma…
+  make trace-schemas-validate               Validate trace message schemas against meta.schema.json  ↓ download
+  make testnet-manifest-validate            Validate manifest golden file (and optionally MANIFEST=path) against its schema  ↓ download
+  make shell                                Workbench dev shell for PROFILE (cabal build-on-demand); vars: PROFILE ERA BACKEND CMD RUN
+  make shell-nix                            Like shell, but run Nix-store binary
+  make shell-prof                           Like shell, profiled build, run with -hT
+  make shell-dev                              ∞ long-running
+  make workbench-ci                         CI entrypoints (drive generated variant targets + Nix ci-test):
+  make ci                                   Run ci-targets make target
+  make ci-report                            Print message
+  make ci-targets
+  make clean                                Misc
+  make full-clean
+  make cls                                  Print message
+  make bump-cardano-node-workbench            ↓ download
+  make bump-node-measured                     ↓ download
+  make bump-cardano-deployment              Sync flake.lock to CI check  ↓ download
+  make workbench-ci-test                    Workbench:  test a-la Hydra, ci-test profile, full Nix engaged
+  make smoke                                Workbench:  test a-la Hydra, ci-test profile, full Nix engaged
+  make workbench-ci-test-trace              ..will contain run directory
+  make smoke-trace                          Run workbench-ci-test make target (+3 more steps)
+  make list-profiles                        List all workbench profile names (JSON array)  ↓ download
+  make show-profile                         Show one profile's config, pretty-printed: make show-profile NAME=<profile>
+  make ps                                   List profile names, one per line  ↓ download
+  make profiles-regenerate                  Regenerate profiles.mk (the profile name lists)  ↓ download
+  make 6-dense-rtsprof
+  make 6-dense-1h-rtsprof
+  make 6-dense-4h-rtsprof
+  make analyse                              Run RUN make target (+5 more steps)  ∞ long-running
+  make clean-profile                        Workbench artifacts left in working tree; top-level `make clean` calls this
+  make proclean                             Workbench artifacts left in working tree; top-level `make clean` calls this  [destructive]
+  make workbench-internals-walkthrough      Open workbench Nix internals walkthrough (doc.org)
+  docker compose up -d                      Start all Docker services
+  docker compose up -d cardano-node         Start cardano-node service (cardano-node)
+  docker compose up -d cardano-submit-api   Start cardano-submit-api service (cardano-submit-api)
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose down                       Stop and remove Docker services
+  docker compose down -v                    Stop Docker services and delete their volumes  [destructive]
+  ./ci/check-dependencies … d-to-master.sh
+  ./ci/check-hydra.sh
+  ./scripts/bin-path.sh                     Find path to built executable in cabal plan. For example:
+  ./scripts/gen-cabal-nosystemd.sh          Force systemd off until there's solution to
+  ./scripts/gen-merge-summary.sh
+  ./scripts/version-change-log.sh
+
+bench/cardano-profile  [Haskell]
+  cabal run  Run executable with Cabal
+
+bench/cardano-timeseries-io  [Haskell]
+  cabal run  Run executable with Cabal
+
+bench/cardano-topology  [Haskell]
+  cabal run  Run executable with Cabal
+
+bench/grafana-datasource  [Node.js, webpack, Docker, Grafana]
+  npm run build                 Bundle with webpack (+2 more steps)
+  npm run dev                   Start webpack dev server (+2 more steps)  ∞ long-running
+  npm run typecheck             Check TypeScript types
+  docker compose up -d grafana  Start Grafana
+
+bench/locli  [Haskell]
+  cabal run  Run executable with Cabal
+
+bench/plutus-scripts-bench  [Haskell]
+  cabal run  Run executable with Cabal
+
+bench/trace-schemas/scripts/schema-gen  [Haskell]
+  cabal run                    Run executable with Cabal
+  ./RegenerateTraceSchemas.sh
+
+bench/tx-generator  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-node  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-node-capi  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-node-chairman  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-submit-api  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-testnet  [Haskell]
+  cabal run  Run executable with Cabal
+
+cardano-tracer  [Haskell]
+  cabal run  Run executable with Cabal
+
+trace-forward  [Haskell]
+  cabal run  Run executable with Cabal

@@ -1,0 +1,31 @@
+apache_dolphinscheduler  [JVM, Maven, Terraform, Kubernetes, Helm]
+
+  ./mvnw package                           Package all Maven modules
+  ./mvnw test                              Run Maven tests
+  ./mvnw verify                            Run Maven verification (integration tests)
+  ./mvnw install                           Install artifacts to local Maven repo
+  ./mvnw clean                             Delete Maven build outputs
+  ./mvnw spotless:apply                    Format code with Spotless
+  helm template … lphinscheduler           Render dolphinscheduler-helm Helm chart
+  helm lint … lphinscheduler               Validate dolphinscheduler-helm Helm chart
+  helm upgrade --install … lphinscheduler  Install or upgrade dolphinscheduler-helm Helm release  [external]
+  helm uninstall dolphinscheduler-helm     Uninstall dolphinscheduler-helm Helm release  [destructive]
+  terraform … init                         Initialise Terraform working directory
+  terraform … plan                         Plan Terraform changes  [external]
+  terraform … apply                        Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                      Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                     Validate Terraform configuration
+  terraform … fmt -recursive               Format Terraform files
+  .\mvnw.cmd                               ----------------------------------------------------------------------------
+  ./script/dolphinscheduler-daemon.sh
+  ./script/install-plugins.sh
+
+dolphinscheduler-bom  [JVM, Maven]
+  ./mvnw -pl … pring-boot:run  Start Spring Boot app
+
+dolphinscheduler-ui  [Node.js, Vite]
+  pnpm run dev         Start Vite development server  ∞ long-running
+  pnpm run build:prod  Check Vue and TypeScript types, then build app with Vite
+  pnpm run preview     Preview production build with Vite  ∞ long-running
+  pnpm run lint        Fix lint issues with ESLint
+  pnpm run prettier    Format source code with Prettier

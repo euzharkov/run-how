@@ -3,18 +3,29 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [terraform] JavaScript tools=npm,terraform
+## . [terraform] JavaScript tools=npm,terraform techs=Node.js,Terraform
 plan                     Infrastructure declared exact  external    .          npm run plan :: Plan Terraform changes
-tf:dev:init              Infrastructure inferred medium safe        .          terraform -chdir=infra/envs/dev init :: Initialise the Terraform working directory
-tf:dev:plan              Infrastructure inferred high   external    .          terraform -chdir=infra/envs/dev plan :: Plan Terraform changes
-tf:dev:apply             Release        inferred high   external    .          terraform -chdir=infra/envs/dev apply :: Apply Terraform changes to infrastructure
-tf:dev:destroy           Infrastructure inferred low    destructive .          terraform -chdir=infra/envs/dev destroy :: Destroy Terraform-managed infrastructure
-tf:dev:validate          Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev validate :: Validate the Terraform configuration
-tf:dev:fmt               Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev fmt -recursive :: Format Terraform files
-tf:dev:lint              Quality        inferred medium safe        .          tflint --chdir=infra/envs/dev :: Lint Terraform files
-tf:prod:init             Infrastructure inferred medium safe        .          terraform -chdir=infra/envs/prod init :: Initialise the Terraform working directory
-tf:prod:plan             Infrastructure inferred high   external    .          terraform -chdir=infra/envs/prod plan :: Plan Terraform changes
+tf:staging:init          Infrastructure inferred medium safe        .          terraform -chdir=env/staging init :: Initialise Terraform working directory
+tf:staging:plan          Infrastructure inferred high   external    .          terraform -chdir=env/staging plan :: Plan Terraform changes
+tf:staging:apply         Release        inferred high   external    .          terraform -chdir=env/staging apply :: Apply Terraform changes to infrastructure
+tf:staging:destroy       Infrastructure inferred low    destructive .          terraform -chdir=env/staging destroy :: Destroy Terraform-managed infrastructure
+tf:staging:validate      Quality        inferred low    safe        .          terraform -chdir=env/staging validate :: Validate Terraform configuration
+tf:staging:fmt           Quality        inferred low    safe        .          terraform -chdir=env/staging fmt -recursive :: Format Terraform files
+tf:envs-dev:init         Infrastructure inferred medium safe        .          terraform -chdir=infra/envs/dev init :: Initialise Terraform working directory
+tf:envs-dev:plan         Infrastructure inferred high   external    .          terraform -chdir=infra/envs/dev plan :: Plan Terraform changes
+tf:envs-dev:apply        Release        inferred high   external    .          terraform -chdir=infra/envs/dev apply :: Apply Terraform changes to infrastructure
+tf:envs-dev:destroy      Infrastructure inferred low    destructive .          terraform -chdir=infra/envs/dev destroy :: Destroy Terraform-managed infrastructure
+tf:envs-dev:validate     Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev validate :: Validate Terraform configuration
+tf:envs-dev:fmt          Quality        inferred low    safe        .          terraform -chdir=infra/envs/dev fmt -recursive :: Format Terraform files
+tf:envs-dev:lint         Quality        inferred medium safe        .          tflint --chdir=infra/envs/dev :: Lint Terraform files
+tf:prod:init             Infrastructure inferred medium safe        .          terraform -chdir=infra/envs/prod init :: Initialise Terraform working directory
 tf:prod:apply            Release        inferred high   external    .          terraform -chdir=infra/envs/prod apply :: Apply Terraform changes to infrastructure
 tf:prod:destroy          Infrastructure inferred low    destructive .          terraform -chdir=infra/envs/prod destroy :: Destroy Terraform-managed infrastructure
-tf:prod:validate         Quality        inferred low    safe        .          terraform -chdir=infra/envs/prod validate :: Validate the Terraform configuration
+tf:prod:validate         Quality        inferred low    safe        .          terraform -chdir=infra/envs/prod validate :: Validate Terraform configuration
 tf:prod:fmt              Quality        inferred low    safe        .          terraform -chdir=infra/envs/prod fmt -recursive :: Format Terraform files
+tf:stacks-dev:init       Infrastructure inferred medium safe        .          terraform -chdir=stacks/dev init :: Initialise Terraform working directory
+tf:stacks-dev:plan       Infrastructure inferred high   external    .          terraform -chdir=stacks/dev plan :: Plan Terraform changes
+tf:stacks-dev:apply      Release        inferred high   external    .          terraform -chdir=stacks/dev apply :: Apply Terraform changes to infrastructure
+tf:stacks-dev:destroy    Infrastructure inferred low    destructive .          terraform -chdir=stacks/dev destroy :: Destroy Terraform-managed infrastructure
+tf:stacks-dev:validate   Quality        inferred low    safe        .          terraform -chdir=stacks/dev validate :: Validate Terraform configuration
+tf:stacks-dev:fmt        Quality        inferred low    safe        .          terraform -chdir=stacks/dev fmt -recursive :: Format Terraform files

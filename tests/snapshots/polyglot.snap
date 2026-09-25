@@ -3,50 +3,47 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [polyglot] JavaScript tools=pnpm,compose,kubernetes,sh
-dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev in web, then run the api project [long-running]
+## . [polyglot] JavaScript tools=pnpm,compose,kubernetes,sh techs=Node.js,Docker,Kubernetes,Kafka,EF Core
+dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev in web, then run api project [long-running]
 test                     Testing        declared exact  safe        .          pnpm run test :: Run test in all workspace packages
 lint                     Quality        declared exact  safe        .          pnpm run lint :: Run lint in all workspace packages
 typecheck                Quality        declared exact  safe        .          pnpm run typecheck :: Run typecheck in all workspace packages
-services                 Infrastructure declared exact  safe        .          pnpm run services :: Start Docker services in the background
+services                 Infrastructure declared exact  safe        .          pnpm run services :: Start Docker services in background
 kafka:topics             Infrastructure declared exact  external    .          pnpm run kafka:topics :: List Kafka topics
 kafka:reset              Infrastructure declared exact  destructive .          pnpm run kafka:reset :: Delete Kafka topics
 k8s:render               Infrastructure declared exact  safe        .          pnpm run k8s:render :: Render Kustomize manifests from k8s
 k8s:apply                Release        declared exact  external    .          pnpm run k8s:apply :: Apply Kubernetes resources
-migrate                  Database       declared exact  safe        .          pnpm run migrate :: Apply EF Core migrations to the database
+migrate                  Database       declared exact  safe        .          pnpm run migrate :: Apply EF Core migrations to database
 reset                    Infrastructure declared exact  destructive .          pnpm run reset :: Stop Docker services and delete their volumes (+2 more steps)
-compose:services         Infrastructure inferred high   safe        hidden .          docker compose -f docker/compose.yml up -d :: Start all Docker services
 postgres                 Infrastructure inferred high   safe        .          docker compose -f docker/compose.yml up -d postgres :: Start PostgreSQL
 kafka                    Infrastructure inferred high   safe        .          docker compose -f docker/compose.yml up -d kafka :: Start local Kafka broker
 logs                     Infrastructure inferred high   safe        .          docker compose -f docker/compose.yml logs -f :: Follow Docker service logs [long-running]
 services:down            Infrastructure inferred high   safe        .          docker compose -f docker/compose.yml down :: Stop and remove Docker services
 services:reset           Infrastructure inferred low    destructive .          docker compose -f docker/compose.yml down -v :: Stop Docker services and delete their volumes
-kubernetes:k8s:render    Infrastructure inferred high   safe        hidden .          kubectl kustomize k8s :: Render Kubernetes manifests
-kubernetes:k8s:apply     Release        inferred medium external    hidden .          kubectl apply -k k8s :: Apply resources to the cluster
-k8s:delete               Infrastructure inferred low    destructive .          kubectl delete -k k8s :: Delete resources from the cluster
-setup                    Other          inferred medium safe        .          ./scripts/setup.sh :: Bootstrap a fresh development machine
-## apps/api [api] DotNet tools=dotnet
-api                      Development    inferred high   safe        apps/api   dotnet run :: Start the .NET Api web app
+k8s:delete               Infrastructure inferred low    destructive .          kubectl delete -k k8s :: Delete resources from cluster
+setup                    Other          inferred medium safe        .          ./scripts/setup.sh :: Bootstrap fresh development machine
+## apps/api [api] DotNet tools=dotnet techs=.NET
+api                      Development    inferred high   safe        apps/api   dotnet run :: Start .NET Api web app
 api:watch                Development    inferred low    safe        apps/api   dotnet watch run :: Start Api with hot reload [long-running]
-api:build                Build          inferred high   safe        apps/api   dotnet build :: Build the Api project
+api:build                Build          inferred high   safe        apps/api   dotnet build :: Build Api project
 api:publish              Release        inferred medium safe        apps/api   dotnet publish -c Release :: Publish Api for deployment
-## apps/api.tests [api.tests] DotNet tools=dotnet
+## apps/api.tests [api.tests] DotNet tools=dotnet techs=.NET
 api.tests:test           Testing        inferred high   safe        apps/api.tests dotnet test :: Run Api.Tests tests
-## apps/web [web] JavaScript tools=pnpm
-web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start the Vite development server [long-running]
-web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build the app with Vite
+## apps/web [web] JavaScript tools=pnpm techs=Node.js,Vite,Vitest,Playwright
+web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start Vite development server [long-running]
+web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build app with Vite
 web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
 web:test:e2e             Testing        declared exact  safe        apps/web   pnpm run test:e2e :: Run Playwright end-to-end tests
 web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Check source code with ESLint
 web:typecheck            Quality        declared exact  safe        apps/web   pnpm run typecheck :: Check TypeScript types
-## packages/ui [ui] JavaScript tools=pnpm
-ui:build                 Build          declared exact  safe        packages/ui pnpm run build :: Build the package with tsup
+## packages/ui [ui] JavaScript tools=pnpm techs=Node.js,Vitest
+ui:build                 Build          declared exact  safe        packages/ui pnpm run build :: Build package with tsup
 ui:test                  Testing        declared exact  safe        packages/ui pnpm run test :: Run Vitest tests
 ui:lint                  Quality        declared exact  safe        packages/ui pnpm run lint :: Check source code with ESLint
-## services/worker [worker] Go tools=go
+## services/worker [worker] Go tools=go techs=Go
 worker:build             Build          inferred high   safe        services/worker go build ./... :: Build Go packages
 worker:test              Testing        inferred high   safe        services/worker go test ./... :: Run Go tests
 worker:vet               Quality        inferred high   safe        services/worker go vet ./... :: Check Go source with go vet
 worker:fmt               Quality        inferred high   safe        services/worker go fmt ./... :: Format Go source
 worker:tidy              Other          inferred low    safe        services/worker go mod tidy :: Tidy Go module dependencies [download]
-worker                   Development    inferred high   safe        services/worker go run . :: Run the Go worker program
+worker                   Development    inferred high   safe        services/worker go run . :: Run Go worker program

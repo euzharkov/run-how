@@ -1,0 +1,55 @@
+---
+source: tests/render.rs
+assertion_line: 38
+expression: out
+---
+[1mpolyglot[0m  [2m[Node.js, Docker, Kubernetes, Kafka, EF Core][0m
+
+  [36mpnpm run dev                      [0m  Run dev in web, then run api project[2m  ∞ long-running[0m
+  [36mpnpm run test                     [0m  Run test in all workspace packages
+  [36mpnpm run lint                     [0m  Run lint in all workspace packages
+  [36mpnpm run typecheck                [0m  Run typecheck in all workspace packages
+  [36mpnpm run services                 [0m  Start Docker services in background
+  [36mpnpm run kafka:topics             [0m  List Kafka topics  [33m● external[0m
+  [36mpnpm run kafka:reset              [0m  Delete Kafka topics  [31m● destructive[0m
+  [36mpnpm run k8s:render               [0m  Render Kustomize manifests from k8s
+  [36mpnpm run k8s:apply                [0m  Apply Kubernetes resources  [33m● external[0m
+  [36mpnpm run migrate                  [0m  Apply EF Core migrations to database
+  [36mpnpm run reset                    [0m  Stop Docker services and delete their volumes (+2 more steps)  [31m● destructive[0m
+  [36mdocker compose -f … up -d postgres[0m  Start PostgreSQL
+  [36mdocker compose -f … up -d kafka   [0m  Start local Kafka broker
+  [36mdocker compose -f … logs -f       [0m  Follow Docker service logs[2m  ∞ long-running[0m
+  [36mdocker compose -f … down          [0m  Stop and remove Docker services
+  [36mdocker compose -f … down -v       [0m  Stop Docker services and delete their volumes  [31m● destructive[0m
+  [36mkubectl delete -k k8s             [0m  Delete resources from cluster  [31m● destructive[0m
+  [36m./scripts/setup.sh                [0m  Bootstrap fresh development machine
+
+[1mapps/api[0m  [2m[.NET][0m
+  [36mdotnet run               [0m  Start .NET Api web app
+  [36mdotnet watch run         [0m  Start Api with hot reload[2m  ∞ long-running[0m
+  [36mdotnet build             [0m  Build Api project
+  [36mdotnet publish -c Release[0m  Publish Api for deployment
+
+[1mapps/api.tests[0m  [2m[.NET][0m
+  [36mdotnet test[0m  Run Api.Tests tests
+
+[1mapps/web[0m  [2m[Node.js, Vite, Vitest, Playwright][0m
+  [36mpnpm run dev      [0m  Start Vite development server[2m  ∞ long-running[0m
+  [36mpnpm run build    [0m  Build app with Vite
+  [36mpnpm run test     [0m  Run Vitest tests
+  [36mpnpm run test:e2e [0m  Run Playwright end-to-end tests
+  [36mpnpm run lint     [0m  Check source code with ESLint
+  [36mpnpm run typecheck[0m  Check TypeScript types
+
+[1mpackages/ui[0m  [2m[Node.js, Vitest][0m
+  [36mpnpm run build[0m  Build package with tsup
+  [36mpnpm run test [0m  Run Vitest tests
+  [36mpnpm run lint [0m  Check source code with ESLint
+
+[1mservices/worker[0m  [2m[Go][0m
+  [36mgo build ./...[0m
+  [36mgo test ./... [0m  Run Go tests
+  [36mgo vet ./...  [0m  Check Go source with go vet
+  [36mgo fmt ./...  [0m  Format Go source
+  [36mgo mod tidy   [0m  Tidy Go module dependencies[2m  ↓ download[0m
+  [36mgo run .      [0m  Run Go worker program

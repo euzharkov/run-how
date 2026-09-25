@@ -1,0 +1,1442 @@
+ever-co_ever-gauzy  [Node.js, Electron, Nx, Docker, Lerna]
+
+  yarn prepare:husky                        Install Git hooks with Husky  ∆ git
+  yarn ng                                   Run Nx
+  yarn ng:prod                              Run Nx
+  yarn ng:docker                            Run Nx
+  yarn ng:dev:docker                        Run Nx
+  yarn ng:ci                                Run Nx
+  yarn run config                           Run .scripts/configure.ts
+  yarn config:dev                           Run .scripts/configure.ts
+  yarn config:prod                          Run .scripts/configure.ts
+  yarn config:electron                      Run .scripts/electron.env.ts
+  yarn config:desktop:prod                  Run .scripts/electron.env.ts
+  yarn config:desktop-timer:prod            Run .scripts/electron.env.ts
+  yarn config:server:prod                   Run .scripts/electron.env.ts
+  yarn config:server-api:prod               Run .scripts/electron.env.ts
+  yarn start
+  yarn start:watch
+  yarn watch:packages                       Run node_modules/nx/bin/nx.js
+  yarn start:prod
+  yarn start:gauzy                          Run yarn node, then serve gauzy with Nx  ∞ long-running
+  yarn start:gauzy:forever                  Run .scripts/configure.ts, then run forever start  ∞ long-running
+  yarn start:gauzy:prod                     Run .scripts/configure.ts, then serve gauzy with Nx  ∞ long-running
+  yarn start:api                            Serve api with Nx  ∞ long-running
+  yarn start:api:prod                       Serve api with Nx  ∞ long-running
+  yarn start:api:ci
+  yarn start:api:forever                      ∞ long-running
+  yarn start:api:core                       Run serve target of core with Nx  ∞ long-running
+  yarn start:worker                         Serve worker with Nx  ∞ long-running
+  yarn start:worker:prod                    Serve worker with Nx  ∞ long-running
+  yarn db:migration                         Build api with Nx, then run apps/api/src/migration.ts
+  yarn migration:run                        Build api with Nx, then run apps/api/src/migration.ts
+  yarn migration:revert                     Build api with Nx, then run apps/api/src/migration.ts  [destructive]
+  yarn migration:generate                   Build api with Nx, then run apps/api/src/migration.ts
+  yarn migration:create                     Build api with Nx, then run apps/api/src/migration.ts
+  yarn migration:command                    Run yarn ./packages/core
+  yarn seed:base                            Run build across Nx projects (+2 more steps)
+  yarn seed                                 Run build across Nx projects (+2 more steps)
+  yarn seed:ever                            Run build across Nx projects (+2 more steps)
+  yarn seed:all                             Run build across Nx projects (+2 more steps)
+  yarn seed:jobs                            Run build across Nx projects (+2 more steps)
+  yarn seed:module                          Run build across Nx projects (+2 more steps)
+  yarn seed:prod                            Build api with Nx (+2 more steps)
+  yarn clean                                Delete dist and coverage
+  yarn bootstrap                            Apply local dependency patches (+2 more steps)  ↓ download
+  yarn bootstrap:ci                         Apply local dependency patches (+2 more steps)  ↓ download
+  yarn clean:cache                          Delete .cache and .angular
+  yarn clean:nx                             Delete dist and tmp, then clear Nx cache and daemon
+  yarn clean:all                            Clear Nx cache and daemon (+2 more steps)
+  yarn build                                Run build across Nx projects
+  yarn build:clean                          Delete dist and coverage, then run build across Nx projects
+  yarn build:lerna                          Run build in all packages with Lerna
+  yarn build:prod                           Run build across Nx projects
+  yarn build:gauzy                          Run yarn node, then run .scripts/configure.ts, then build gauzy with Nx
+  yarn build:gauzy:prod                     Run .scripts/configure.ts, then build gauzy with Nx
+  yarn build:gauzy:prod:quiet               Run .scripts/configure.ts, then build gauzy with Nx
+  yarn build:gauzy:prod:docker              Run .scripts/configure.ts, then build gauzy with Nx
+  yarn build:gauzy:dev:docker               Run .scripts/configure.ts, then build gauzy with Nx
+  yarn build:gauzy:prod:ci                  Run .scripts/configure.ts, then run ~/.cache/yarn script
+  yarn build:api
+  yarn build:api:prod
+  yarn build:api:prod:docker
+  yarn build:api:dev:docker
+  yarn build:api:prod:ci
+  yarn build:worker
+  yarn build:worker:prod
+  yarn build:worker:prod:docker
+  yarn build:worker:dev:docker
+  yarn build:worker:prod:ci
+  yarn build:watch                          Run .scripts/build-watch.ts
+  yarn bundle-report                        Build project with Nx (+2 more steps)
+  yarn commit                                 ∆ git
+  yarn commit:lint                          Check commit messages  ∆ git
+  yarn semantic-release                     Publish release with semantic-release  [external]  ∆ git
+  yarn test                                 Run yarn node, then run .scripts/configure.ts, then test project with Nx
+  yarn lint                                 Run .scripts/configure.ts, then lint project with Nx
+  yarn e2e                                  Run yarn node, then run .scripts/configure.ts, then run nx e2e
+  yarn e2e:ci                               Run .scripts/configure.ts (+2 more steps)
+  yarn affected:apps                        List affected Nx apps
+  yarn affected:libs                        List affected Nx libs
+  yarn affected:build
+  yarn affected:e2e
+  yarn affected:test
+  yarn affected:lint
+  yarn affected:dep-graph                   Show affected Nx project graph
+  yarn affected
+  yarn format                               Format source files with Prettier via Nx
+  yarn format:write                         Format source files with Prettier via Nx
+  yarn format:check                         Check formatting with Prettier via Nx
+  yarn update
+  yarn update:check
+  yarn workspace-schematic
+  yarn dep-graph                            Open Nx project graph
+  yarn help
+  yarn doc:build
+  yarn doc:serve
+  yarn doc:build-serve
+  yarn postinstall                          Apply local dependency patches
+  yarn postinstall.manual                   Apply local dependency patches, then run yarn node
+  yarn test:postinstall                     Run Node.js tests
+  yarn test:publish-channel                 Run Node.js tests
+  yarn postinstall.electron                 Package Electron app, then run yarn node
+  yarn postinstall.web                      Run yarn node
+  yarn build:desktop                        Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/desktop/data/sound (+14 more steps)
+  yarn build:desktop:local                  Start Electron app (+15 more steps)  ∞ long-running
+  yarn build:desktop:linux                  Package Electron app (+15 more steps)
+  yarn build:desktop:linux:release          Package Electron app (+15 more steps)
+  yarn build:desktop:linux:release:gh       Package Electron app (+15 more steps)
+  yarn build:desktop:linux:release:gh:x64   Package Electron app (+16 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+16 more steps)
+  yarn build:desktop:windows                Package Electron app (+15 more steps)
+  yarn build:desktop:windows:release        Package Electron app (+15 more steps)
+  yarn build:desktop:windows:release:gh     Package Electron app (+15 more steps)
+  yarn … release:gh:x64                     Package Electron app (+16 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+16 more steps)
+  yarn build:desktop:mac                    Package Electron app (+15 more steps)
+  yarn build:desktop:mac:release            Package Electron app (+15 more steps)
+  yarn build:desktop:mac:quick              Run npm config, then package Electron app
+  yarn prepare:desktop                      Compile TypeScript sources (+2 more steps)
+  yarn prepare:desktop:watch                Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn serve:desktop.target                 Serve desktop with Nx  ∞ long-running
+  yarn serve:desktop                        Wait for resource to become available, then start Electron app  ∞ long-running
+  yarn start:desktop                        Run serve.electron.gauzy-desktop script (+3 more steps)  ∞ long-running
+  yarn build:desktop:local:quick            Start Electron app  ∞ long-running
+  yarn build:desktop:windows:quick          Run npm config, then package Electron app
+  yarn debug:desktop:app:mac
+  yarn start:desktop:ui                     Run yarn node, then serve desktop with Nx  ∞ long-running
+  yarn build:desktop:ui                     Run yarn node, then build desktop with Nx
+  yarn start:api:desktop                    Serve api-desktop with Nx  ∞ long-running
+  yarn deploy:desktop:mac                   Run npm config, then package Electron app
+  yarn build:package:ui-auth
+  yarn build:package:ui-auth:prod
+  yarn build:package:ui-auth:docker
+  yarn build:package:ui-auth:dev:docker
+  yarn build:package:ui-config
+  yarn build:package:ui-config:prod
+  yarn build:package:ui-config:docker
+  yarn build:package:ui-config:dev:docker
+  yarn build:package:ui-core
+  yarn build:package:ui-core:prod
+  yarn build:package:ui-core:docker
+  yarn build:package:ui-core:dev:docker
+  yarn build:package:plugin-ui
+  yarn build:package:plugin-ui:prod
+  yarn build:package:plugin-ui:docker
+  yarn build:package:plugin-ui:dev:docker
+  yarn build:package:ui-react
+  yarn build:package:ui-react:prod
+  yarn build:package:ui-react:docker
+  yarn build:package:ui-react:dev:docker
+  yarn build:package:ui-react-components
+  yarn … omponents:prod
+  yarn … ponents:docker
+  yarn … nts:dev:docker
+  yarn build:package:auth
+  yarn build:package:auth:prod
+  yarn build:package:auth:docker
+  yarn build:package:core
+  yarn build:package:core:prod
+  yarn build:package:core:docker
+  yarn build:package:common
+  yarn build:package:common:prod
+  yarn build:package:common:docker
+  yarn build:package:utils
+  yarn build:package:utils:prod
+  yarn build:package:utils:docker
+  yarn build:package:constants
+  yarn build:package:constants:prod
+  yarn build:package:constants:docker
+  yarn build:package:contracts
+  yarn build:package:contracts:prod
+  yarn build:package:contracts:docker
+  yarn build:package:config
+  yarn build:package:config:prod
+  yarn build:package:config:docker
+  yarn build:package:scheduler
+  yarn build:package:scheduler:prod
+  yarn build:package:scheduler:docker
+  yarn build:package:desktop-core
+  yarn build:package:desktop-core:prod
+  yarn build:package:desktop-core:docker
+  yarn build:package:desktop-window
+  yarn build:package:desktop-window:prod
+  yarn build:package:desktop-window:docker
+  yarn build:package:desktop-lib
+  yarn build:package:desktop-lib:prod
+  yarn build:package:desktop-lib:docker
+  yarn build:package:desktop-ui-lib
+  yarn build:package:desktop-ui-lib:prod
+  yarn build:package:desktop-ui-lib:docker
+  yarn build:package:plugin
+  yarn build:package:plugin:prod
+  yarn build:package:plugin:docker
+  yarn build:package:plugins:pre            Run build across Nx projects
+  yarn build:package:plugins:pre:prod       Run build across Nx projects
+  yarn build:package:plugins:pre:docker     Run build across Nx projects
+  yarn … pre:dev:docker                     Run build across Nx projects
+  yarn build:package:plugins:post           Run build across Nx projects
+  yarn build:package:plugins:post:prod      Run build across Nx projects
+  yarn build:package:plugins:post:docker    Run build across Nx projects
+  yarn build:package:plugin:integration-ai  Build plugin-integration-ai with Nx
+  yarn … ration-ai:prod                     Build plugin-integration-ai with Nx
+  yarn … tion-ai:docker                     Build plugin-integration-ai with Nx
+  yarn … n-activepieces                     Build plugin-integration-activepieces with Nx
+  yarn … ivepieces:prod                     Build plugin-integration-activepieces with Nx
+  yarn … epieces:docker                     Build plugin-integration-activepieces with Nx
+  yarn … ation-hubstaff                     Build plugin-integration-hubstaff with Nx
+  yarn … -hubstaff:prod                     Build plugin-integration-hubstaff with Nx
+  yarn … ubstaff:docker                     Build plugin-integration-hubstaff with Nx
+  yarn … gration-upwork                     Build plugin-integration-upwork with Nx
+  yarn … on-upwork:prod                     Build plugin-integration-upwork with Nx
+  yarn … -upwork:docker                     Build plugin-integration-upwork with Nx
+  yarn … gration-github                     Build plugin-integration-github with Nx
+  yarn … on-github:prod                     Build plugin-integration-github with Nx
+  yarn … -github:docker                     Build plugin-integration-github with Nx
+  yarn … tegration-jira                     Build plugin-integration-jira with Nx
+  yarn … tion-jira:prod                     Build plugin-integration-jira with Nx
+  yarn … on-jira:docker                     Build plugin-integration-jira with Nx
+  yarn … ation-make-com                     Build plugin-integration-make-com with Nx
+  yarn … -make-com:prod                     Build plugin-integration-make-com with Nx
+  yarn … ake-com:docker                     Build plugin-integration-make-com with Nx
+  yarn … ntegration-sim                     Build plugin-integration-sim with Nx
+  yarn … ation-sim:prod                     Build plugin-integration-sim with Nx
+  yarn … ion-sim:docker                     Build plugin-integration-sim with Nx
+  yarn … egration-plane                     Build plugin-integration-plane with Nx
+  yarn … ion-ever-async                     Build plugin-integration-ever-async with Nx
+  yarn … ion-plane:prod                     Build plugin-integration-plane with Nx
+  yarn … ver-async:prod                     Build plugin-integration-ever-async with Nx
+  yarn … n-plane:docker                     Build plugin-integration-plane with Nx
+  yarn … r-async:docker                     Build plugin-integration-ever-async with Nx
+  yarn … gration-zapier                     Build plugin-integration-zapier with Nx
+  yarn … on-zapier:prod                     Build plugin-integration-zapier with Nx
+  yarn … -zapier:docker                     Build plugin-integration-zapier with Nx
+  yarn build:package:plugin:sentry          Build plugin-sentry with Nx
+  yarn build:package:plugin:sentry:prod     Build plugin-sentry with Nx
+  yarn build:package:plugin:sentry:docker   Build plugin-sentry with Nx
+  yarn build:package:plugin:posthog         Build plugin-posthog with Nx
+  yarn build:package:plugin:posthog:prod    Build plugin-posthog with Nx
+  yarn build:package:plugin:posthog:docker  Build plugin-posthog with Nx
+  yarn build:package:plugin:jitsu-analytic  Build plugin-jitsu-analytics with Nx
+  yarn … -analytic:prod                     Build plugin-jitsu-analytics with Nx
+  yarn … nalytic:docker                     Build plugin-jitsu-analytics with Nx
+  yarn … roduct-reviews                     Build plugin-product-reviews with Nx
+  yarn … t-reviews:prod                     Build plugin-product-reviews with Nx
+  yarn … reviews:docker                     Build plugin-product-reviews with Nx
+  yarn build:package:plugin:job-search      Build plugin-job-search with Nx
+  yarn … ob-search:prod                     Build plugin-job-search with Nx
+  yarn … -search:docker                     Build plugin-job-search with Nx
+  yarn build:package:plugin:posthog-ui      Build plugin-posthog-ui with Nx
+  yarn … osthog-ui:prod                     Build plugin-posthog-ui with Nx
+  yarn … thog-ui:docker                     Build plugin-posthog-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-posthog-ui with Nx
+  yarn … ack-angular-ui                     Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn … ngular-ui:prod                     Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn … ular-ui:docker                     Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn … track-react-ui                     Build plugin-dashboard-time-track-react-ui with Nx
+  yarn … -react-ui:prod                     Build plugin-dashboard-time-track-react-ui with Nx
+  yarn … eact-ui:docker                     Build plugin-dashboard-time-track-react-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-dashboard-time-track-react-ui with Nx
+  yarn … ctivepieces-ui                     Build plugin-integration-activepieces-ui with Nx
+  yarn … pieces-ui:prod                     Build plugin-integration-activepieces-ui with Nx
+  yarn … eces-ui:docker                     Build plugin-integration-activepieces-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-activepieces-ui with Nx
+  yarn … egration-ai-ui                     Build plugin-integration-ai-ui with Nx
+  yarn … ion-ai-ui:prod                     Build plugin-integration-ai-ui with Nx
+  yarn … n-ai-ui:docker                     Build plugin-integration-ai-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-ai-ui with Nx
+  yarn … on-hubstaff-ui                     Build plugin-integration-hubstaff-ui with Nx
+  yarn … bstaff-ui:prod                     Build plugin-integration-hubstaff-ui with Nx
+  yarn … taff-ui:docker                     Build plugin-integration-hubstaff-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-hubstaff-ui with Nx
+  yarn … tion-github-ui                     Build plugin-integration-github-ui with Nx
+  yarn … github-ui:prod                     Build plugin-integration-github-ui with Nx
+  yarn … thub-ui:docker                     Build plugin-integration-github-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-github-ui with Nx
+  yarn … tion-upwork-ui                     Build plugin-integration-upwork-ui with Nx
+  yarn … upwork-ui:prod                     Build plugin-integration-upwork-ui with Nx
+  yarn … work-ui:docker                     Build plugin-integration-upwork-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-upwork-ui with Nx
+  yarn … on-make-com-ui                     Build plugin-integration-make-com-ui with Nx
+  yarn … ke-com-ui:prod                     Build plugin-integration-make-com-ui with Nx
+  yarn … -com-ui:docker                     Build plugin-integration-make-com-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-make-com-ui with Nx
+  yarn … gration-sim-ui                     Build plugin-integration-sim-ui with Nx
+  yarn … on-sim-ui:prod                     Build plugin-integration-sim-ui with Nx
+  yarn … -sim-ui:docker                     Build plugin-integration-sim-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-sim-ui with Nx
+  yarn … tion-zapier-ui                     Build plugin-integration-zapier-ui with Nx
+  yarn … zapier-ui:prod                     Build plugin-integration-zapier-ui with Nx
+  yarn … pier-ui:docker                     Build plugin-integration-zapier-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-zapier-ui with Nx
+  yarn … ation-plane-ui                     Build plugin-integration-plane-ui with Nx
+  yarn … -ever-async-ui                     Build plugin-integration-ever-async-ui with Nx
+  yarn … -plane-ui:prod                     Build plugin-integration-plane-ui with Nx
+  yarn … -async-ui:prod                     Build plugin-integration-ever-async-ui with Nx
+  yarn … lane-ui:docker                     Build plugin-integration-plane-ui with Nx
+  yarn … sync-ui:docker                     Build plugin-integration-ever-async-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-plane-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-integration-ever-async-ui with Nx
+  yarn build:integration-ui-plugins         Run build across Nx projects
+  yarn build:integration-ui-plugins:prod    Run build across Nx projects
+  yarn build:integration-ui-plugins:docker  Run build across Nx projects
+  yarn … ins:dev:docker                     Run build across Nx projects
+  yarn build:package:plugin:job-ui          Build plugin-jobs-ui with Nx
+  yarn build:package:plugin:job-ui:prod     Build plugin-jobs-ui with Nx
+  yarn build:package:plugin:job-ui:docker   Build plugin-jobs-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-jobs-ui with Nx
+  yarn … ob-employee-ui                     Build plugin-job-employee-ui with Nx
+  yarn … ployee-ui:prod                     Build plugin-job-employee-ui with Nx
+  yarn … oyee-ui:docker                     Build plugin-job-employee-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-job-employee-ui with Nx
+  yarn … ob-matching-ui                     Build plugin-job-matching-ui with Nx
+  yarn … tching-ui:prod                     Build plugin-job-matching-ui with Nx
+  yarn … hing-ui:docker                     Build plugin-job-matching-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-job-matching-ui with Nx
+  yarn … ob-proposal-ui                     Build plugin-job-proposal-ui with Nx
+  yarn … oposal-ui:prod                     Build plugin-job-proposal-ui with Nx
+  yarn … osal-ui:docker                     Build plugin-job-proposal-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-job-proposal-ui with Nx
+  yarn build:package:plugin:job-search-ui   Build plugin-job-search-ui with Nx
+  yarn … search-ui:prod                     Build plugin-job-search-ui with Nx
+  yarn … arch-ui:docker                     Build plugin-job-search-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-job-search-ui with Nx
+  yarn build:package:plugin:legal-ui        Build plugin-legal-ui with Nx
+  yarn build:package:plugin:legal-ui:prod   Build plugin-legal-ui with Nx
+  yarn … egal-ui:docker                     Build plugin-legal-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-legal-ui with Nx
+  yarn build:package:plugin:maintenance-ui  Build plugin-maintenance-ui with Nx
+  yarn … enance-ui:prod                     Build plugin-maintenance-ui with Nx
+  yarn … ance-ui:docker                     Build plugin-maintenance-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-maintenance-ui with Nx
+  yarn build:package:plugin:onboarding-ui   Build plugin-onboarding-ui with Nx
+  yarn … arding-ui:prod                     Build plugin-onboarding-ui with Nx
+  yarn … ding-ui:docker                     Build plugin-onboarding-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-onboarding-ui with Nx
+  yarn … blic-layout-ui                     Build plugin-public-layout-ui with Nx
+  yarn … layout-ui:prod                     Build plugin-public-layout-ui with Nx
+  yarn … yout-ui:docker                     Build plugin-public-layout-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-public-layout-ui with Nx
+  yarn build:package:plugin:job-proposal    Build plugin-job-proposal with Nx
+  yarn … -proposal:prod                     Build plugin-job-proposal with Nx
+  yarn … roposal:docker                     Build plugin-job-proposal with Nx
+  yarn build:package:plugin:knowledge-base  Build plugin-knowledge-base with Nx
+  yarn … edge-base:prod                     Build plugin-knowledge-base with Nx
+  yarn … ge-base:docker                     Build plugin-knowledge-base with Nx
+  yarn build:package:plugin:videos-ui       Build plugin-videos-ui with Nx
+  yarn build:package:plugin:videos-ui:prod  Build plugin-videos-ui with Nx
+  yarn … deos-ui:docker                     Build plugin-videos-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-videos-ui with Nx
+  yarn build:package:plugin:videos          Build plugin-videos with Nx
+  yarn build:package:plugin:videos:prod     Build plugin-videos with Nx
+  yarn build:package:plugin:videos:docker   Build plugin-videos with Nx
+  yarn build:package:plugin:docs-ui         Build plugin-docs-ui with Nx
+  yarn build:package:plugin:docs-ui:prod    Build plugin-docs-ui with Nx
+  yarn build:package:plugin:docs-ui:docker  Build plugin-docs-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-docs-ui with Nx
+  yarn build:package:plugin:docs            Build plugin-docs with Nx
+  yarn build:package:plugin:docs:prod       Build plugin-docs with Nx
+  yarn build:package:plugin:docs:docker     Build plugin-docs with Nx
+  yarn build:package:plugin:registry        Build plugin-registry with Nx
+  yarn build:package:plugin:registry:prod   Build plugin-registry with Nx
+  yarn … egistry:docker                     Build plugin-registry with Nx
+  yarn build:package:plugin:changelog       Build plugin-changelog with Nx
+  yarn build:package:plugin:changelog:prod  Build plugin-changelog with Nx
+  yarn … angelog:docker                     Build plugin-changelog with Nx
+  yarn … ation-wakatime                     Build plugin-integration-wakatime with Nx
+  yarn … -wakatime:prod                     Build plugin-integration-wakatime with Nx
+  yarn … akatime:docker                     Build plugin-integration-wakatime with Nx
+  yarn build:package:plugin:camshot         Build plugin-camshot with Nx
+  yarn build:package:plugin:camshot:prod    Build plugin-camshot with Nx
+  yarn build:package:plugin:camshot:docker  Build plugin-camshot with Nx
+  yarn build:package:plugin:soundshot       Build plugin-soundshot with Nx
+  yarn build:package:plugin:soundshot:prod  Build plugin-soundshot with Nx
+  yarn … undshot:docker                     Build plugin-soundshot with Nx
+  yarn … -chat-react-ui                     Build plugin-ai-chat-react-ui with Nx
+  yarn … -react-ui:prod                     Build plugin-ai-chat-react-ui with Nx
+  yarn … eact-ui:docker                     Build plugin-ai-chat-react-ui with Nx
+  yarn … -ui:dev:docker                     Build plugin-ai-chat-react-ui with Nx
+  yarn build:package:all                    Run build across Nx projects
+  yarn build:package:all:prod               Run build across Nx projects
+  yarn build:package:all:docker             Run build across Nx projects
+  yarn build:package:api                    Run build across Nx projects
+  yarn build:package:api:prod               Run build across Nx projects
+  yarn build:package:api:docker             Run build across Nx projects
+  yarn build:package:api:dev:docker         Run build across Nx projects
+  yarn build:package:gauzy                  Run build across Nx projects
+  yarn build:package:gauzy:prod             Run build across Nx projects
+  yarn build:package:gauzy:docker           Run build across Nx projects
+  yarn build:package:gauzy:dev:docker       Run build across Nx projects
+  yarn build:package:all:once               Run build across Nx projects
+  yarn build:package:all:prod:once          Run build across Nx projects
+  yarn build:package:desktop-activity
+  yarn build:package:desktop-activity:prod
+  yarn … ctivity:docker
+  yarn copy-files-desktop                   Copy packages/core/src/**/*.gql to dist/apps/desktop/data
+  yarn prepare:desktop-timer                Compile TypeScript sources (+2 more steps)
+  yarn prepare:desktop-timer:watch          Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn serve:desktop-timer:ui               Serve desktop-timer with Nx (+2 more steps)  ∞ long-running
+  yarn serve:desktop-timer:main             Compile TypeScript sources (+5 more steps)
+  yarn build:desktop-timer                  Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/desktop-timer/data/sound (+11 more…
+  yarn build:desktop-timer:linux            Package Electron app (+12 more steps)
+  yarn build:desktop-timer:linux:release    Package Electron app (+12 more steps)
+  yarn … nux:release:gh                     Package Electron app (+12 more steps)
+  yarn … release:gh:x64                     Package Electron app (+13 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+13 more steps)
+  yarn build:desktop-timer:windows          Package Electron app (+12 more steps)
+  yarn build:desktop-timer:windows:release  Package Electron app (+12 more steps)
+  yarn … ows:release:gh                     Package Electron app (+12 more steps)
+  yarn … release:gh:x64                     Package Electron app (+13 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+13 more steps)
+  yarn build:desktop-timer:mac              Package Electron app (+12 more steps)
+  yarn build:desktop-timer:mac:release      Package Electron app (+12 more steps)
+  yarn build:desktop-timer:mac:quick        Package Electron app (+12 more steps)
+  yarn copy-assets-gauzy                    Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/desktop/data/sound
+  yarn copy-assets-gauzy-timer              Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/desktop-timer/data/sound
+  yarn prepare:gauzy-server                 Compile TypeScript sources (+2 more steps)
+  yarn prepare:gauzy-server:watch           Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn prepare:gauzy-server:dev             Compile TypeScript sources (+2 more steps)
+  yarn build:gauzy-server:web               Run gauzy-server-api target of api with Nx (+2 more steps)  ∞ long-running
+  yarn build:gauzy-server:prepare           Compile TypeScript sources (+9 more steps)
+  yarn build:gauzy-server                   Run gauzy-server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn build:gauzy-server:windows           Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-server:windows:release   Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn … ows:release:gh                     Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn … release:gh:x64                     Run gauzy-server-api target of api with Nx (+14 more steps)  ∞ long-running
+  yarn … lease:gh:arm64                     Run gauzy-server-api target of api with Nx (+14 more steps)  ∞ long-running
+  yarn build:gauzy-server:linux             Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-server:linux:release     Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-server:linux:release:gh  Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn … release:gh:x64                     Run gauzy-server-api target of api with Nx (+14 more steps)  ∞ long-running
+  yarn … lease:gh:arm64                     Run gauzy-server-api target of api with Nx (+14 more steps)  ∞ long-running
+  yarn build:gauzy-server:mac               Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-server:mac:release       Run gauzy-server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn quick:build:gauzy-server             Package Electron app
+  yarn … arm64:isolated                     Package Electron app (+4 more steps)
+  yarn … h:x64:isolated                     Package Electron app (+4 more steps)
+  yarn … h:x64:isolated                     Package Electron app (+4 more steps)
+  yarn … arm64:isolated                     Package Electron app (+4 more steps)
+  yarn … lease:isolated                     Run npm config, then package Electron app
+  yarn copy-files-i18n-desktop-timer        Run .scripts/translation/translation-util.ts
+  yarn copy-files-i18n-desktop              Run .scripts/translation/translation-util.ts
+  yarn copy-files-i18n-server               Run .scripts/translation/translation-util.ts
+  yarn copy-files-gauzy-server              Copy packages/core/src/**/*.gql to dist/apps/gauzy-server/data
+  yarn generate:icons                       Run .scripts/icon-utils/icon-factory.ts
+  yarn generate:icons:desktop-timer         Run .scripts/icon-utils/icon-factory.ts
+  yarn generate:icons:desktop               Run .scripts/icon-utils/icon-factory.ts
+  yarn generate:icons:server                Run .scripts/icon-utils/icon-factory.ts
+  yarn run pack                             Run .scripts/electron-package-utils/package-util.ts
+  yarn pack:desktop-timer                   Run .scripts/electron-package-utils/package-util.ts
+  yarn pack:desktop                         Run .scripts/electron-package-utils/package-util.ts
+  yarn pack:server                          Run .scripts/electron-package-utils/package-util.ts
+  yarn pack:api-server                      Run .scripts/electron-package-utils/package-util.ts
+  yarn download:translations                Run .scripts/translation/translation-util.ts
+  yarn prepare:gauzy-api-server             Compile TypeScript sources (+2 more steps)
+  yarn prepare:gauzy-api-server:watch       Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn build:gauzy-api-server               Run server-api target of api with Nx (+11 more steps)  ∞ long-running
+  yarn build:gauzy-api-server:windows       Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … indows:release                     Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … ows:release:gh                     Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … release:gh:x64                     Run server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn … lease:gh:arm64                     Run server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-api-server:linux         Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … :linux:release                     Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … nux:release:gh                     Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn … release:gh:x64                     Run server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn … lease:gh:arm64                     Run server-api target of api with Nx (+13 more steps)  ∞ long-running
+  yarn build:gauzy-api-server:mac           Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn build:gauzy-api-server:mac:release   Run server-api target of api with Nx (+12 more steps)  ∞ long-running
+  yarn copy-files-i18n-api-server           Run .scripts/translation/translation-util.ts
+  yarn copy-files-gauzy-api-server          Copy packages/core/src/**/*.gql to dist/apps/gauzy-api-server/data
+  yarn quick:build:gauzy-api-server         Package Electron app
+  yarn generate:icons:server-api            Run .scripts/icon-utils/icon-factory.ts
+  yarn pack:agent                           Run .scripts/electron-package-utils/package-util.ts
+  yarn prepare:agent                        Compile TypeScript sources (+2 more steps)
+  yarn prepare:agent:watch                  Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn serve:agent:main                     Compile TypeScript sources (+5 more steps)
+  yarn serve:agent:ui                       Serve agent with Nx (+2 more steps)  ∞ long-running
+  yarn serve:agent                          Serve agent with Nx (+7 more steps)  ∞ long-running
+  yarn build:agent                          Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/agent/data/sound (+10 more steps)
+  yarn copy-files-i18n-agent                Run .scripts/translation/translation-util.ts
+  yarn config:agent:prod                    Run .scripts/electron.env.ts
+  yarn dev:agent
+  yarn generate:icons:agent                 Run .scripts/icon-utils/icon-factory.ts
+  yarn build:agent:windows                  Package Electron app (+11 more steps)
+  yarn build:agent:windows:release          Package Electron app (+11 more steps)
+  yarn build:agent:windows:release:gh       Package Electron app (+11 more steps)
+  yarn build:agent:windows:release:gh:x64   Package Electron app (+12 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+12 more steps)
+  yarn build:agent:linux                    Package Electron app (+11 more steps)
+  yarn build:agent:linux:release            Package Electron app (+11 more steps)
+  yarn build:agent:linux:release:gh         Package Electron app (+11 more steps)
+  yarn build:agent:linux:release:gh:x64     Package Electron app (+12 more steps)
+  yarn build:agent:linux:release:gh:arm64   Package Electron app (+12 more steps)
+  yarn build:agent:mac                      Package Electron app (+11 more steps)
+  yarn build:agent:mac:quick                Package Electron app (+11 more steps)
+  yarn build:agent:mac:release              Package Electron app (+11 more steps)
+  yarn copy-assets-agent                    Copy apps/desktop/src/assets/snapshot-sound.wav to dist/apps/agent/data/sound
+  yarn build:mcp-server
+  yarn build:mcp-server:prod
+  yarn build:mcp-server:docker
+  yarn test:mcp-server
+  yarn build:mcp
+  yarn build:mcp:prod
+  yarn start:mcp                            Serve mcp with Nx  ∞ long-running
+  yarn test:mcp
+  yarn build:mcp-auth
+  yarn build:mcp-auth:prod
+  yarn start:mcp-auth                       Serve mcp-auth with Nx  ∞ long-running
+  yarn build:server-mcp
+  yarn build:server-mcp:prod
+  yarn start:server-mcp                     Build server-mcp with Nx, then run apps/server-mcp/electron-start.js
+  yarn start:server-mcp:prod                Build server-mcp with Nx, then run apps/server-mcp/electron-start.js
+  yarn serve:server-mcp                       ∞ long-running
+  yarn serve:server-mcp:prod                  ∞ long-running
+  yarn test:server-mcp
+  yarn config:server-mcp:prod               Run .scripts/electron.env.ts
+  yarn prepare:server-mcp                   Compile TypeScript sources (+2 more steps)
+  yarn prepare:server-mcp:watch             Compile TypeScript in watch mode (+2 more steps)  ∞ long-running
+  yarn pack:server-mcp                      Run .scripts/electron-package-utils/package-util.ts
+  yarn prepare:gauzy-mcp-server             Compile TypeScript sources (+2 more steps)
+  yarn build:gauzy-mcp-server               Copy packages/core/src/**/*.gql to dist/apps/server-mcp/data (+10 more steps)
+  yarn build:gauzy-mcp-server:linux         Package Electron app (+11 more steps)
+  yarn … :linux:release                     Package Electron app (+11 more steps)
+  yarn … nux:release:gh                     Package Electron app (+11 more steps)
+  yarn … release:gh:x64                     Package Electron app (+12 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+12 more steps)
+  yarn build:gauzy-mcp-server:windows       Package Electron app (+11 more steps)
+  yarn … indows:release                     Package Electron app (+11 more steps)
+  yarn … ows:release:gh                     Package Electron app (+11 more steps)
+  yarn … release:gh:x64                     Package Electron app (+12 more steps)
+  yarn … lease:gh:arm64                     Package Electron app (+12 more steps)
+  yarn build:gauzy-mcp-server:mac           Package Electron app (+11 more steps)
+  yarn build:gauzy-mcp-server:mac:release   Package Electron app (+11 more steps)
+  yarn copy-files-i18n-mcp-server           Run .scripts/translation/translation-util.ts
+  yarn copy-files-gauzy-mcp-server          Copy packages/core/src/**/*.gql to dist/apps/server-mcp/data
+  yarn quick:build:gauzy-mcp-server         Package Electron app
+  yarn generate:icons:server-mcp            Run .scripts/icon-utils/icon-factory.ts
+  yarn build:mcp:all                        Run build across Nx projects
+  yarn build:mcp:all:prod                   Run build across Nx projects
+  yarn build:apps:windows                   Run gauzy-server-api target of api with Nx (+35 more steps)  ∞ long-running
+  yarn build:apps:linux                     Run gauzy-server-api target of api with Nx (+35 more steps)  ∞ long-running
+  yarn build:apps:mac                       Run gauzy-server-api target of api with Nx (+35 more steps)  ∞ long-running
+  yarn test:mcp:all                         Run test across Nx projects
+  nx run ever-gauzy:local-registry          Run local-registry target (verdaccio)
+  docker compose up -d                      Start all Docker services
+  docker compose up -d api                  Start api service (gauzy-api)
+  docker compose up -d webapp               Start webapp service (gauzy-webapp)
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose down                       Stop and remove Docker services
+  .\dc.cmd
+
+apps/agent  [Node.js, Nx]
+  yarn build                 Build desktop with Nx
+  yarn build:prod            Build desktop with Nx
+  yarn start                 Serve desktop with Nx  ∞ long-running
+  nx run agent:build         Build Angular app
+  nx run agent:serve         Start Angular development server  ∞ long-running
+  nx run agent:extract-i18n  Extract i18n messages from Angular app
+  nx run agent:lint          Check source code with ESLint
+  nx run agent:test          Run Jest tests
+
+apps/api  [Node.js, Nx, Angular]
+  yarn typeorm                 Run node_modules/.bin/typeorm
+  yarn typeorm:sync            Run node_modules/.bin/typeorm
+  yarn typeorm:seeds           Run node_modules/.bin/typeorm
+  yarn typeorm:flush           Run node_modules/.bin/typeorm  [destructive]
+  yarn typeorm:create          Run node_modules/.bin/typeorm
+  yarn typeorm:preserve        Run node_modules/.bin/typeorm
+  yarn migration:run           Run src/migration.ts
+  yarn migration:revert        Run src/migration.ts  [destructive]
+  yarn migration:generate      Run src/migration.ts
+  yarn start                   Serve api with Nx  ∞ long-running
+  yarn start:debug             Run nodemon-debug.json with auto-restart  ∞ long-running
+  yarn start:prod              Serve api with Nx  ∞ long-running
+  yarn build                   Build api with Nx
+  yarn build:prod              Build api with Nx
+  yarn seed                    Run src/seed.ts
+  yarn seed:build              Run ng run
+  yarn seed:all                Run src/seed-all.ts
+  yarn seed:module             Run src/seed-module.ts
+  yarn seed:all:build          Run ng run
+  yarn seed:prod               Run src/seed.ts
+  yarn seed:prod:build         Run ng run
+  nx run api:build             Build with webpack
+  nx run api:serve             Serve app  ∞ long-running
+  nx run api:lint              Check source code with ESLint
+  nx run api:test              Run Jest tests
+  nx run api:desktop-api       Build with webpack
+  nx run api:server-api        Build with webpack  ∞ long-running
+  nx run api:gauzy-server-api  Build with webpack  ∞ long-running
+
+apps/desktop  [Node.js, Nx]
+  yarn build                   Build desktop with Nx
+  yarn build:prod              Build desktop with Nx
+  yarn start                   Serve desktop with Nx  ∞ long-running
+  nx run desktop:build         Build Angular app
+  nx run desktop:serve         Start Angular development server  ∞ long-running
+  nx run desktop:extract-i18n  Extract i18n messages from Angular app
+  nx run desktop:lint          Check source code with ESLint
+  nx run desktop:test          Run Jest tests
+
+apps/desktop-api  [Node.js, Nx]
+  yarn build                Build desktop-api with Nx
+  yarn build:prod           Build desktop-api with Nx
+  nx run desktop-api:build  Build with webpack
+  nx run desktop-api:serve  Serve app  ∞ long-running
+  nx run desktop-api:lint   Check source code with ESLint
+  nx run desktop-api:test   Run Jest tests
+
+apps/desktop-timer  [Node.js, Nx]
+  yarn build                         Build desktop-timer with Nx
+  yarn build:prod                    Build desktop-timer with Nx
+  nx run desktop-timer:build         Build Angular app
+  nx run desktop-timer:serve         Start Angular development server  ∞ long-running
+  nx run desktop-timer:extract-i18n  Extract i18n messages from Angular app
+  nx run desktop-timer:lint          Check source code with ESLint
+  nx run desktop-timer:test          Run Jest tests
+
+apps/gauzy  [Node.js, Nx]
+  nx run gauzy:build         Build Angular app
+  nx run gauzy:serve         Start Angular development server  ∞ long-running
+  nx run gauzy:extract-i18n  Extract i18n messages from Angular app
+  nx run gauzy:test          Run Jest tests
+  nx run gauzy:desktop-ui    Build Angular app
+  nx run gauzy:server-ui     Build Angular app  ∞ long-running
+
+apps/gauzy-e2e  [Node.js, Nx, Angular]
+  yarn run config                           Run .scripts/configure.ts
+  yarn config:dev                           Run .scripts/configure.ts
+  yarn build:package:all                    Run build across Nx projects
+  yarn start:api                            Start Angular development server  ∞ long-running
+  yarn build:package:contracts              Run build across Nx projects
+  yarn build:package:config                 Run build across Nx projects
+  yarn build:package:common                 Run build across Nx projects
+  yarn build:package:utils                  Run build across Nx projects
+  yarn build:package:plugin                 Run build across Nx projects
+  yarn … ation-wakatime                     Run build across Nx projects
+  yarn build:package:desktop-lib
+  yarn build:package:desktop-lib:prod
+  yarn build:package:desktop-window
+  yarn build:package:desktop-window:prod
+  yarn build:package:plugin:changelog       Run build across Nx projects
+  yarn build:package:plugin:knowledge-base  Run build across Nx projects
+  yarn build:package:core                   Run build across Nx projects
+  yarn build:package:auth                   Run build across Nx projects
+  yarn build:package:plugins                Run build across Nx projects
+  yarn build                                Run build across Nx projects
+  yarn build:api                            Build Angular app
+  yarn build:gauzy                          Run yarn node, then run .scripts/configure.ts, then build Angular app
+  yarn build:package:plugin:integration-ai  Run build across Nx projects
+  yarn … ation-hubstaff                     Run build across Nx projects
+  yarn … gration-upwork                     Run build across Nx projects
+  yarn … gration-github                     Run build across Nx projects
+  yarn … tegration-jira                     Run build across Nx projects
+  yarn … roduct-reviews                     Run build across Nx projects
+  yarn postinstall.web                      Run yarn node
+  nx run gauzy-e2e:e2e                      Run end-to-end tests
+  nx run gauzy-e2e:playwright               Run end-to-end tests
+  nx run gauzy-e2e:lint                     Check source code with ESLint
+
+apps/mcp  [Node.js, Nx]
+  yarn build        Delete build, then compile TypeScript sources
+  yarn build:prod   Build mcp with Nx
+  yarn build:dev    Build mcp with Nx
+  yarn start        Serve mcp with Nx  ∞ long-running
+  yarn test         Run Node.js tests
+  nx run mcp:build
+  nx run mcp:serve  Serve app  ∞ long-running
+  nx run mcp:lint   Check source code with ESLint
+  nx run mcp:test   Run Jest tests
+
+apps/mcp-auth  [Node.js, Nx]
+  yarn build             Delete build, then compile TypeScript sources
+  yarn build:prod        Build mcp-auth with Nx
+  yarn build:dev         Build mcp-auth with Nx
+  yarn start             Serve mcp-auth with Nx  ∞ long-running
+  yarn test              Run Node.js tests
+  nx run mcp-auth:build
+  nx run mcp-auth:serve  Serve app  ∞ long-running
+  nx run mcp-auth:test
+
+apps/server  [Node.js, Nx]
+  nx run gauzy-server:build         Build Angular app
+  nx run gauzy-server:serve         Start Angular development server  ∞ long-running
+  nx run gauzy-server:extract-i18n  Extract i18n messages from Angular app
+  nx run gauzy-server:lint          Check source code with ESLint
+  nx run gauzy-server:test          Run Jest tests
+
+apps/server-api  [Node.js, Nx]
+  yarn build                            Build gauzy-api-server with Nx
+  yarn build:prod                       Build gauzy-api-server with Nx
+  nx run gauzy-api-server:build         Build Angular app
+  nx run gauzy-api-server:serve         Start Angular development server  ∞ long-running
+  nx run gauzy-api-server:extract-i18n  Extract i18n messages from Angular app
+  nx run gauzy-api-server:lint          Check source code with ESLint
+  nx run gauzy-api-server:test          Run Jest tests
+
+apps/server-mcp  [Node.js, Nx]
+  yarn build                  Build server-mcp with Nx
+  yarn build:prod             Build server-mcp with Nx
+  yarn start                  Run electron target of server-mcp with Nx
+  yarn start:prod             Run electron target of server-mcp with Nx
+  yarn serve                  Serve server-mcp with Nx  ∞ long-running
+  nx run server-mcp:build     Build with webpack
+  nx run server-mcp:serve     Serve app  ∞ long-running
+  nx run server-mcp:electron  Serve electron
+  nx run server-mcp:lint      Check source code with ESLint
+  nx run server-mcp:test      Run Jest tests
+
+apps/worker  [Node.js, Nx]
+  yarn start                            Serve worker with Nx  ∞ long-running
+  yarn start:debug                      Run nodemon-debug.json with auto-restart  ∞ long-running
+  yarn start:prod                       Serve worker with Nx  ∞ long-running
+  yarn build                            Build worker with Nx
+  yarn build:prod                       Build worker with Nx
+  nx run worker:build                   Build with webpack
+  nx run worker:prune-lockfile
+  nx run worker:copy-workspace-modules
+  nx run worker:serve                   Serve app  ∞ long-running
+  nx run worker:lint                    Check source code with ESLint
+  nx run worker:test                    Run Jest tests
+
+packages/auth  [Node.js, Nx]
+  yarn lib:build       Build auth with Nx
+  yarn lib:build:prod  Build auth with Nx
+  yarn lib:watch       Build auth with Nx  ∞ long-running
+  nx run auth:build
+  nx run auth:lint     Check source code with ESLint
+  nx run auth:test     Run Jest tests
+
+packages/common  [Node.js, Nx]
+  yarn lib:build       Build common with Nx
+  yarn lib:build:prod  Build common with Nx
+  yarn lib:watch       Build common with Nx  ∞ long-running
+  nx run common:build
+  nx run common:lint   Check source code with ESLint
+  nx run common:test   Run Jest tests
+
+packages/config  [Node.js, Nx]
+  yarn lib:build       Build config with Nx
+  yarn lib:build:prod  Run scripts/replace-env-files.ts, then build config with Nx
+  yarn lib:watch       Build config with Nx  ∞ long-running
+  nx run config:build
+  nx run config:lint   Check source code with ESLint
+  nx run config:test   Run Jest tests
+
+packages/constants  [Node.js, Nx]
+  yarn lib:build          Build constants with Nx
+  yarn lib:build:prod     Build constants with Nx
+  yarn lib:watch          Build constants with Nx  ∞ long-running
+  nx run constants:build
+  nx run constants:lint   Check source code with ESLint
+  nx run constants:test   Run Jest tests
+
+packages/contracts  [Node.js, Nx]
+  yarn lib:build          Build contracts with Nx
+  yarn lib:build:prod     Build contracts with Nx
+  yarn lib:watch          Build contracts with Nx  ∞ long-running
+  nx run contracts:build
+  nx run contracts:lint   Check source code with ESLint
+  nx run contracts:test   Run Jest tests
+
+packages/core  [Node.js, Nx]
+  yarn lib:build                        Build core with Nx
+  yarn lib:build:prod                   Build core with Nx
+  yarn lib:watch                        Build core with Nx  ∞ long-running
+  yarn start:api                        Run app with auto-restart  ∞ long-running
+  yarn start:api:debug                  Run nodemon-debug.json with auto-restart  ∞ long-running
+  yarn typeorm                          Run ../../node_modules/typeorm/cli.js
+  yarn migration:run                    Run src/lib/database/migration.ts
+  yarn migration:generate               Run src/lib/database/migration.ts
+  yarn migration:revert                 Run src/lib/database/migration.ts  [destructive]
+  yarn migration:create                 Run src/lib/database/migration.ts
+  nx run core:build
+  nx run core:serve                     Run rs with auto-restart  ∞ long-running
+  nx run core:lint                      Check source code with ESLint
+  nx run core:test-postgres-migrations  Run Node.js tests
+  nx run core:test                      Run Jest tests
+  nx run core:test-migration-smoke      Run Jest tests
+
+packages/desktop-activity  [Node.js, Nx]
+  yarn lib:build                 Build desktop-activity with Nx
+  yarn lib:build:prod            Build desktop-activity with Nx
+  yarn lib:watch                 Build desktop-activity with Nx  ∞ long-running
+  nx run desktop-activity:build
+  nx run desktop-activity:lint   Check source code with ESLint
+  nx run desktop-activity:test   Run Jest tests
+
+packages/desktop-core  [Node.js, Nx]
+  yarn lib:build             Build desktop-core with Nx
+  yarn lib:build:prod        Build desktop-core with Nx
+  yarn lib:watch             Build desktop-core with Nx  ∞ long-running
+  nx run desktop-core:build
+  nx run desktop-core:lint   Check source code with ESLint
+  nx run desktop-core:test   Run Jest tests
+
+packages/desktop-lib  [Node.js, Nx, Knex]
+  yarn lib:build            Build desktop-lib with Nx
+  yarn lib:build:prod       Build desktop-lib with Nx
+  yarn lib:watch            Build desktop-lib with Nx  ∞ long-running
+  yarn knex                 Run knex src/lib/offline/databases/knexfile.ts
+  nx run desktop-lib:build
+  nx run desktop-lib:lint   Check source code with ESLint
+  nx run desktop-lib:test   Run Jest tests
+
+packages/desktop-ui-lib  [Node.js, Nx]
+  yarn lib:build               Build desktop-ui-lib with Nx
+  yarn lib:build:prod          Build desktop-ui-lib with Nx
+  yarn lib:watch               Build desktop-ui-lib with Nx  ∞ long-running
+  nx run desktop-ui-lib:build  Run build target (ng-packagr-lite)
+  nx run desktop-ui-lib:test   Run Jest tests
+  nx run desktop-ui-lib:lint   Check source code with ESLint
+
+packages/desktop-window  [Node.js, Nx]
+  yarn lib:build               Build desktop-window with Nx
+  yarn lib:build:prod          Build desktop-window with Nx
+  yarn lib:watch               Build desktop-window with Nx  ∞ long-running
+  nx run desktop-window:build
+  nx run desktop-window:lint   Check source code with ESLint
+  nx run desktop-window:test   Run Jest tests
+
+packages/mcp-server  [Node.js, Nx]
+  yarn start               Serve mcp with Nx  ∞ long-running
+  yarn lib:build           Build mcp-server with Nx
+  yarn lib:build:prod      Build mcp-server with Nx
+  yarn lib:watch           Build mcp-server with Nx  ∞ long-running
+  nx run mcp-server:build
+  nx run mcp-server:lint   Check source code with ESLint
+  nx run mcp-server:test   Run Jest tests
+
+packages/plugin  [Node.js, Nx]
+  yarn lib:build       Build plugin with Nx
+  yarn lib:build:prod  Build plugin with Nx
+  yarn lib:watch       Build plugin with Nx  ∞ long-running
+  nx run plugin:build
+  nx run plugin:lint   Check source code with ESLint
+  nx run plugin:test   Run Jest tests
+
+packages/plugin-ui  [Node.js, Nx]
+  yarn lib:build          Build plugin-ui with Nx
+  yarn lib:build:prod     Build plugin-ui with Nx
+  yarn lib:watch          Build plugin-ui with Nx  ∞ long-running
+  nx run plugin-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-ui:test   Run Jest tests
+  nx run plugin-ui:lint   Check source code with ESLint
+
+packages/plugins/ai-chat  [Node.js, Nx]
+  yarn lib:build               Build plugin-ai-chat with Nx
+  yarn lib:build:prod          Build plugin-ai-chat with Nx
+  yarn lib:watch               Build plugin-ai-chat with Nx  ∞ long-running
+  nx run plugin-ai-chat:build
+  nx run plugin-ai-chat:lint   Check source code with ESLint
+  nx run plugin-ai-chat:test   Run Jest tests
+
+packages/plugins/ai-chat-react-ui  [Node.js, Nx]
+  yarn lib:build                        Build plugin-ai-chat-react-ui with Nx
+  yarn lib:build:prod                   Build plugin-ai-chat-react-ui with Nx
+  yarn lib:watch                        Build plugin-ai-chat-react-ui with Nx  ∞ long-running
+  nx run plugin-ai-chat-react-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-ai-chat-react-ui:test   Run Jest tests
+  nx run plugin-ai-chat-react-ui:lint   Check source code with ESLint
+
+packages/plugins/ai-provider-anthropic  [Node.js, Nx]
+  yarn lib:build                            Build plugin-ai-provider-anthropic with Nx
+  yarn lib:build:prod                       Build plugin-ai-provider-anthropic with Nx
+  yarn lib:watch                            Build plugin-ai-provider-anthropic with Nx  ∞ long-running
+  nx run … nthropic:build
+  nx run plugin-ai-provider-anthropic:lint  Check source code with ESLint
+  nx run plugin-ai-provider-anthropic:test  Run Jest tests
+
+packages/plugins/ai-provider-deepgram  [Node.js, Nx]
+  yarn lib:build                            Build plugin-ai-provider-deepgram with Nx
+  yarn lib:build:prod                       Build plugin-ai-provider-deepgram with Nx
+  yarn lib:watch                            Build plugin-ai-provider-deepgram with Nx  ∞ long-running
+  nx run plugin-ai-provider-deepgram:build
+  nx run plugin-ai-provider-deepgram:lint   Check source code with ESLint
+  nx run plugin-ai-provider-deepgram:test   Run Jest tests
+
+packages/plugins/ai-provider-elevenlabs  [Node.js, Nx]
+  yarn lib:build           Build plugin-ai-provider-elevenlabs with Nx
+  yarn lib:build:prod      Build plugin-ai-provider-elevenlabs with Nx
+  yarn lib:watch           Build plugin-ai-provider-elevenlabs with Nx  ∞ long-running
+  nx run … evenlabs:build
+  nx run … levenlabs:lint  Check source code with ESLint
+  nx run … levenlabs:test  Run Jest tests
+
+packages/plugins/ai-provider-gauzy-ai  [Node.js, Nx]
+  yarn lib:build                            Build plugin-ai-provider-gauzy-ai with Nx
+  yarn lib:build:prod                       Build plugin-ai-provider-gauzy-ai with Nx
+  yarn lib:watch                            Build plugin-ai-provider-gauzy-ai with Nx  ∞ long-running
+  nx run plugin-ai-provider-gauzy-ai:build
+  nx run plugin-ai-provider-gauzy-ai:lint   Check source code with ESLint
+  nx run plugin-ai-provider-gauzy-ai:test   Run Jest tests
+
+packages/plugins/ai-provider-gemini  [Node.js, Nx]
+  yarn lib:build                          Build plugin-ai-provider-gemini with Nx
+  yarn lib:build:prod                     Build plugin-ai-provider-gemini with Nx
+  yarn lib:watch                          Build plugin-ai-provider-gemini with Nx  ∞ long-running
+  nx run plugin-ai-provider-gemini:build
+  nx run plugin-ai-provider-gemini:lint   Check source code with ESLint
+  nx run plugin-ai-provider-gemini:test   Run Jest tests
+
+packages/plugins/ai-provider-grok  [Node.js, Nx]
+  yarn lib:build                        Build plugin-ai-provider-grok with Nx
+  yarn lib:build:prod                   Build plugin-ai-provider-grok with Nx
+  yarn lib:watch                        Build plugin-ai-provider-grok with Nx  ∞ long-running
+  nx run plugin-ai-provider-grok:build
+  nx run plugin-ai-provider-grok:lint   Check source code with ESLint
+  nx run plugin-ai-provider-grok:test   Run Jest tests
+
+packages/plugins/ai-provider-groq  [Node.js, Nx]
+  yarn lib:build                        Build plugin-ai-provider-groq with Nx
+  yarn lib:build:prod                   Build plugin-ai-provider-groq with Nx
+  yarn lib:watch                        Build plugin-ai-provider-groq with Nx  ∞ long-running
+  nx run plugin-ai-provider-groq:build
+  nx run plugin-ai-provider-groq:lint   Check source code with ESLint
+  nx run plugin-ai-provider-groq:test   Run Jest tests
+
+packages/plugins/ai-provider-localai  [Node.js, Nx]
+  yarn lib:build                           Build plugin-ai-provider-localai with Nx
+  yarn lib:build:prod                      Build plugin-ai-provider-localai with Nx
+  yarn lib:watch                           Build plugin-ai-provider-localai with Nx  ∞ long-running
+  nx run plugin-ai-provider-localai:build
+  nx run plugin-ai-provider-localai:lint   Check source code with ESLint
+  nx run plugin-ai-provider-localai:test   Run Jest tests
+
+packages/plugins/ai-provider-mistral  [Node.js, Nx]
+  yarn lib:build                           Build plugin-ai-provider-mistral with Nx
+  yarn lib:build:prod                      Build plugin-ai-provider-mistral with Nx
+  yarn lib:watch                           Build plugin-ai-provider-mistral with Nx  ∞ long-running
+  nx run plugin-ai-provider-mistral:build
+  nx run plugin-ai-provider-mistral:lint   Check source code with ESLint
+  nx run plugin-ai-provider-mistral:test   Run Jest tests
+
+packages/plugins/ai-provider-openai  [Node.js, Nx]
+  yarn lib:build                          Build plugin-ai-provider-openai with Nx
+  yarn lib:build:prod                     Build plugin-ai-provider-openai with Nx
+  yarn lib:watch                          Build plugin-ai-provider-openai with Nx  ∞ long-running
+  nx run plugin-ai-provider-openai:build
+  nx run plugin-ai-provider-openai:lint   Check source code with ESLint
+  nx run plugin-ai-provider-openai:test   Run Jest tests
+
+packages/plugins/ai-provider-openai-compatible  [Node.js, Nx]
+  yarn lib:build           Build plugin-ai-provider-openai-compatible with Nx
+  yarn lib:build:prod      Build plugin-ai-provider-openai-compatible with Nx
+  yarn lib:watch           Build plugin-ai-provider-openai-compatible with Nx  ∞ long-running
+  nx run … mpatible:build
+  nx run … ompatible:lint  Check source code with ESLint
+  nx run … ompatible:test  Run Jest tests
+
+packages/plugins/ai-provider-openrouter  [Node.js, Nx]
+  yarn lib:build           Build plugin-ai-provider-openrouter with Nx
+  yarn lib:build:prod      Build plugin-ai-provider-openrouter with Nx
+  yarn lib:watch           Build plugin-ai-provider-openrouter with Nx  ∞ long-running
+  nx run … enrouter:build
+  nx run … penrouter:lint  Check source code with ESLint
+  nx run … penrouter:test  Run Jest tests
+
+packages/plugins/ai-provider-speaches  [Node.js, Nx]
+  yarn lib:build                            Build plugin-ai-provider-speaches with Nx
+  yarn lib:build:prod                       Build plugin-ai-provider-speaches with Nx
+  yarn lib:watch                            Build plugin-ai-provider-speaches with Nx  ∞ long-running
+  nx run plugin-ai-provider-speaches:build
+  nx run plugin-ai-provider-speaches:lint   Check source code with ESLint
+  nx run plugin-ai-provider-speaches:test   Run Jest tests
+
+packages/plugins/ai-provider-vercel-gateway  [Node.js, Nx]
+  yarn lib:build           Build plugin-ai-provider-vercel-gateway with Nx
+  yarn lib:build:prod      Build plugin-ai-provider-vercel-gateway with Nx
+  yarn lib:watch           Build plugin-ai-provider-vercel-gateway with Nx  ∞ long-running
+  nx run … -gateway:build
+  nx run … l-gateway:lint  Check source code with ESLint
+  nx run … l-gateway:test  Run Jest tests
+
+packages/plugins/ai-provider-whisper-cpp  [Node.js, Nx]
+  yarn lib:build           Build plugin-ai-provider-whisper-cpp with Nx
+  yarn lib:build:prod      Build plugin-ai-provider-whisper-cpp with Nx
+  yarn lib:watch           Build plugin-ai-provider-whisper-cpp with Nx  ∞ long-running
+  nx run … sper-cpp:build
+  nx run … isper-cpp:lint  Check source code with ESLint
+  nx run … isper-cpp:test  Run Jest tests
+
+packages/plugins/camshot  [Node.js, Nx]
+  yarn lib:build               Build plugin-camshot with Nx
+  yarn lib:build:prod          Build plugin-camshot with Nx
+  yarn lib:watch               Build plugin-camshot with Nx  ∞ long-running
+  nx run plugin-camshot:build
+
+packages/plugins/changelog  [Node.js, Nx]
+  yarn lib:build                 Build plugin-changelog with Nx
+  yarn lib:build:prod            Build plugin-changelog with Nx
+  yarn lib:watch                 Build plugin-changelog with Nx  ∞ long-running
+  nx run plugin-changelog:build
+  nx run plugin-changelog:lint   Check source code with ESLint
+  nx run plugin-changelog:test   Run Jest tests
+
+packages/plugins/dashboard-time-track-angular-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn lib:build:prod      Build plugin-dashboard-time-track-angular-ui with Nx
+  yarn lib:watch           Build plugin-dashboard-time-track-angular-ui with Nx  ∞ long-running
+  nx run … gular-ui:build  Run build target (ng-packagr-lite)
+  nx run … ngular-ui:test  Run Jest tests
+  nx run … ngular-ui:lint  Check source code with ESLint
+
+packages/plugins/dashboard-time-track-react-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-dashboard-time-track-react-ui with Nx
+  yarn lib:build:prod      Build plugin-dashboard-time-track-react-ui with Nx
+  yarn lib:watch           Build plugin-dashboard-time-track-react-ui with Nx  ∞ long-running
+  nx run … react-ui:build  Run build target (ng-packagr-lite)
+  nx run … -react-ui:test  Run Jest tests
+  nx run … -react-ui:lint  Check source code with ESLint
+
+packages/plugins/docs  [Node.js, Nx]
+  yarn lib:build            Build plugin-docs with Nx
+  yarn lib:build:prod       Build plugin-docs with Nx
+  yarn lib:watch            Build plugin-docs with Nx  ∞ long-running
+  nx run plugin-docs:build
+  nx run plugin-docs:lint   Check source code with ESLint
+  nx run plugin-docs:test   Run Jest tests
+
+packages/plugins/docs-ui  [Node.js, Nx]
+  yarn lib:build               Build plugin-docs-ui with Nx
+  yarn lib:build:prod          Build plugin-docs-ui with Nx
+  yarn lib:watch               Build plugin-docs-ui with Nx  ∞ long-running
+  nx run plugin-docs-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-docs-ui:test   Run Jest tests
+  nx run plugin-docs-ui:lint   Check source code with ESLint
+
+packages/plugins/integration-activepieces  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-activepieces with Nx
+  yarn lib:build:prod      Build plugin-integration-activepieces with Nx
+  yarn lib:watch           Build plugin-integration-activepieces with Nx  ∞ long-running
+  nx run … vepieces:build
+  nx run … ivepieces:lint  Check source code with ESLint
+  nx run … ivepieces:test  Run Jest tests
+
+packages/plugins/integration-activepieces-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-activepieces-ui with Nx
+  yarn lib:build:prod      Build plugin-integration-activepieces-ui with Nx
+  yarn lib:watch           Build plugin-integration-activepieces-ui with Nx  ∞ long-running
+  nx run … ieces-ui:build  Run build target (ng-packagr-lite)
+  nx run … pieces-ui:test  Run Jest tests
+  nx run … pieces-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-ai  [Node.js, Nx]
+  yarn lib:build                      Build plugin-integration-ai with Nx
+  yarn lib:build:prod                 Build plugin-integration-ai with Nx
+  yarn lib:watch                      Build plugin-integration-ai with Nx  ∞ long-running
+  nx run plugin-integration-ai:build
+  nx run plugin-integration-ai:lint   Check source code with ESLint
+  nx run plugin-integration-ai:test   Run Jest tests
+
+packages/plugins/integration-ai-ui  [Node.js, Nx]
+  yarn lib:build                         Build plugin-integration-ai-ui with Nx
+  yarn lib:build:prod                    Build plugin-integration-ai-ui with Nx
+  yarn lib:watch                         Build plugin-integration-ai-ui with Nx  ∞ long-running
+  nx run plugin-integration-ai-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-integration-ai-ui:test   Run Jest tests
+  nx run plugin-integration-ai-ui:lint   Check source code with ESLint
+
+packages/plugins/integration-ever-async  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-ever-async with Nx
+  yarn lib:build:prod      Build plugin-integration-ever-async with Nx
+  yarn lib:watch           Build plugin-integration-ever-async with Nx  ∞ long-running
+  nx run … er-async:build
+  nx run … ver-async:lint  Check source code with ESLint
+  nx run … st-integration  Run Node.js tests
+  nx run … ver-async:test  Run Node.js tests
+
+packages/plugins/integration-ever-async-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-ever-async-ui with Nx
+  yarn lib:build:prod      Build plugin-integration-ever-async-ui with Nx
+  yarn lib:watch           Build plugin-integration-ever-async-ui with Nx  ∞ long-running
+  nx run … async-ui:build  Run build target (ng-packagr-lite)
+  nx run … -async-ui:test  Run Jest tests
+  nx run … -async-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-github  [Node.js, Nx]
+  yarn lib:build                          Build plugin-integration-github with Nx
+  yarn lib:build:prod                     Build plugin-integration-github with Nx
+  yarn lib:watch                          Build plugin-integration-github with Nx  ∞ long-running
+  nx run plugin-integration-github:build
+  nx run plugin-integration-github:lint   Check source code with ESLint
+  nx run plugin-integration-github:test   Run Jest tests
+
+packages/plugins/integration-github-ui  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-github-ui with Nx
+  yarn lib:build:prod                       Build plugin-integration-github-ui with Nx
+  yarn lib:watch                            Build plugin-integration-github-ui with Nx  ∞ long-running
+  nx run … ithub-ui:build                   Run build target (ng-packagr-lite)
+  nx run plugin-integration-github-ui:test  Run Jest tests
+  nx run plugin-integration-github-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-hubstaff  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-hubstaff with Nx
+  yarn lib:build:prod                       Build plugin-integration-hubstaff with Nx
+  yarn lib:watch                            Build plugin-integration-hubstaff with Nx  ∞ long-running
+  nx run plugin-integration-hubstaff:build
+  nx run plugin-integration-hubstaff:lint   Check source code with ESLint
+  nx run plugin-integration-hubstaff:test   Run Jest tests
+
+packages/plugins/integration-hubstaff-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-hubstaff-ui with Nx
+  yarn lib:build:prod      Build plugin-integration-hubstaff-ui with Nx
+  yarn lib:watch           Build plugin-integration-hubstaff-ui with Nx  ∞ long-running
+  nx run … staff-ui:build  Run build target (ng-packagr-lite)
+  nx run … bstaff-ui:test  Run Jest tests
+  nx run … bstaff-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-jira  [Node.js, Nx]
+  yarn lib:build                        Build plugin-integration-jira with Nx
+  yarn lib:build:prod                   Build plugin-integration-jira with Nx
+  yarn lib:watch                        Build plugin-integration-jira with Nx  ∞ long-running
+  nx run plugin-integration-jira:build
+  nx run plugin-integration-jira:lint   Check source code with ESLint
+  nx run plugin-integration-jira:test   Run Jest tests
+
+packages/plugins/integration-make-com  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-make-com with Nx
+  yarn lib:build:prod                       Build plugin-integration-make-com with Nx
+  yarn lib:watch                            Build plugin-integration-make-com with Nx  ∞ long-running
+  nx run plugin-integration-make-com:build
+  nx run plugin-integration-make-com:lint   Check source code with ESLint
+  nx run plugin-integration-make-com:test   Run Jest tests
+
+packages/plugins/integration-make-com-ui  [Node.js, Nx]
+  yarn lib:build           Build plugin-integration-make-com-ui with Nx
+  yarn lib:build:prod      Build plugin-integration-make-com-ui with Nx
+  yarn lib:watch           Build plugin-integration-make-com-ui with Nx  ∞ long-running
+  nx run … e-com-ui:build  Run build target (ng-packagr-lite)
+  nx run … ke-com-ui:test  Run Jest tests
+  nx run … ke-com-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-plane  [Node.js, Nx]
+  yarn lib:build                         Build plugin-integration-plane with Nx
+  yarn lib:build:prod                    Build plugin-integration-plane with Nx
+  yarn lib:watch                         Build plugin-integration-plane with Nx  ∞ long-running
+  nx run plugin-integration-plane:build
+  nx run plugin-integration-plane:lint   Check source code with ESLint
+  nx run plugin-integration-plane:test   Run Jest tests
+
+packages/plugins/integration-plane-ui  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-plane-ui with Nx
+  yarn lib:build:prod                       Build plugin-integration-plane-ui with Nx
+  yarn lib:watch                            Build plugin-integration-plane-ui with Nx  ∞ long-running
+  nx run plugin-integration-plane-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-integration-plane-ui:test   Run Jest tests
+  nx run plugin-integration-plane-ui:lint   Check source code with ESLint
+
+packages/plugins/integration-sim  [Node.js, Nx]
+  yarn lib:build                       Build plugin-integration-sim with Nx
+  yarn lib:build:prod                  Build plugin-integration-sim with Nx
+  yarn lib:watch                       Build plugin-integration-sim with Nx  ∞ long-running
+  nx run plugin-integration-sim:build
+  nx run plugin-integration-sim:lint   Check source code with ESLint
+  nx run plugin-integration-sim:test   Run Jest tests
+
+packages/plugins/integration-sim-ui  [Node.js, Nx]
+  yarn lib:build                          Build plugin-integration-sim-ui with Nx
+  yarn lib:build:prod                     Build plugin-integration-sim-ui with Nx
+  yarn lib:watch                          Build plugin-integration-sim-ui with Nx  ∞ long-running
+  nx run plugin-integration-sim-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-integration-sim-ui:test   Run Jest tests
+  nx run plugin-integration-sim-ui:lint   Check source code with ESLint
+
+packages/plugins/integration-upwork  [Node.js, Nx]
+  yarn lib:build                          Build plugin-integration-upwork with Nx
+  yarn lib:build:prod                     Build plugin-integration-upwork with Nx
+  yarn lib:watch                          Build plugin-integration-upwork with Nx  ∞ long-running
+  nx run plugin-integration-upwork:build
+  nx run plugin-integration-upwork:lint   Check source code with ESLint
+  nx run plugin-integration-upwork:test   Run Jest tests
+
+packages/plugins/integration-upwork-ui  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-upwork-ui with Nx
+  yarn lib:build:prod                       Build plugin-integration-upwork-ui with Nx
+  yarn lib:watch                            Build plugin-integration-upwork-ui with Nx  ∞ long-running
+  nx run … pwork-ui:build                   Run build target (ng-packagr-lite)
+  nx run plugin-integration-upwork-ui:test  Run Jest tests
+  nx run plugin-integration-upwork-ui:lint  Check source code with ESLint
+
+packages/plugins/integration-wakatime  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-wakatime with Nx
+  yarn lib:build:prod                       Build plugin-integration-wakatime with Nx
+  yarn lib:watch                            Build plugin-integration-wakatime with Nx  ∞ long-running
+  nx run plugin-integration-wakatime:build
+  nx run plugin-integration-wakatime:lint   Check source code with ESLint
+  nx run plugin-integration-wakatime:test   Run Jest tests
+
+packages/plugins/integration-zapier  [Node.js, Nx]
+  yarn lib:build                          Build plugin-integration-zapier with Nx
+  yarn lib:build:prod                     Build plugin-integration-zapier with Nx
+  yarn lib:watch                          Build plugin-integration-zapier with Nx  ∞ long-running
+  nx run plugin-integration-zapier:build
+  nx run plugin-integration-zapier:lint   Check source code with ESLint
+  nx run plugin-integration-zapier:test   Run Jest tests
+
+packages/plugins/integration-zapier/zapier  [Node.js]
+  yarn build     Compile TypeScript sources
+  yarn test      Run zapier test
+  yarn push
+  yarn validate  Run zapier validate
+  yarn watch     Compile TypeScript in watch mode  ∞ long-running
+  yarn dev       Run zapier test  ∞ long-running
+  yarn clean     Delete lib and dist  [destructive]
+
+packages/plugins/integration-zapier-ui  [Node.js, Nx]
+  yarn lib:build                            Build plugin-integration-zapier-ui with Nx
+  yarn lib:build:prod                       Build plugin-integration-zapier-ui with Nx
+  yarn lib:watch                            Build plugin-integration-zapier-ui with Nx  ∞ long-running
+  nx run … apier-ui:build                   Run build target (ng-packagr-lite)
+  nx run plugin-integration-zapier-ui:test  Run Jest tests
+  nx run plugin-integration-zapier-ui:lint  Check source code with ESLint
+
+packages/plugins/jitsu-analytics  [Node.js, Nx]
+  yarn lib:build                       Build plugin-jitsu-analytics with Nx
+  yarn lib:build:prod                  Build plugin-jitsu-analytics with Nx
+  yarn lib:watch                       Build plugin-jitsu-analytics with Nx  ∞ long-running
+  nx run plugin-jitsu-analytics:build
+  nx run plugin-jitsu-analytics:lint   Check source code with ESLint
+  nx run plugin-jitsu-analytics:test   Run Jest tests
+
+packages/plugins/job-employee-ui  [Node.js, Nx]
+  yarn lib:build                       Build plugin-job-employee-ui with Nx
+  yarn lib:build:prod                  Build plugin-job-employee-ui with Nx
+  yarn lib:watch                       Build plugin-job-employee-ui with Nx  ∞ long-running
+  nx run plugin-job-employee-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-job-employee-ui:test   Run Jest tests
+  nx run plugin-job-employee-ui:lint   Check source code with ESLint
+
+packages/plugins/job-matching-ui  [Node.js, Nx]
+  yarn lib:build                       Build plugin-job-matching-ui with Nx
+  yarn lib:build:prod                  Build plugin-job-matching-ui with Nx
+  yarn lib:watch                       Build plugin-job-matching-ui with Nx  ∞ long-running
+  nx run plugin-job-matching-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-job-matching-ui:test   Run Jest tests
+  nx run plugin-job-matching-ui:lint   Check source code with ESLint
+
+packages/plugins/job-proposal  [Node.js, Nx]
+  yarn lib:build                    Build plugin-job-proposal with Nx
+  yarn lib:build:prod               Build plugin-job-proposal with Nx
+  yarn lib:watch                    Build plugin-job-proposal with Nx  ∞ long-running
+  nx run plugin-job-proposal:build
+  nx run plugin-job-proposal:lint   Check source code with ESLint
+  nx run plugin-job-proposal:test   Run Jest tests
+
+packages/plugins/job-proposal-ui  [Node.js, Nx]
+  yarn lib:build                       Build plugin-job-proposal-ui with Nx
+  yarn lib:build:prod                  Build plugin-job-proposal-ui with Nx
+  yarn lib:watch                       Build plugin-job-proposal-ui with Nx  ∞ long-running
+  nx run plugin-job-proposal-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-job-proposal-ui:test   Run Jest tests
+  nx run plugin-job-proposal-ui:lint   Check source code with ESLint
+
+packages/plugins/job-search  [Node.js, Nx]
+  yarn lib:build                  Build plugin-job-search with Nx
+  yarn lib:build:prod             Build plugin-job-search with Nx
+  yarn lib:watch                  Build plugin-job-search with Nx  ∞ long-running
+  nx run plugin-job-search:build
+  nx run plugin-job-search:lint   Check source code with ESLint
+  nx run plugin-job-search:test   Run Jest tests
+
+packages/plugins/job-search-ui  [Node.js, Nx]
+  yarn lib:build                     Build plugin-job-search-ui with Nx
+  yarn lib:build:prod                Build plugin-job-search-ui with Nx
+  yarn lib:watch                     Build plugin-job-search-ui with Nx  ∞ long-running
+  nx run plugin-job-search-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-job-search-ui:test   Run Jest tests
+  nx run plugin-job-search-ui:lint   Check source code with ESLint
+
+packages/plugins/jobs-ui  [Node.js, Nx]
+  yarn lib:build               Build plugin-jobs-ui with Nx
+  yarn lib:build:prod          Build plugin-jobs-ui with Nx
+  yarn lib:watch               Build plugin-jobs-ui with Nx  ∞ long-running
+  nx run plugin-jobs-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-jobs-ui:test   Run Jest tests
+  nx run plugin-jobs-ui:lint   Check source code with ESLint
+
+packages/plugins/knowledge-base  [Node.js, Nx]
+  yarn lib:build                      Build plugin-knowledge-base with Nx
+  yarn lib:build:prod                 Build plugin-knowledge-base with Nx
+  yarn lib:watch                      Build plugin-knowledge-base with Nx  ∞ long-running
+  nx run plugin-knowledge-base:build
+  nx run plugin-knowledge-base:lint   Check source code with ESLint
+  nx run plugin-knowledge-base:test   Run Jest tests
+
+packages/plugins/legal-ui  [Node.js, Nx]
+  yarn lib:build                Build plugin-legal-ui with Nx
+  yarn lib:build:prod           Build plugin-legal-ui with Nx
+  yarn lib:watch                Build plugin-legal-ui with Nx  ∞ long-running
+  nx run plugin-legal-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-legal-ui:test   Run Jest tests
+  nx run plugin-legal-ui:lint   Check source code with ESLint
+
+packages/plugins/maintenance-ui  [Node.js, Nx]
+  yarn lib:build                      Build plugin-maintenance-ui with Nx
+  yarn lib:build:prod                 Build plugin-maintenance-ui with Nx
+  yarn lib:watch                      Build plugin-maintenance-ui with Nx  ∞ long-running
+  nx run plugin-maintenance-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-maintenance-ui:test   Run Jest tests
+  nx run plugin-maintenance-ui:lint   Check source code with ESLint
+
+packages/plugins/onboarding-ui  [Node.js, Nx]
+  yarn lib:build                     Build plugin-onboarding-ui with Nx
+  yarn lib:build:prod                Build plugin-onboarding-ui with Nx
+  yarn lib:watch                     Build plugin-onboarding-ui with Nx  ∞ long-running
+  nx run plugin-onboarding-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-onboarding-ui:test   Run Jest tests
+  nx run plugin-onboarding-ui:lint   Check source code with ESLint
+
+packages/plugins/posthog  [Node.js, Nx]
+  yarn lib:build               Build plugin-posthog with Nx
+  yarn lib:build:prod          Build plugin-posthog with Nx
+  yarn lib:watch               Build plugin-posthog with Nx  ∞ long-running
+  nx run plugin-posthog:build
+  nx run plugin-posthog:lint   Check source code with ESLint
+  nx run plugin-posthog:test   Run Jest tests
+
+packages/plugins/posthog-ui  [Node.js, Nx]
+  yarn lib:build                  Build plugin-posthog-ui with Nx
+  yarn lib:build:prod             Build plugin-posthog-ui with Nx
+  yarn lib:watch                  Build plugin-posthog-ui with Nx  ∞ long-running
+  nx run plugin-posthog-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-posthog-ui:test   Run Jest tests
+  nx run plugin-posthog-ui:lint   Check source code with ESLint
+
+packages/plugins/product-reviews  [Node.js, Nx]
+  yarn lib:build                       Build plugin-product-reviews with Nx
+  yarn lib:build:prod                  Build plugin-product-reviews with Nx
+  yarn lib:watch                       Build plugin-product-reviews with Nx  ∞ long-running
+  nx run plugin-product-reviews:build
+  nx run plugin-product-reviews:lint   Check source code with ESLint
+  nx run plugin-product-reviews:test   Run Jest tests
+
+packages/plugins/public-layout-ui  [Node.js, Nx]
+  yarn lib:build                        Build plugin-public-layout-ui with Nx
+  yarn lib:build:prod                   Build plugin-public-layout-ui with Nx
+  yarn lib:watch                        Build plugin-public-layout-ui with Nx  ∞ long-running
+  nx run plugin-public-layout-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-public-layout-ui:test   Run Jest tests
+  nx run plugin-public-layout-ui:lint   Check source code with ESLint
+
+packages/plugins/registry  [Node.js, Nx]
+  yarn lib:build                Build plugin-registry with Nx
+  yarn lib:build:prod           Build plugin-registry with Nx
+  yarn lib:watch                Build plugin-registry with Nx  ∞ long-running
+  nx run plugin-registry:build
+  nx run plugin-registry:lint   Check source code with ESLint
+  nx run plugin-registry:test   Run Jest tests
+
+packages/plugins/sentry-tracing  [Node.js, Nx]
+  yarn lib:build              Build plugin-sentry with Nx
+  yarn lib:build:prod         Build plugin-sentry with Nx
+  yarn lib:watch              Build plugin-sentry with Nx  ∞ long-running
+  nx run plugin-sentry:build
+  nx run plugin-sentry:lint   Check source code with ESLint
+  nx run plugin-sentry:test   Run Jest tests
+
+packages/plugins/soundshot  [Node.js, Nx]
+  yarn lib:build                 Build plugin-soundshot with Nx
+  yarn lib:build:prod            Build plugin-soundshot with Nx
+  yarn lib:watch                 Build plugin-soundshot with Nx  ∞ long-running
+  nx run plugin-soundshot:build
+
+packages/plugins/videos  [Node.js, Nx]
+  yarn lib:build              Build plugin-videos with Nx
+  yarn lib:build:prod         Build plugin-videos with Nx
+  yarn lib:watch              Build plugin-videos with Nx  ∞ long-running
+  nx run plugin-videos:build
+  nx run plugin-videos:lint   Check source code with ESLint
+  nx run plugin-videos:test   Run Jest tests
+
+packages/plugins/videos-ui  [Node.js, Nx]
+  yarn lib:build                 Build plugin-videos-ui with Nx
+  yarn lib:build:prod            Build plugin-videos-ui with Nx
+  yarn lib:watch                 Build plugin-videos-ui with Nx  ∞ long-running
+  nx run plugin-videos-ui:build  Run build target (ng-packagr-lite)
+  nx run plugin-videos-ui:test   Run Jest tests
+  nx run plugin-videos-ui:lint   Check source code with ESLint
+
+packages/scheduler  [Node.js, Nx]
+  nx run scheduler:build
+  nx run scheduler:test   Run Jest tests
+
+packages/ui-auth  [Node.js, Nx]
+  yarn lib:build        Build ui-auth with Nx
+  yarn lib:build:prod   Build ui-auth with Nx
+  yarn lib:watch        Build ui-auth with Nx  ∞ long-running
+  nx run ui-auth:build  Run build target (ng-packagr-lite)
+  nx run ui-auth:test   Run Jest tests
+  nx run ui-auth:lint   Check source code with ESLint
+
+packages/ui-config  [Node.js, Nx]
+  yarn lib:build              Build ui-config with Nx
+  yarn lib:build:prod         Build ui-config with Nx
+  yarn lib:watch              Build ui-config with Nx  ∞ long-running
+  yarn generate-env           Run ../../.scripts/configure.ts
+  yarn generate-env:prod      Run ../../.scripts/configure.ts
+  yarn generate-env:dev       Run ../../.scripts/configure.ts
+  yarn replace-env            Run scripts/replace-env.js
+  yarn replace-env:prod       Run scripts/replace-env.js
+  yarn replace-env:dev        Run scripts/replace-env.js
+  yarn setup-env              Run ../../.scripts/configure.ts, then run scripts/replace-env.js
+  yarn setup-env:prod         Run ../../.scripts/configure.ts, then run scripts/replace-env.js
+  yarn setup-env:dev          Run ../../.scripts/configure.ts, then run scripts/replace-env.js
+  nx run ui-config:build      Run build target (ng-packagr-lite)
+  nx run ui-config:setup-env
+  nx run ui-config:test       Run Jest tests
+  nx run ui-config:lint       Check source code with ESLint
+
+packages/ui-core  [Node.js, Nx]
+  yarn lib:build         Build ui-core with Nx
+  yarn lib:build:prod    Build ui-core with Nx
+  yarn lib:watch         Build ui-core with Nx  ∞ long-running
+  nx run ui-core:build   Run build target (ng-packagr-lite)
+  nx run ui-core:config
+  nx run ui-core:test    Run Jest tests
+  nx run ui-core:lint    Check source code with ESLint
+
+packages/ui-react  [Node.js, Nx]
+  yarn lib:build         Build ui-react with Nx
+  yarn lib:build:prod    Build ui-react with Nx
+  yarn lib:watch         Build ui-react with Nx  ∞ long-running
+  nx run ui-react:build  Run build target (ng-packagr-lite)
+  nx run ui-react:test   Run Jest tests
+  nx run ui-react:lint   Check source code with ESLint
+
+packages/ui-react-components  [Node.js, Nx]
+  yarn lib:build                    Build ui-react-components with Nx
+  yarn lib:watch                    Build ui-react-components with Nx  ∞ long-running
+  nx run ui-react-components:build
+  nx run ui-react-components:test   Run Jest tests
+  nx run ui-react-components:lint   Check source code with ESLint
+
+packages/utils  [Node.js, Nx]
+  yarn lib:build       Build utils with Nx
+  yarn lib:build:prod  Build utils with Nx
+  yarn lib:watch       Build utils with Nx  ∞ long-running
+  nx run utils:build
+  nx run utils:lint    Check source code with ESLint
+  nx run utils:test    Run Jest tests

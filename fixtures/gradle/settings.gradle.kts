@@ -1,2 +1,3 @@
 rootProject.name = "shop"
-include(":app", ":lib")
+include(":app")
+include("lib")

@@ -1,0 +1,192 @@
+hoppscotch_hoppscotch  [Node.js, Docker, PostgreSQL]
+
+  pnpm run preinstall
+  pnpm run prepare                          Install Git hooks with Husky  ∆ git
+  pnpm run dev                              Run do-dev in all workspace packages  ∞ long-running
+  pnpm run gen-gql                          Run generate-gql-sdl in all workspace packages
+  pnpm run generate                         Run do-build-prod in all workspace packages
+  pnpm run start                            Serve packages/hoppscotch-selfhost-web/dist over HTTP  ∞ long-running
+  pnpm run lint                             Run do-lint in all workspace packages
+  pnpm run typecheck                        Run do-typecheck in all workspace packages
+  pnpm run lintfix
+  pnpm run pre-commit                       Run linting and type checks
+  pnpm run test                             Run do-test in all workspace packages
+  pnpm run generate-ui                      Run do-build-ui in all workspace packages
+  docker compose up -d                      Start all Docker services
+  docker compose up -d hoppscotch-backend   Start hoppscotch-backend service (built from source)
+  docker compose up -d hoppscotch-app       Start hoppscotch-app service (built from source)
+  docker compose up -d hoppscotch-sh-admin  Start hoppscotch-sh-admin service (built from source)
+  docker compose up -d hoppscotch-aio       Start hoppscotch-aio service (built from source)
+  docker compose up -d … otch-aio-no-db     Start hoppscotch-aio-no-db service (built from source)
+  docker compose up -d hoppscotch-db        Start PostgreSQL
+  docker compose up -d hoppscotch-migrate   Start hoppscotch-migrate service (built from source)
+  docker compose up -d … ch-old-backend     Start hoppscotch-old-backend service (built from source)
+  docker compose up -d hoppscotch-old-app   Start hoppscotch-old-app service (built from source)
+  docker compose up -d … h-old-sh-admin     Start hoppscotch-old-sh-admin service (built from source)
+  docker compose --profile backend up -d    Start Docker services in backend profile
+  docker compose --profile … up -d          Start Docker services in just-backend profile
+  docker compose --profile app up -d        Start Docker services in app profile
+  docker compose --profile admin up -d      Start Docker services in admin profile
+  docker compose --profile default up -d    Start Docker services in default profile
+  docker compose --profile … up -d          Start Docker services in default-no-db profile
+  docker compose --profile database up -d   Start Docker services in database profile
+  docker compose --profile … up -d          Start Docker services in deprecated profile
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose build                      Build Docker service images
+  docker compose down                       Stop and remove Docker services
+  ./healthcheck.sh
+  pnpm -r run preview                       Preview production build with Vite in every workspace package
+  pnpm -r run do-lint                       Check source code with ESLint in every workspace package
+  pnpm -r run do-lintfix                    Fix lint issues with ESLint in every workspace package
+
+packages/codemirror-lang-graphql  [Node.js]
+  pnpm run prepare  Bundle with Rollup, then compile TypeScript sources
+
+packages/hoppscotch-agent  [Node.js, Tauri, Vite]
+  pnpm run dev           Start Vite development server  ∞ long-running
+  pnpm run build         Check Vue and TypeScript types, then build app with Vite
+  pnpm run tauri
+  pnpm run lint:ts       Check Vue and TypeScript types
+  pnpm run prod-lint     Check source code with ESLint
+  pnpm run do-typecheck  Check Vue and TypeScript types
+
+packages/hoppscotch-agent/src-tauri  [Rust]
+  cargo run  Run Rust program
+
+packages/hoppscotch-backend  [Node.js, NestJS, Jest, Prisma]
+  pnpm run prebuild          Delete dist
+  pnpm run build             Build NestJS app
+  pnpm run postbuild         Create dist/mailer, then copy src/mailer/templates to dist/mailer/templates
+  pnpm run generate-gql-sdl  Start NestJS app  ∞ long-running
+  pnpm run format            Format source code with Prettier
+  pnpm run start             Start NestJS app  ∞ long-running
+  pnpm run start:dev         Start NestJS app in watch mode  ∞ long-running
+  pnpm run start:debug       Start NestJS app in watch mode  ∞ long-running
+  pnpm run start:prod        Run dist/main
+  pnpm run lint              Fix lint issues with ESLint
+  pnpm run test              Run Jest tests
+  pnpm run postinstall       Generate Prisma client, then start NestJS app  ∞ long-running
+  pnpm run test:watch        Run Jest tests in watch mode  ∞ long-running
+  pnpm run test:cov          Run Jest tests with coverage
+  pnpm run test:debug        Run node_modules/.bin/jest
+  pnpm run test:e2e          Run Jest tests
+  pnpm run do-test           Run Jest tests
+
+packages/hoppscotch-cli  [Node.js, Vitest]
+  pnpm run build            Build package with tsup
+  pnpm run dev              Build with tsup in watch mode  ∞ long-running
+  pnpm run debugger         Run debugger.js
+  pnpm run prepublish       Build package with tsup
+  pnpm run prettier-format  Format source code with Prettier
+  pnpm run test             Build package with tsup, then run Vitest tests
+  pnpm run do-typecheck     Check TypeScript types
+  pnpm run do-test          Build package with tsup, then run Vitest tests
+
+packages/hoppscotch-common  [Node.js, Vitest, GraphQL, Vite]
+  pnpm run dev              Run all dev:* scripts  ∞ long-running
+  pnpm run test             Run Vitest tests
+  pnpm run test:watch       Run Vitest tests
+  pnpm run dev:vite         Start Vite development server  ∞ long-running
+  pnpm run dev:gql-codegen  Generate GraphQL types  ∞ long-running
+  pnpm run lint:ts          Check Vue and TypeScript types
+  pnpm run prod-lint        Check source code with ESLint
+  pnpm run gql-codegen      Generate GraphQL types
+  pnpm run postinstall      Generate GraphQL types
+  pnpm run do-test          Run Vitest tests
+  pnpm run do-typecheck     Run type-check.mjs
+
+packages/hoppscotch-data  [Node.js, Vite]
+  pnpm run dev           Build app with Vite  ∞ long-running
+  pnpm run build:code    Build app with Vite
+  pnpm run build:decl    Compile TypeScript sources
+  pnpm run build         Build app with Vite, then compile TypeScript sources
+  pnpm run prepare       Build app with Vite, then compile TypeScript sources
+  pnpm run do-typecheck  Check TypeScript types
+
+packages/hoppscotch-desktop  [Node.js, Tauri, Vitest, Vite, Rust]
+  pnpm run dev             Start Vite development server  ∞ long-running
+  pnpm run build           Check Vue and TypeScript types, then build app with Vite
+  pnpm run test            Run Vitest tests
+  pnpm run test:watch      Run Vitest tests
+  pnpm run tauri
+  pnpm run lint:ts         Check Vue and TypeScript types
+  pnpm run prod-lint       Check source code with ESLint
+  pnpm run do-typecheck    Check Vue and TypeScript types
+  pnpm run prepare-web     Build Rust project in release mode (+3 more steps)  ↓ download
+  pnpm run dev:full        Start Tauri app in development mode  ∞ long-running
+  pnpm run build:full      Build Tauri app
+  pnpm run dev:portable    Start Tauri app in development mode  ∞ long-running
+  pnpm run build:portable  Build Tauri app
+  pnpm run do-test         Run Vitest tests
+
+packages/hoppscotch-desktop/crates/webapp-bundler  [Rust]
+  cargo run  Run Rust program
+
+packages/hoppscotch-desktop/plugin-workspace/tauri-plugin-appload  [Node.js]
+  pnpm run build           Compile TypeScript sources, then bundle with Rollup
+  pnpm run prepublishOnly  Compile TypeScript sources, then bundle with Rollup
+  pnpm run pretest         Compile TypeScript sources, then bundle with Rollup
+
+packages/hoppscotch-desktop/plugin-workspace/tauri-plugin-appload/examples/tauri-app  [Node.js, Tauri, Vite]
+  pnpm run dev    Start Vite development server  ∞ long-running
+  pnpm run build  Build app with Vite
+  pnpm run tauri
+
+packages/hoppscotch-desktop/plugin-workspace/tauri-plugin-appload/examples/tauri-app/src-tauri  [Rust]
+  cargo run  Run Rust program
+
+packages/hoppscotch-desktop/plugin-workspace/tauri-plugin-relay  [Node.js]
+  pnpm run build           Compile TypeScript sources, then bundle with Rollup
+  pnpm run prepublishOnly  Compile TypeScript sources, then bundle with Rollup
+  pnpm run pretest         Compile TypeScript sources, then bundle with Rollup
+
+packages/hoppscotch-desktop/src-tauri  [Rust]
+  cargo run  Run Rust program
+
+packages/hoppscotch-js-sandbox  [Node.js, Vite, Vitest]
+  pnpm run test           Run Vitest tests
+  pnpm run build          Build app with Vite, then compile TypeScript sources
+  pnpm run clean          Build TypeScript project references
+  pnpm run postinstall    Build app with Vite, then compile TypeScript sources
+  pnpm run prepublish     Build app with Vite, then compile TypeScript sources
+  pnpm run do-typecheck   Check TypeScript types
+  pnpm run do-build-prod  Build app with Vite, then compile TypeScript sources
+  pnpm run do-test        Run Vitest tests
+
+packages/hoppscotch-kernel  [Node.js, Vite]
+  pnpm run dev           Build app with Vite  ∞ long-running
+  pnpm run build:code    Build app with Vite
+  pnpm run build:decl    Compile TypeScript sources
+  pnpm run build         Build app with Vite, then compile TypeScript sources
+  pnpm run prepare       Build app with Vite, then compile TypeScript sources
+  pnpm run do-typecheck  Check TypeScript types
+
+packages/hoppscotch-selfhost-web  [Node.js, GraphQL, Vite]
+  pnpm run dev:vite         Start Vite development server  ∞ long-running
+  pnpm run dev:gql-codegen  Generate GraphQL types  ∞ long-running
+  pnpm run dev              Run all dev:* scripts  ∞ long-running
+  pnpm run build            Run node_modules/vite/bin/vite.js
+  pnpm run lint:ts          Check Vue and TypeScript types
+  pnpm run prod-lint        Check source code with ESLint
+  pnpm run generate         Run node_modules/vite/bin/vite.js
+  pnpm run do-dev           Run all dev:* scripts  ∞ long-running
+  pnpm run do-build-prod    Run node_modules/vite/bin/vite.js
+  pnpm run do-typecheck     Check source code with ESLint
+  pnpm run gql-codegen      Generate GraphQL types
+  pnpm run postinstall      Generate GraphQL types
+
+packages/hoppscotch-selfhost-web/webapp-server  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  go run .        Run Go webapp-server program
+
+packages/hoppscotch-sh-admin  [Node.js, GraphQL, Vite]
+  pnpm run dev              Run all dev:* scripts  ∞ long-running
+  pnpm run dev:vite         Start Vite development server  ∞ long-running
+  pnpm run dev:gql-codegen  Generate GraphQL types  ∞ long-running
+  pnpm run gql-codegen      Generate GraphQL types
+  pnpm run postinstall      Generate GraphQL types
+  pnpm run build            Build app with Vite

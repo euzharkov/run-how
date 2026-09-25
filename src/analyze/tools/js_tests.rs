@@ -94,3 +94,34 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn test_runners() {
+        assert_eq!(
+            sum("vitest run --coverage").text,
+            "Run Vitest tests with coverage"
+        );
+        assert_eq!(sum("vitest --watch").text, "Run Vitest tests in watch mode");
+        assert_eq!(sum("vitest bench").kind, Bench);
+        assert_eq!(sum("jest --coverage").text, "Run Jest tests with coverage");
+        assert_eq!(sum("mocha").kind, Test);
+    }
+
+    #[test]
+    fn end_to_end_runners() {
+        assert_eq!(
+            sum("playwright test --ui").text,
+            "Open the Playwright test UI"
+        );
+        assert_eq!(sum("playwright install").kind, Install);
+        assert_eq!(sum("cypress open").kind, E2e);
+        assert_eq!(sum("cypress run").text, "Run Cypress end-to-end tests");
+        assert_eq!(sum("codecov").risk, External);
+        assert_eq!(sum("size-limit").risk, Safe);
+    }
+}

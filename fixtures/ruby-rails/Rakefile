@@ -10,3 +10,18 @@ namespace :reports do
   task weekly: :environment do
   end
 end
+
+namespace :db do
+  namespace :seed do
+    desc "Seed demo accounts"
+    task demo: :environment do |t, args|
+      if ENV["VERBOSE"]
+        puts t.name
+      end
+    end
+  end
+
+  desc "Rebuild the search index"
+  task reindex: :environment do
+  end
+end

@@ -17,7 +17,7 @@ impl Discoverer for Php {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has("composer.json") || dir.has("artisan")
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let composer: Option<Value> = base
             .read("composer.json")
@@ -168,7 +168,7 @@ impl Discoverer for Php {
                         .cat(Category::Quality),
                 );
             }
-        } else if base.path.join("bin/console").is_file() {
+        } else if ctx.has_file(base, "bin/console") {
             let sf = |c: &str| format!("php bin/console {c}");
             out.actions.push(
                 Action::new("dev", "symfony server:start".to_string())

@@ -1,0 +1,45 @@
+cljdoc_cljdoc  [Node.js, Terraform, Clojure]
+
+  clojure -M:nrepl            Run nrepl deps.edn alias
+  clojure -M:flowstorm        Run flowstorm deps.edn alias
+  clojure -M:test             Run test deps.edn alias
+  clojure -M:clerk            Run clerk deps.edn alias
+  clojure -M:build            Run build deps.edn alias
+  clojure -M:clj-kondo        Run clj-kondo deps.edn alias
+  clojure -M:eastwood         Run eastwood deps.edn alias
+  clojure -M:cli              Run cli deps.edn alias
+  clojure -M:outdated         Run outdated deps.edn alias
+  clojure -M -r               Start Clojure REPL  ∞ long-running
+  terraform … init            Initialise Terraform working directory
+  terraform … plan            Plan Terraform changes  [external]
+  terraform … apply           Apply Terraform changes to infrastructure  [external]
+  terraform … destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate        Validate Terraform configuration
+  terraform … fmt -recursive  Format Terraform files
+  terraform … init            Initialise Terraform working directory
+  terraform … plan            Plan Terraform changes  [external]
+  terraform … apply           Apply Terraform changes to infrastructure  [external]
+  terraform … destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate        Validate Terraform configuration
+  terraform … fmt -recursive  Format Terraform files
+  terraform … init            Initialise Terraform working directory
+  terraform … plan            Plan Terraform changes  [external]
+  terraform … apply           Apply Terraform changes to infrastructure  [external]
+  terraform … destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate        Validate Terraform configuration
+  terraform … fmt -recursive  Format Terraform files
+  terraform … init            Initialise Terraform working directory
+  terraform … plan            Plan Terraform changes  [external]
+  terraform … apply           Apply Terraform changes to infrastructure  [external]
+  terraform … destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate        Validate Terraform configuration
+  terraform … fmt -recursive  Format Terraform files
+  terraform … init            Initialise Terraform working directory
+  terraform … plan            Plan Terraform changes  [external]
+  terraform … apply           Apply Terraform changes to infrastructure  [external]
+  terraform … destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate        Validate Terraform configuration
+  terraform … fmt -recursive  Format Terraform files
+
+ops/exoscale/deploy  [Clojure]
+  clojure -M -r  Start Clojure REPL  ∞ long-running

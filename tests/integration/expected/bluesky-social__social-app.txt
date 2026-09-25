@@ -1,0 +1,123 @@
+bluesky-social_social-app  [Node.js, Expo, Docker, Jest, Maestro]
+
+  pnpm exec expo-doctor                     Check Expo project for common issues
+  pnpm exec eas build                       Build app with EAS Build  [external]
+  pnpm exec eas build --local               Build app locally with EAS
+  pnpm exec eas update                      Publish over-the-air update with EAS  [external]
+  pnpm exec eas submit                      Submit app to app stores  [external]
+  pnpm run prepare                          Run is-ci, then install Git hooks with Husky  ∆ git
+  pnpm run postinstall                      Run lingui compile (+3 more steps)
+  pnpm run prebuild                         Generate native iOS and Android projects
+  pnpm run android                          Build and run app on Android  ∞ long-running  ⊙ device
+  pnpm run android:prod                     Build and run app on Android  ∞ long-running  ⊙ device
+  pnpm run android:profile                  Build and run app on Android  ∞ long-running
+  pnpm run ios                              Build and run app on iOS  ∞ long-running  ⊙ device
+  pnpm run web                              Start Expo development server in browser  ∞ long-running
+  pnpm run use-build-number
+  pnpm run use-build-number-with-bump
+  pnpm run build-web                        Export Expo app bundle, then run scripts/post-web-build.js
+  pnpm run check-web-browser-support
+  pnpm run build-all                        Run lingui, then run lingui compile, then build app with EAS Build  [external]
+  pnpm run build-ios                        Build app with EAS Build  [external]
+  pnpm run build-android                    Build app with EAS Build  [external]
+  pnpm run build                            Build app with EAS Build  [external]
+  pnpm run build-embed                      Run build-snippet in bskyembed (+2 more steps)
+  pnpm run start                            Start Expo development server  ∞ long-running
+  pnpm run start:prod                       Start Expo development server  ∞ long-running
+  pnpm run test                             Run Jest tests
+  pnpm run test-watch                       Run Jest tests in watch mode
+  pnpm run test-ci                          Run Jest tests
+  pnpm run test-coverage                    Run Jest tests with coverage
+  pnpm run lint                             Check source code with Oxlint (+1 more step)
+  pnpm run lint-native                      Check Swift source with SwiftLint, then run ktlint
+  pnpm run lint-native:fix                  Fix Swift lint issues with SwiftLint, then run ktlint
+  pnpm run lexicons:generate                Run lex build
+  pnpm run lexicons:install
+  pnpm run lexicons:update
+  pnpm run lexicons:verify
+  pnpm run typecheck                        Compile TypeScript sources
+  pnpm run typecheck:ios                    Compile TypeScript sources
+  pnpm run typecheck:android                Compile TypeScript sources
+  pnpm run typecheck:web                    Compile TypeScript sources
+  pnpm run e2e:mock-server                  Run start in dev-env  ∞ long-running
+  pnpm run e2e:build                        Build and run app on iOS  ∞ long-running
+  pnpm run e2e:build-android                Build and run app on Android  ∞ long-running
+  pnpm run e2e:start                        Start Expo development server  ∞ long-running
+  pnpm run e2e:run                          Run Maestro mobile end-to-end flows  ⊙ device
+  pnpm run perf:test                        Run Maestro mobile end-to-end flows  ⊙ device
+  pnpm run perf:test:run                    Run Maestro mobile end-to-end flows in __e2e__/perf-test.yml  ⊙ device
+  pnpm run perf:test:measure                Run flashlight test
+  pnpm run perf:test:results
+  pnpm run perf:measure
+  pnpm run intl:build                       Run lingui, then run lingui compile
+  pnpm run intl:extract
+  pnpm run intl:extract:all
+  pnpm run intl:compile                     Run lingui compile
+  pnpm run intl:compile-if-needed           Run is-ci, then check environment, then run lingui compile
+  pnpm run intl:pull
+  pnpm run intl:push-sources
+  pnpm run … h-translations
+  pnpm run intl:release
+  pnpm run nuke                             Delete node_modules, then delete ios, then delete android  [destructive]
+  pnpm run update-extensions                Run scripts/updateExtensions.sh
+  pnpm run export                           Export Expo app bundle, then run sentry-expo-upload-sourcemaps
+  pnpm run upload-native-sourcemaps
+  pnpm run generate-web-stats               Export Expo app bundle, then run scripts/post-web-build.js
+  pnpm run open-analyzer
+  pnpm run icons:optimize
+  pnpm run prettier                         Check formatting with Prettier
+  make help                                 Print info about all commands
+  make build-web                            Compile web bundle, copy to bskyweb directory
+  make build-web-embed                      Compile web embed bundle, copy to bskyweb/embedr* directories
+  make test                                 Run all tests
+  make lint                                 Run style checks and verify syntax
+  make deps                                 Installs dependent libs using 'pnpm install'  ↓ download
+  make nvm-setup                            Use NVM to install and activate node+pnpm  ↓ download
+  docker build -t … .                       Build Docker image
+  docker build -f Dockerfile.bskylink … .   Build Docker image from Dockerfile.bskylink
+  docker build -f … .                       Build Docker image from Dockerfile.bskyogcard
+  docker build -f Dockerfile.embedr -t … .  Build Docker image from Dockerfile.embedr
+  ./scripts/buildAndroidRelease.sh
+  ./scripts/denisPublish.sh
+  ./scripts/setGitHubOutput.sh
+
+bskyembed  [Node.js, Vite]
+  pnpm run dev            Start Vite development server  ∞ long-running
+  pnpm run dev-snippet    Compile TypeScript sources, then serve dist over HTTP  ∞ long-running
+  pnpm run build          Compile TypeScript sources, then build app with Vite
+  pnpm run build-snippet  Compile TypeScript sources
+  pnpm run analyze        Build app with Vite
+  pnpm run lint           Check source code with ESLint
+  pnpm run typecheck      Check TypeScript types
+  pnpm run format         Format source code with Prettier
+
+bskylink  [Node.js]
+  yarn test       Run Node.js tests and run Node.js tests
+  yarn test:e2e   Run Node.js tests
+  yarn test:unit  Run Node.js tests
+  yarn build      Compile TypeScript sources
+
+bskyogcard  [Node.js]
+  pnpm run start          Run src/bin.ts
+  pnpm run dev            Run src with auto-reload  ∞ long-running
+  pnpm run build          Compile TypeScript sources, then copy src/assets to dist
+  pnpm run install-fonts  Run scripts/install-fonts.ts
+  pnpm run typecheck      Check TypeScript types
+
+bskyweb  [Go]
+  go mod tidy           Tidy Go module dependencies  ↓ download
+  go run ./cmd/bskyweb  Run bskyweb command
+  go run ./cmd/embedr   Run embedr command
+  make help             Print info about all commands
+  make build            Build all executables
+  make test             Run all tests
+  make coverage-html    Generate test coverage report and open in browser
+  make lint             Verify code style and run static checks
+  make fmt              Run syntax re-formatting (modify in place)
+  make check            Compile everything, checking syntax (does not output binaries)
+  make run-dev-bskyweb  Runs 'bskyweb' for local dev
+  make run-dev-embedr   Runs 'embedr' for local dev
+
+dev-env  [Node.js]
+  pnpm run start           Run mock-server.ts
+  pnpm run start:external  Run mock-server.ts

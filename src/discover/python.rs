@@ -6,6 +6,7 @@
 use super::{Context, Discoverer, Discovery};
 use crate::model::*;
 use crate::repo::DirInfo;
+use std::rc::Rc;
 use toml::Value;
 
 pub struct Python;
@@ -65,7 +66,8 @@ impl Runner {
     }
 }
 
-fn runner(dir: &DirInfo, py: Option<&Value>) -> Runner {
+/// The runner `dir` itself declares: its lockfile or its `[tool.*]` tables.
+fn own_runner(dir: &DirInfo, py: Option<&Value>) -> Runner {
     let tool = py.and_then(|p| p.get("tool"));
     if dir.has("uv.lock") || tool.and_then(|t| t.get("uv")).is_some() {
         Runner::Uv
@@ -84,6 +86,48 @@ fn runner(dir: &DirInfo, py: Option<&Value>) -> Runner {
     } else {
         Runner::None
     }
+}
+
+/// The runner for `dir`: what it declares itself, else the nearest ancestor with a lockfile
+/// or a workspace table (`[tool.uv.workspace]`, `[tool.poetry]`, `[tool.pdm]`), the way a
+/// uv/Poetry workspace member is run from inside its own directory.
+fn runner(ctx: &Context, dir: &DirInfo, py: Option<&Value>) -> Runner {
+    let own = own_runner(dir, py);
+    if own != Runner::None {
+        return own;
+    }
+    for a in ctx.ancestors(dir).into_iter().skip(1) {
+        let apy = ctx.toml(a, "pyproject.toml");
+        let tool = apy.as_ref().and_then(|p| p.get("tool"));
+        if a.has("uv.lock")
+            || tool
+                .and_then(|t| t.get("uv"))
+                .and_then(|u| u.get("workspace"))
+                .is_some()
+        {
+            return Runner::Uv;
+        }
+        if a.has("poetry.lock") || tool.and_then(|t| t.get("poetry")).is_some() {
+            return Runner::Poetry;
+        }
+        if a.has("pdm.lock") || tool.and_then(|t| t.get("pdm")).is_some() {
+            return Runner::Pdm;
+        }
+        if a.has("Pipfile") {
+            return Runner::Pipenv;
+        }
+    }
+    Runner::None
+}
+
+/// The interpreter version a `.python-version` (pyenv/uv) pins: its first line, without a
+/// `python-`/`cpython-` implementation prefix.
+fn python_version_file(text: &str) -> Option<String> {
+    let v = text.lines().next()?.trim();
+    let v = v
+        .trim_start_matches("cpython-")
+        .trim_start_matches("python-");
+    (!v.is_empty()).then(|| v.to_string())
 }
 
 /// All dependency names mentioned in pyproject/requirements, lowercased, for cheap `contains`.
@@ -201,10 +245,7 @@ fn nox_sessions(text: &str) -> Vec<(String, Option<String>)> {
                             l.split("name=")
                                 .nth(1)
                                 .and_then(|s| {
-                                    s.trim()
-                                        .trim_matches(|c| {
-                                            c == '"' || c == '\'' || c == ')' || c == ','
-                                        })
+                                    super::unquote(s.trim().trim_end_matches([')', ',']))
                                         .split(['"', '\''])
                                         .next()
                                 })
@@ -234,26 +275,39 @@ impl Discoverer for Python {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(MARKERS)
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
-        let py: Option<Value> = base
-            .read("pyproject.toml")
-            .and_then(|t| toml::from_str(&t).ok());
+        let py: Option<Rc<Value>> = ctx.toml(base, "pyproject.toml");
+        let py = py.as_deref();
+        // Declared interpreter version, most specific source first.
         if let Some(rp) = py
-            .as_ref()
             .and_then(|p| p.get("project"))
             .and_then(|p| p.get("requires-python"))
             .and_then(|v| v.as_str())
         {
             out.version("python", rp, "pyproject.toml");
+        } else if let Some(pv) = py
+            .and_then(|p| p.get("tool"))
+            .and_then(|t| t.get("poetry"))
+            .and_then(|p| p.get("dependencies"))
+            .and_then(|d| d.get("python"))
+            .and_then(|v| v.as_str())
+        {
+            out.version("python", pv, "pyproject.toml");
+        } else if let Some(v) = ctx
+            .text(base, ".python-version")
+            .and_then(|t| python_version_file(&t))
+        {
+            out.version("python", v, ".python-version");
+        } else if let Some((v, src)) = super::tool_version(ctx, base, "python") {
+            out.version("python", v, src);
         }
-        let r = runner(base, py.as_ref());
+        let r = runner(ctx, base, py);
         let pre = r.prefix();
         let tool = r.tool();
-        let deps = dependency_text(base, py.as_ref());
+        let deps = dependency_text(base, py);
         let tool_cfg = |name: &str| -> bool {
-            py.as_ref()
-                .and_then(|p| p.get("tool"))
+            py.and_then(|p| p.get("tool"))
                 .and_then(|t| t.get(name))
                 .is_some()
         };
@@ -564,7 +618,7 @@ impl Discoverer for Python {
                 "src/main.py",
                 "server.py",
             ] {
-                let Some(text) = crate::repo::read_text(&base.path.join(f)) else {
+                let Some(text) = super::text_at(ctx, base, f) else {
                     continue;
                 };
                 let module = f.trim_end_matches(".py").replace('/', ".");
@@ -644,5 +698,46 @@ fn script_body(v: &Value) -> (String, Option<String>) {
             (body, help)
         }
         _ => (String::new(), None),
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    fn python_version(dir: &str) -> (String, String) {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let d = ctx.dir_at(dir).unwrap();
+        let disc = Python.discover(&ctx, d, &[d]);
+        let v = disc.versions.iter().find(|v| v.tool == "python").unwrap();
+        (v.value.clone(), v.source.clone())
+    }
+
+    #[test]
+    fn python_version_file_and_poetry_constraint() {
+        assert_eq!(
+            python_version("py"),
+            ("3.12.1".into(), ".python-version".into())
+        );
+        assert_eq!(
+            python_version("poetry"),
+            ("^3.11".into(), "pyproject.toml".into())
+        );
+        assert_eq!(
+            python_version_file("python-3.11.4\n"),
+            Some("3.11.4".into())
+        );
+    }
+
+    #[test]
+    fn workspace_member_uses_the_root_runner() {
+        let (root, dirs) = super::super::fixture_dirs("python-uv");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let lib = ctx.dir_at("packages/lib").unwrap();
+        assert_eq!(
+            runner(&ctx, lib, ctx.toml(lib, "pyproject.toml").as_deref()),
+            Runner::Uv
+        );
     }
 }

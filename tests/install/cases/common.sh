@@ -24,7 +24,7 @@ smoke() {
   printf '{"scripts":{"dev":"vite","test":"vitest run"}}\n' > "$tmp/package.json"
   out="$(cd "$tmp" && "$bin" --no-runtime --color never)"
   echo "$out"
-  echo "$out" | grep -q "Development" || { echo "discovery output missing Development" >&2; exit 1; }
+  echo "$out" | grep -q "Start Vite development server" || { echo "discovery output missing dev action" >&2; exit 1; }
   echo "$out" | grep -q "Run Vitest tests" || { echo "discovery output missing test action" >&2; exit 1; }
   say "OK: $bin is rhow $VERSION"
 }

@@ -93,8 +93,8 @@ pub fn render(repo: Option<&Repo>, style: &Style) -> String {
     o
 }
 
-/// Wrap a comma-joined list to `width` columns, prefixing every line with `indent`.
-fn wrap(items: &str, width: usize, indent: &str) -> String {
+/// Wrap a comma-joined list to `width` display columns, prefixing every line with `indent`.
+pub(crate) fn wrap(items: &str, width: usize, indent: &str) -> String {
     let mut out = String::new();
     let mut line = String::new();
     for part in items.split(", ") {
@@ -103,7 +103,7 @@ fn wrap(items: &str, width: usize, indent: &str) -> String {
         } else {
             format!("{line}, {part}")
         };
-        if candidate.len() > width && !line.is_empty() {
+        if super::width(&candidate) > width && !line.is_empty() {
             out.push_str(indent);
             out.push_str(&line);
             out.push_str(",\n");
@@ -136,4 +136,20 @@ pub fn render_json(repo: Option<&Repo>) -> String {
         findings: repo.map(support::check).unwrap_or_default(),
     };
     serde_json::to_string_pretty(&env).unwrap_or_else(|_| "{}".into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::wrap;
+
+    #[test]
+    fn wrap_measures_display_columns() {
+        // Each CJK name is 4 columns wide (6 bytes, 2 chars): three fit in 16 columns with
+        // their separators (4 + 2 + 4 + 2 + 4 = 16), the fourth wraps.
+        let out = wrap("日本, 中国, 한국, 台湾", 16, "");
+        assert_eq!(out, "日本, 中国, 한국,\n台湾\n");
+        // Byte length would have wrapped after the second item; char count after the third.
+        let out = wrap("aaaa, bbbb, cccc, dddd", 16, "  ");
+        assert_eq!(out, "  aaaa, bbbb, cccc,\n  dddd\n");
+    }
 }

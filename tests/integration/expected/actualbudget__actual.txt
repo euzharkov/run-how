@@ -1,0 +1,174 @@
+actualbudget_actual  [Node.js, Docker]
+
+  yarn start                               Run all start:browser-* scripts, then run watch in plugins-service  ∞ long-running
+  yarn start:server                        Run start in @actual-app/sync-server  ∞ long-running
+  yarn start:server-monitor                Run start-monitor in @actual-app/sync-server  ∞ long-running
+  yarn start:server-dev                    Run npm-run-all script  ∞ long-running
+  yarn start:desktop                       Run all start:desktop-* scripts (+2 more steps)  ∞ long-running
+  yarn start:docs                            ∞ long-running
+  yarn desktop-dependencies                Run electron-rebuild, then run build in plugins-service
+  yarn start:desktop-node                  Run watch:node in @actual-app/core  ∞ long-running
+  yarn start:desktop-client                Run watch in @actual-app/web  ∞ long-running
+  yarn start:desktop-server-client         Run build:browser in @actual-app/web
+  yarn start:desktop-electron              Run watch in desktop-electron  ∞ long-running
+  yarn start:browser                       Run all start:browser-* scripts, then run watch in plugins-service  ∞ long-running
+  yarn start:service-plugins               Run watch in plugins-service  ∞ long-running
+  yarn start:browser-frontend              Run start:browser in @actual-app/web  ∞ long-running
+  yarn start:storybook                     Run start:storybook in @actual-app/components  ∞ long-running
+  yarn build                               Run lage build
+  yarn start:ios                           Run bin/package-browser, then run start:ios in mobile-client  ∞ long-running
+  yarn start:android                       Run bin/package-browser, then run start:android in mobile-client  ∞ long-running
+  yarn build:server                        Run bin/package-browser, then run build in @actual-app/sync-server
+  yarn build:browser
+  yarn build:desktop
+  yarn build:plugins-service
+  yarn build:api                           Run lage build
+  yarn build:mobile                        Run lage build
+  yarn build:cli                           Run lage build
+  yarn build:docs
+  yarn build:storybook                     Run build:storybook in @actual-app/components
+  yarn deploy:docs
+  yarn generate:i18n                       Run generate:i18n in @actual-app/web
+  yarn generate:release-notes              Run bin/release-note-generator.mts
+  yarn generate:news-feed
+  yarn test                                Run lage test
+  yarn test:debug                          Run lage test
+  yarn e2e                                 Run e2e in @actual-app/web
+  yarn e2e:desktop                         Run bin/package-electron, then run e2e in desktop-electron
+  yarn playwright                          Run playwright in @actual-app/web
+  yarn vrt
+  yarn vrt:docker
+  yarn rebuild-electron
+  yarn rebuild-node
+  yarn lint                                Run oxfmt, then check source code with Oxlint
+  yarn lint:fix                            Run oxfmt, then check source code with Oxlint
+  yarn knip                                Find unused files and dependencies with Knip
+  yarn install:server
+  yarn constraints                         Check workspace constraints
+  yarn typecheck                           Check TypeScript types and run lage typecheck
+  yarn check:tsconfig-references
+  yarn sync:tsconfig-references
+  yarn prepare                             Install Git hooks with Husky  ∆ git
+  docker build -t actualbudget_actual .    Build Docker image
+  docker compose up -d                     Start all Docker services
+  docker compose up -d actual-development  Start actual-development service (built from source)
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose build                     Build Docker service images
+  docker compose down                      Stop and remove Docker services
+
+packages/api  [Node.js, Vite, Playwright]
+  yarn build  Build app with Vite, then compile TypeScript sources
+  yarn e2e    Run Playwright end-to-end tests
+
+packages/ci-actions  [Node.js]
+  yarn tsx
+  yarn typecheck  Build TypeScript project references
+
+packages/cli  [Node.js, Vite]
+  yarn build      Build app with Vite
+  yarn typecheck  Build TypeScript project references
+
+packages/component-library  [Node.js, Storybook, Vitest]
+  yarn generate:icons   Delete src/icons/*/*.tsx, then run svgr
+  yarn test             Run Vitest tests in vitest.web.config.ts
+  yarn start:storybook    ∞ long-running
+  yarn build:storybook  Build static Storybook
+  yarn typecheck        Build TypeScript project references
+
+packages/crdt  [Node.js, Vite]
+  yarn build:node      Build app with Vite
+  yarn proto:generate
+  yarn build           Build app with Vite, then build TypeScript project references
+  yarn typecheck       Build TypeScript project references
+
+packages/desktop-client  [Node.js, Vite, Playwright]
+  yarn start                   Start Vite development server  ∞ long-running
+  yarn start:browser
+  yarn watch                   Start Vite development server  ∞ long-running
+  yarn build                   Build app with Vite
+  yarn build:browser           Build app with Vite
+  yarn generate:i18n
+  yarn validate:theme-catalog  Run bin/validate-theme-catalog.mts
+  yarn e2e                     Run Playwright end-to-end tests
+  yarn vrt                     Run Playwright end-to-end tests
+  yarn playwright              Run Playwright end-to-end tests
+
+packages/desktop-electron  [Node.js, Electron, Playwright]
+  yarn clean               Delete dist
+  yarn update-client
+  yarn build               Package Electron app (+2 more steps)
+  yarn build:dist          Compile TypeScript sources, then copy build/**/* to build/desktop-electron
+  yarn copy-static-assets  Copy build/**/* to build/desktop-electron
+  yarn watch               Start Electron app (+2 more steps)  ∞ long-running
+  yarn e2e                 Run Playwright end-to-end tests
+
+packages/docs  [Node.js]
+  yarn docusaurus
+  yarn start               Start Docusaurus site locally (+1 more step)  ∞ long-running
+  yarn build               Build Docusaurus site (+1 more step)
+  yarn swizzle             Run docusaurus swizzle
+  yarn deploy              Deploy Docusaurus site  [external]
+  yarn clear               Run docusaurus clear
+  yarn serve               Serve built Docusaurus site  ∞ long-running
+  yarn write-translations  Run docusaurus write-translations
+  yarn write-heading-ids   Run docusaurus write-heading-ids
+
+packages/loot-core  [Node.js, Vite, Vitest]
+  yarn build:node  Build app with Vite
+  yarn watch:node  Build app with Vite  ∞ long-running
+  yarn test        Run all test:* scripts
+  yarn test:node   Run Vitest tests
+  yarn test:web    Run Vitest tests in vitest.web.config.ts
+  yarn build       Build TypeScript project references
+  yarn prepack     Build TypeScript project references (+1 more step)
+  yarn postpack    Run scripts/restore-package-json.mts
+
+packages/mobile-client  [Node.js, Gradle]
+  yarn sync:ios         Run cap sync
+  yarn sync:android     Run cap sync
+  yarn build:ios        Run cap sync, then build with Xcode  ⊙ device
+  yarn build:android    Copy app/build/outputs/apk/debug/app-debug.apk to ../build (+2 more steps)
+  yarn release:ios      Run cap sync, then run cap build
+  yarn release:android  Run cap sync, then run cap build
+  yarn build            Copy app/build/outputs/apk/debug/app-debug.apk to ../build (+3 more steps)  ⊙ device
+  yarn start:ios        Run cap sync, then build with Xcode, then run cap  ⊙ device
+  yarn start:android    Copy app/build/outputs/apk/debug/app-debug.apk to ../build (+3 more steps)
+
+packages/mobile-client/android  [JVM, Gradle]
+  ./gradlew clean
+  ./gradlew build
+  ./gradlew test   Run Gradle tests
+  ./gradlew check  Run Gradle checks (tests and linters)
+  ./gradlew tasks  List all Gradle tasks
+  .\gradlew.bat    Copyright 2015 original author or authors
+
+packages/mobile-client/android/app  [JVM, Gradle]
+  ./gradlew :app:installDebug          Build and install debug app on device  ⊙ device
+  ./gradlew :app:assembleDebug         Build debug APK
+  ./gradlew :app:assembleRelease       Build release APK
+  ./gradlew :app:bundleRelease         Build release App Bundle
+  ./gradlew :app:connectedAndroidTest  Run instrumented tests on device  ⊙ device
+  ./gradlew :app:lint                  Run Android Lint
+
+packages/mobile-client/ios/App  [Xcode]
+  xcodebuild -workspace … build     Build App scheme for iOS Simulator  ⊙ device
+  xcodebuild -workspace … 16' test  Run App tests in iOS Simulator  ⊙ device
+  pod install                       Install CocoaPods dependencies
+
+packages/plugins-service  [Node.js, Vite]
+  yarn build      Build app with Vite
+  yarn build-dev  Build app with Vite
+  yarn watch      Build app with Vite  ∞ long-running
+
+packages/sync-server  [Node.js, Vite, Docker]
+  yarn start                          Build app with Vite, then run build/app.js
+  yarn start-monitor                  Run yarn build && node build/app.js with auto-restart  ∞ long-running
+  yarn build                          Build app with Vite
+  yarn db:migrate                     Build app with Vite, then run build/scripts/run-migrations.js
+  yarn db:downgrade                   Build app with Vite, then run build/scripts/run-migrations.js
+  yarn db:test-migrate                Build app with Vite, then run build/scripts/run-migrations.js
+  yarn db:test-downgrade              Build app with Vite, then run build/scripts/run-migrations.js
+  yarn reset-password                 Build app with Vite, then run build/scripts/reset-password.js
+  yarn disable-openid                 Build app with Vite, then run build/scripts/disable-openid.js
+  yarn health-check                   Build app with Vite, then run build/scripts/health-check.js
+  docker compose up -d actual_server  Start actual_server service (actual-server)

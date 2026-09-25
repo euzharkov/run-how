@@ -1,0 +1,24 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [version-sources] Root tools=terraform techs=Terraform
+tf:init                  Infrastructure inferred medium safe        .          terraform -chdir=tf init :: Initialise Terraform working directory
+tf:plan                  Infrastructure inferred high   external    .          terraform -chdir=tf plan :: Plan Terraform changes
+tf:apply                 Release        inferred high   external    .          terraform -chdir=tf apply :: Apply Terraform changes to infrastructure
+tf:destroy               Infrastructure inferred low    destructive .          terraform -chdir=tf destroy :: Destroy Terraform-managed infrastructure
+tf:validate              Quality        inferred low    safe        .          terraform -chdir=tf validate :: Validate Terraform configuration
+tf:fmt                   Quality        inferred low    safe        .          terraform -chdir=tf fmt -recursive :: Format Terraform files
+## gowork [gowork] Go tools=go techs=Go
+gowork:build             Build          inferred high   safe        gowork     go build ./... :: Build Go workspace
+gowork:test              Testing        inferred high   safe        gowork     go test ./... :: Run Go tests
+gowork:vet               Quality        inferred high   safe        gowork     go vet ./... :: Check Go source with go vet
+gowork:fmt               Quality        inferred high   safe        gowork     go fmt ./... :: Format Go source
+gowork:tidy              Other          inferred low    safe        gowork     go mod tidy :: Tidy Go module dependencies [download]
+## gowork/api [api] Go tools=go techs=Go
+## node [node] JavaScript tools=npm techs=Node.js,Vite
+node:build               Build          declared exact  safe        node       npm run build :: Build app with Vite
+## poetry [poetry] Python tools= techs=Python
+## py [py] Python tools= techs=Python
+## rb [rb] Ruby tools= techs=Ruby

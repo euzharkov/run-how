@@ -1,0 +1,68 @@
+plausible_analytics  [Elixir, Docker]
+
+  mix test                               Run Elixir tests
+  mix format                             Format Elixir source
+  mix compile                            Compile Elixir project
+  mix credo --strict                     Check Elixir source with Credo
+  mix dialyzer                           Run Dialyzer type analysis
+  mix ecto.migrate                       Apply Ecto migrations
+  mix ecto.setup                         Create, migrate and seed database
+  mix ecto.reset                         Drop and recreate database  [destructive]
+  mix deps.get                           Fetch Elixir dependencies  ↓ download
+  iex -S mix                             Open IEx shell with app loaded  ∞ long-running
+  make help
+  make install                           Run initial setup  ↓ download
+  make server                            Start web server  ∞ long-running
+  make clickhouse                        Start container with recent version of clickhouse
+  make clickhouse-client                 Connect to clickhouse
+  make clickhouse-prod                   Start container with same version of clickhouse as one in prod
+  make clickhouse-stop                   Stop and remove clickhouse container
+  make clickhouse-postgres-remote        Create postgres_remote database in ClickHouse for querying PostgreSQL
+  make postgres                          Start container with recent version of postgres
+  make postgres-client                   Connect to postgres
+  make postgres-prod                     Start container with same version of postgres as one in prod
+  make postgres-stop                     Stop and remove postgres container
+  make browserless                       Run TOKEN=dummy_token container
+  make minio                             Start transient container with recent version of minio (s3)
+  make minio-stop                        Stop and remove minio container
+  make sso
+  make sso-stop                          Stop containers, then remove containers
+  make generate-corefile
+  make mock-dns
+  make loadtest-server                   Open IEx shell  ∞ long-running
+  make loadtest-client                   Run k6 load tests
+  docker build -t plausible_analytics .  Build Docker image
+
+assets  [Node.js, Jest]
+  npm run test            Run Jest tests
+  npm run format          Format source code with Prettier
+  npm run check-format    Check formatting with Prettier
+  npm run eslint          Check source code with ESLint
+  npm run stylelint       Check stylesheets with Stylelint
+  npm run lint            Check source code with ESLint and check stylesheets with Stylelint
+  npm run typecheck       Check TypeScript types
+  npm run generate-types
+
+e2e  [Node.js, Playwright]
+  npm run lint          Check source code with ESLint
+  npm run format        Format source code with Prettier
+  npm run check-format  Check formatting with Prettier
+  npm run typecheck     Check TypeScript types
+  npm run test          Run Playwright end-to-end tests
+
+tracker  [Node.js, Playwright]
+  npm run lint                           Check source code with ESLint
+  npm run check-format                   Check formatting with Prettier
+  npm run deploy                         Run compile.js
+  npm run test                           Run Playwright end-to-end tests
+  npm run test:local                     Run Playwright end-to-end tests
+  npm run start                          Run test/support/server.js
+  npm run npm:prepare_release:patch      Run compile.js (+2 more steps)
+  npm run npm:prepare_release:minor      Run compile.js (+2 more steps)
+  npm run npm:prepare_release:major      Run compile.js (+2 more steps)
+  npm run npm:bump_version               Run npm npm_package
+  npm run npm:update_code_and_changelog  Run compile.js, then run release-update-changelog.sh
+  ./release-update-changelog.sh          Ensure we're in correct directory for relative paths to work  [external]
+
+tracker/npm_package  [Node.js]
+  npm run test  Print message

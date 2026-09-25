@@ -1,0 +1,71 @@
+traefik_traefik  [Go, Docker, Kubernetes]
+
+  go build ./...
+  go vet ./...                              Check Go source with go vet
+  go mod tidy                               Tidy Go module dependencies  ↓ download
+  go run .                                  Run Go v3 program
+  make default                              ? default: Run `make generate` and `make binary`
+  make dist                                 ? dist: Create "dist" directory
+  make build-webui-image                    ? build-webui-image: Build WebUI Docker image
+  make clean-webui                          ? clean-webui: Clean WebUI static generated assets  [destructive]
+  make generate-webui                       ? generate-webui: Generate WebUI
+  make generate                             ? generate: Generate code (Dynamic and Static configuration documentation reference files)
+  make binary                               ? binary: Build binary
+  make binary-linux-arm64
+  make binary-linux-amd64
+  make binary-windows-amd64
+  make crossbinary-default                  ? crossbinary-default: Build binary for standard platforms (linux, darwin, windows)
+  make test                                 ? test: Run unit and integration tests
+  make test-unit                            ? test-unit: Run unit tests
+  make test-integration                     ? test-integration: Run integration tests
+  make test-gateway-api-conformance         ? test-gateway-api-conformance: Run Gateway API conformance tests  ↓ download
+  make test-gateway-api-conformance-merged  ? test-gateway-api-conformance-merged: Run Gateway API conformance tests against single merged …
+  make test-knative-conformance             ? test-knative-conformance: Run Knative conformance tests
+  make test-ui-unit                         ? test-ui-unit: Run unit tests for webui
+  make pull-images                          ? pull-images: Pull all Docker images to avoid timeout during integration tests
+  make lint                                 ? lint: Run golangci-lint
+  make validate-files                       ? validate-files: Validate code and docs
+  make validate                             ? validate: Validate code, docs, and vendor
+  make build-image                          ? build-image: Clean up static directory and build Docker Traefik image
+  make build-image-dirty                    ? build-image-dirty: Build Docker Traefik image without re-building webui when it's already bui…
+  make docs                                 ? docs: Build documentation site
+  make docs-serve                           ? docs-serve: Serve documentation site locally
+  make docs-pull-images                     ? docs-pull-images: Pull image for doc building
+  make generate-crd                         ? generate-crd: Generate CRD clientset and CRD manifests
+  make generate-genconf                     ? generate-genconf: Generate code from dynamic configuration github.com/traefik/genconf
+  make fmt                                  ? fmt: Format Code
+  make help                                 ? help: Get more info on make commands
+  docker build -t traefik_traefik .         Build Docker image
+  kubectl apply … eports/v1.6.1/            Validate Kubernetes manifests
+  kubectl apply -f … eports/v1.6.1/         Apply resources to cluster  [external]
+  kubectl delete -f … eports/v1.6.1/        Delete resources from cluster  [destructive]
+  ./script/deploy.sh                          [external]
+  ./script/validate-misspell.sh
+  ./script/validate-shell-script.sh
+  ./script/validate-vendor.sh
+
+docs  [Python, Docker]
+  make docs               Default: generates documentation into $(SITE_DIR)  [destructive]
+  make docs-serve         Writer Mode: build and serve docs on http://localhost:8000 with livereload
+  make docs-pull-images   Pull image for doc building
+  make docs-image         Utilities Targets for each step
+  make docs-build
+  make docs-verify        Build Docker image, then run .:/app container
+  make docs-lint          Build Docker image, then run .:/app container
+  make docs-clean         Delete site  [destructive]
+  ./scripts/lint-yaml.sh
+  ./scripts/lint.sh
+  ./scripts/verify.sh
+
+webui  [Node.js, Vitest, Vite]
+  yarn build          Build app with Vite
+  yarn build:prod     Run Vitest tests (+3 more steps)
+  yarn dev            Start Vite development server  ∞ long-running
+  yarn format         Format source code with Prettier
+  yarn lint           Check source code with ESLint
+  yarn lint:fix       Fix lint issues with ESLint
+  yarn preview        Preview production build with Vite  ∞ long-running
+  yarn test           Run Vitest tests
+  yarn test:coverage  Run Vitest tests with coverage
+  yarn test:watch     Run Vitest tests
+  yarn test:unit:ci   Run Vitest tests
