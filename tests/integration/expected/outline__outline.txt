@@ -1,0 +1,46 @@
+outline_outline  [Node.js, Docker, Sequelize, Vitest, Vite]
+
+  yarn clean                              Delete build
+  yarn copy:i18n                          Create build/shared/i18n, then copy shared/i18n/locales to build/shared/i18n
+  yarn build:i18n                         Copy shared/i18n/locales to build/shared/i18n (+2 more steps)
+  yarn build:server                       Run build.js
+  yarn build                              Copy shared/i18n/locales to build/shared/i18n (+5 more steps)
+  yarn start                              Run build/server/index.js
+  yarn dev
+  yarn dev:backend                        Run yarn build:server && yarn dev with auto-restart  ∞ long-running
+  yarn dev:watch
+  yarn lint                               Check source code with Oxlint
+  yarn lint:changed                       Inspect Git repository, then run grep, then run xargs
+  yarn format
+  yarn format:check
+  yarn prepare                            Install Git hooks with Husky  ∆ git
+  yarn postinstall                        Apply local dependency patches
+  yarn install-local-ssl                  Run server/scripts/install-local-ssl.js
+  yarn release                            Run server/scripts/release.js
+  yarn heroku-postbuild                   Apply pending Sequelize migrations (+6 more steps)
+  yarn db:create-migration                Run sequelize migration:create
+  yarn db:create                          Create database
+  yarn db:migrate                         Apply pending Sequelize migrations
+  yarn db:rollback                        Roll back Sequelize migrations  [destructive]
+  yarn db:reset                           Drop database (+2 more steps)  [destructive]
+  yarn run upgrade                        Fetch changes from remote (+8 more steps)  [external]
+  yarn test                               Run Vitest tests
+  yarn test:app                           Run Vitest tests
+  yarn test:shared                        Run Vitest tests
+  yarn test:server                        Run Vitest tests
+  yarn test:watch                         Run Vitest tests
+  yarn vite:dev                           Start Vite development server  ∞ long-running
+  yarn vite:build                         Build app with Vite
+  yarn vite:preview                       Preview production build with Vite  ∞ long-running
+  make up                                 Start redis and postgres services in background (+3 more steps)  ↓ download
+  make build                              Build images for outline service
+  make test                               Drop database (+4 more steps)  [destructive]
+  make watch                              Drop database (+4 more steps)  [destructive]
+  make destroy                            Stop Docker services, then remove stopped containers of Docker services
+  docker build -t outline_outline .       Build Docker image
+  docker build -f Dockerfile.base -t … .  Build Docker image from Dockerfile.base
+  docker compose up -d                    Start all Docker services
+  docker compose up -d redis              Start Redis
+  docker compose up -d postgres           Start PostgreSQL
+  docker compose logs -f                  Follow Docker service logs  ∞ long-running
+  docker compose down                     Stop and remove Docker services

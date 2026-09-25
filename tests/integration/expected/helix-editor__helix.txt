@@ -1,0 +1,20 @@
+helix-editor_helix  [Rust]
+
+  cargo integration-test           Run Rust tests for whole workspace
+  cargo xtask                      Run Rust program for xtask
+  cargo build --workspace
+  cargo test --workspace           Run Rust tests for whole workspace
+  cargo check --workspace          Type-check Rust project for whole workspace
+  cargo clippy --workspace         Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace            Format Rust source
+  cargo bench --workspace          Run Rust benchmarks
+  cargo doc --no-deps --workspace  Build Rust docs
+
+helix-loader  [Rust]
+  cargo run -p helix-loader  Run Rust program for helix-loader
+
+helix-term  [Rust]
+  cargo run -p helix-term  Run Rust program for helix-term
+
+xtask  [Rust]
+  cargo run -p xtask  Run Rust program for xtask

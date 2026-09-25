@@ -1,0 +1,59 @@
+localsend_localsend  [Rust]
+
+  cargo build --workspace
+  cargo test --workspace           Run Rust tests for whole workspace
+  cargo check --workspace          Type-check Rust project for whole workspace
+  cargo clippy --workspace         Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace            Format Rust source
+  cargo bench --workspace          Run Rust benchmarks
+  cargo doc --no-deps --workspace  Build Rust docs
+  dart test                        Run Dart tests
+  dart analyze                     Analyse Dart source
+  dart format .                    Format Dart source
+
+app  [Flutter]
+  flutter run                             Run Flutter app  ∞ long-running  ⊙ device
+  flutter test                            Run Flutter tests
+  flutter analyze                         Analyze Dart source
+  dart format .
+  flutter build apk                       Build Android APK
+  flutter build appbundle                 Build Android App Bundle
+  flutter build ios                       Build iOS app
+  flutter build web                       Build web app
+  dart run build_runner … icting-outputs  Generate code with build_runner
+  flutter pub get                         Install Dart dependencies  ↓ download
+
+cli  [Rust]
+  cargo run -p localsend-cli  Run Rust program for localsend-cli
+
+packages/localsend_isolates  [Flutter]
+  flutter run                             Run Flutter app  ∞ long-running  ⊙ device
+  flutter test                            Run Flutter tests
+  flutter analyze                         Analyze Dart source
+  dart format .
+  flutter build apk                       Build Android APK
+  flutter build appbundle                 Build Android App Bundle
+  dart run build_runner … icting-outputs  Generate code with build_runner
+  flutter pub get                         Install Dart dependencies  ↓ download
+
+packages/localsend_isolates/rust  [Rust]
+  cargo build -p rust_lib_localsend_app    Build crate
+  cargo test -p rust_lib_localsend_app     Run Rust tests for rust_lib_localsend_app
+  cargo check -p rust_lib_localsend_app    Type-check Rust project for rust_lib_localsend_app
+  cargo clippy -p rust_lib_localsend_app   Lint Rust source with Clippy for rust_lib_localsend_app
+  cargo fmt -p rust_lib_localsend_app      Format Rust source
+  cargo bench -p rust_lib_localsend_app    Run Rust benchmarks
+  cargo doc --no-deps -p … _localsend_app  Build Rust docs
+
+packages/localsend_isolates/rust_builder  [Flutter]
+  flutter run        Run Flutter app  ∞ long-running  ⊙ device
+  flutter build ios  Build iOS app
+
+packages/localsend_isolates/rust_builder/cargokit/build_tool
+  dart test      Run Dart tests
+  dart analyze   Analyse Dart source
+  dart format .  Format Dart source
+
+server  [Rust, Docker]
+  cargo run -p server       Run Rust program for server
+  docker build -t server .  Build Docker image

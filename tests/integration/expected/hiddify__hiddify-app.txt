@@ -1,0 +1,84 @@
+hiddify_hiddify-app  [Flutter, Docker]
+
+  flutter run                            Run Flutter app  ∞ long-running  ⊙ device
+  flutter test                           Run Flutter tests
+  flutter analyze                        Analyze Dart source
+  dart format .
+  flutter build apk                      Build Android APK
+  flutter build appbundle                Build Android App Bundle
+  flutter build ios                      Build iOS app
+  flutter build web                      Build web app
+  make get                               Manage Dart packages  ↓ download
+  make gen                               Run dart run
+  make translate                         Run dart run
+  make prepare                           Print message
+  make common-prepare                    Manage Dart packages, then run dart run
+  make windows-prepare                   Extract archive (+6 more steps)
+  make ios-prepare                       Run pod repo, then install CocoaPods dependencies
+  make macos-prepare                     Extract archive (+4 more steps)
+  make linux-prepare                     Extract archive (+4 more steps)
+  make linux-amd64-prepare               Extract archive (+4 more steps)
+  make linux-arm64-prepare               Extract archive (+4 more steps)
+  make linux-amd64-musl-prepare          Extract archive (+4 more steps)
+  make linux-arm64-musl-prepare          Extract archive (+4 more steps)
+  make linux-appimage-prepare            Extract archive (+4 more steps)
+  make linux-rpm-prepare                 Extract archive (+4 more steps)
+  make linux-deb-prepare                 Extract archive (+4 more steps)
+  make android-prepare                   Extract archive (+4 more steps)
+  make android-apk-prepare               Extract archive (+4 more steps)
+  make android-aab-prepare               Extract archive (+4 more steps)
+  make generate_kotlin_protos            Generate code  [external]
+  make generate_go_protoc                Create lib/hiddifycore/generated (+2 more steps)
+  make generate_dart_protoc              Create lib/hiddifycore/generated
+  make protos                            Create lib/hiddifycore/generated (+2 more steps)
+  make macos-install-deps                Install dependencies with npm (+2 more steps)  ↓ download
+  make ios-install-deps                  Install packages with Homebrew, then install dependencies with npm  ↓ download
+  make android-install-deps              Run dart pub  ↓ download
+  make android-apk-install-deps          Run dart pub
+  make android-aab-install-deps          Run dart pub
+  make linux-amd64-install-deps          Delete flutter (+7 more steps)  [destructive]
+  make linux-amd64-musl-install-deps     Delete flutter (+7 more steps)  [destructive]
+  make linux-arm64-install-deps          Delete flutter (+7 more steps)  [destructive]
+  make linux-arm64-musl-install-deps     Delete flutter (+7 more steps)  [destructive]
+  make linux-install-deps                Delete flutter (+7 more steps)  [destructive]
+  make linux-flutter-sync                Syncing 'flutter sdk' version with pubspec.yaml flutter version
+  make windows-install-deps              Run dart pub  ↓ download
+  make gen_translations                  Generating missing translations using google translate
+  make android-release                   Run ls, then run android-aab-release make target
+  make android-apk-release
+  make android-aab-release
+  make windows-release                   Run windows-msix-release make target (+2 more steps)
+  make windows-zip-release
+  make windows-exe-release
+  make windows-msix-release
+  make linux-release                     Delete files at $$PKG_DIR_NAME (+13 more steps)  [destructive]
+  make linux-amd64-release               Delete files at $$PKG_DIR_NAME (+13 more steps)  [destructive]
+  make linux-arm64-release               Delete files at $$PKG_DIR_NAME (+13 more steps)  [destructive]
+  make linux-amd64-musl-release          Delete files at $$PKG_DIR_NAME (+13 more steps)  [destructive]
+  make linux-arm64-musl-release          Delete files at $$PKG_DIR_NAME (+13 more steps)  [destructive]
+  make linux-deb-release
+  make linux-appimage-release            ==============================================================================  [destructive]
+  make linux-docker-release              Build Docker image
+  make macos-release
+  make ios-release                       Not tested
+  make android-libs                      Create android/app/libs, then fetch github.com, then extract archive  ↓ download
+  make android-apk-libs                  Create android/app/libs, then fetch github.com, then extract archive
+  make android-aab-libs                  Create android/app/libs, then fetch github.com, then extract archive
+  make windows-libs                      Extract archive (+4 more steps)  ↓ download
+  make linux-amd64-libs                  Create hiddify-core/bin, then fetch github.com, then extract archive  ↓ download
+  make linux-arm64-libs                  Create hiddify-core/bin, then fetch github.com, then extract archive  ↓ download
+  make linux-amd64-musl-libs             Create hiddify-core/bin, then fetch github.com, then extract archive  ↓ download
+  make linux-arm64-musl-libs             Create hiddify-core/bin, then fetch github.com, then extract archive  ↓ download
+  make macos-libs                        Create hiddify-core/bin, then fetch github.com, then extract archive  ↓ download
+  make ios-libs                          Not tested  [destructive]
+  make get-geo-assets                    Print message
+  make build-headers                     Move hiddify-core/bin/hiddify-lib-headers.h to hiddify-core/bin/hiddify-core.h (+1 more step)
+  make build-android-libs                Move hiddify-core/bin/hiddify-core.aar to android/app/libs (+1 more step)
+  make build-windows-libs
+  make build-linux-libs
+  make build-macos-libs
+  make build-ios-libs                    Delete ios/Frameworks/HiddifyCore.xcframework (+2 more steps)  [destructive]
+  make release                           Create new tag for release
+  make ios-temp-prepare                  Build Flutter app (+2 more steps)
+  docker build -t hiddify_hiddify-app .  Build Docker image
+  pwsh ./scripts/package_windows.ps1

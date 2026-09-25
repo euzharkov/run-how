@@ -1,0 +1,36 @@
+supabase_realtime  [Elixir, Docker]
+
+  mix phx.server                       Start Phoenix server  ∞ long-running
+  mix test                             Run Elixir tests
+  mix format                           Format Elixir source
+  mix compile                          Compile Elixir project
+  mix credo --strict                   Check Elixir source with Credo
+  mix dialyzer                         Run Dialyzer type analysis
+  mix ecto.migrate                     Apply Ecto migrations
+  mix ecto.setup                       Create, migrate and seed database
+  mix ecto.reset                       Drop and recreate database  [destructive]
+  mix deps.get                         Fetch Elixir dependencies  ↓ download
+  iex -S mix                           Open IEx shell with app loaded  ∞ long-running
+  docker build -t supabase_realtime .  Build Docker image
+  docker compose up -d                 Start all Docker services
+  docker compose up -d realtime        Start realtime service (built from source)
+  docker compose logs -f               Follow Docker service logs  ∞ long-running
+  docker compose build                 Build Docker service images
+  docker compose down                  Stop and remove Docker services
+  ./run.sh
+
+assets  [Node.js]
+  npm run test          Run Node.js tests
+  npm run lint          Check source code with Oxlint
+  npm run format
+  npm run format:check
+
+forum  [Elixir]
+  iex -S mix  Open IEx shell with app loaded  ∞ long-running
+
+test/e2e  [Node.js, Bun, Docker, Jaeger]
+  bun run check                Run realtime-check.ts with Bun
+  bun run build                Bundle with Bun
+  bun run nix                  Run nix-build.sh
+  docker compose up -d jaeger  Start Jaeger tracing
+  ./nix-build.sh

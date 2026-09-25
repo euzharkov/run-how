@@ -1,0 +1,199 @@
+szinn_k8s-homelab  [Kubernetes]
+
+  just default
+  just main                                Run command for main cluster
+  just staging                             Run command for staging cluster
+  task default
+  kubectl apply --dry-run=client -f hack/  Validate Kubernetes manifests
+  kubectl apply -f hack/                   Apply resources to cluster  [external]
+  kubectl delete -f hack/                  Delete resources from cluster  [destructive]
+  ./hack/ashell.sh
+  ./hack/ushell.sh
+  ./scripts/find-orphaned-rbd-images.sh    NAME: find_orphan_rbd_images.sh
+  ./scripts/kubeconform.sh
+
+kubernetes/main  [Kubernetes]
+  just default
+  just rebuild                              Rebuild main cluster
+  just browse-pvc                           Browse PVC  [external]
+  just node-shell                           Open shell on node  [destructive]
+  just prune-pods                           Delete Kubernetes resources  [destructive]
+  just apply-ks                             Apply local Flux Kustomization  [external]
+  just delete-ks                            Delete local Flux Kustomization  [destructive]
+  just sync-hr                              Sync single Flux HelmRelease  [external]
+  just sync-ks                              Sync single Flux Kustomizations  [external]
+  just sync-es                              Sync single ExternalSecret  [external]
+  just sync-all-hr                          Sync all Flux HelmReleases  [external]
+  just sync-all-ks                          Sync all Flux Kustomizations  [external]
+  just sync-all-es                          Sync all ExternalSecrets  [external]
+  just render-local-ks                      Run flate build
+  just log
+  just template
+  kubectl kustomize … -runner-system        Render Kubernetes manifests
+  kubectl apply -k … -runner-system         Apply resources to cluster  [external]
+  kubectl delete -k … -runner-system        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/cert-manager       Render Kubernetes manifests
+  kubectl apply -k apps/cert-manager        Apply resources to cluster  [external]
+  kubectl delete -k apps/cert-manager       Delete resources from cluster  [destructive]
+  kubectl kustomize apps/dbms               Render Kubernetes manifests
+  kubectl apply -k apps/dbms                Apply resources to cluster  [external]
+  kubectl delete -k apps/dbms               Delete resources from cluster  [destructive]
+  kubectl kustomize apps/default            Render Kubernetes manifests
+  kubectl apply -k apps/default             Apply resources to cluster  [external]
+  kubectl delete -k apps/default            Delete resources from cluster  [destructive]
+  kubectl kustomize apps/downloads          Render Kubernetes manifests
+  kubectl apply -k apps/downloads           Apply resources to cluster  [external]
+  kubectl delete -k apps/downloads          Delete resources from cluster  [destructive]
+  kubectl kustomize apps/external-secrets   Render Kubernetes manifests
+  kubectl apply -k apps/external-secrets    Apply resources to cluster  [external]
+  kubectl delete -k apps/external-secrets   Delete resources from cluster  [destructive]
+  kubectl kustomize apps/flux-system        Render Kubernetes manifests
+  kubectl apply -k apps/flux-system         Apply resources to cluster  [external]
+  kubectl delete -k apps/flux-system        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/home               Render Kubernetes manifests
+  kubectl apply -k apps/home                Apply resources to cluster  [external]
+  kubectl delete -k apps/home               Delete resources from cluster  [destructive]
+  kubectl kustomize apps/jobs               Render Kubernetes manifests
+  kubectl apply -k apps/jobs                Apply resources to cluster  [external]
+  kubectl delete -k apps/jobs               Delete resources from cluster  [destructive]
+  kubectl kustomize apps/kopiur-system      Render Kubernetes manifests
+  kubectl apply -k apps/kopiur-system       Apply resources to cluster  [external]
+  kubectl delete -k apps/kopiur-system      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/kube-system        Render Kubernetes manifests
+  kubectl apply -k apps/kube-system         Apply resources to cluster  [external]
+  kubectl delete -k apps/kube-system        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/media              Render Kubernetes manifests
+  kubectl apply -k apps/media               Apply resources to cluster  [external]
+  kubectl delete -k apps/media              Delete resources from cluster  [destructive]
+  kubectl kustomize apps/miroir-system      Render Kubernetes manifests
+  kubectl apply -k apps/miroir-system       Apply resources to cluster  [external]
+  kubectl delete -k apps/miroir-system      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/network            Render Kubernetes manifests
+  kubectl apply -k apps/network             Apply resources to cluster  [external]
+  kubectl delete -k apps/network            Delete resources from cluster  [destructive]
+  kubectl kustomize apps/observability      Render Kubernetes manifests
+  kubectl apply -k apps/observability       Apply resources to cluster  [external]
+  kubectl delete -k apps/observability      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/rook-ceph          Render Kubernetes manifests
+  kubectl apply -k apps/rook-ceph           Apply resources to cluster  [external]
+  kubectl delete -k apps/rook-ceph          Delete resources from cluster  [destructive]
+  kubectl kustomize apps/security           Render Kubernetes manifests
+  kubectl apply -k apps/security            Apply resources to cluster  [external]
+  kubectl delete -k apps/security           Delete resources from cluster  [destructive]
+  kubectl kustomize apps/self-hosted        Render Kubernetes manifests
+  kubectl apply -k apps/self-hosted         Apply resources to cluster  [external]
+  kubectl delete -k apps/self-hosted        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/system             Render Kubernetes manifests
+  kubectl apply -k apps/system              Apply resources to cluster  [external]
+  kubectl delete -k apps/system             Delete resources from cluster  [destructive]
+  kubectl kustomize apps/system-upgrade     Render Kubernetes manifests
+  kubectl apply -k apps/system-upgrade      Apply resources to cluster  [external]
+  kubectl delete -k apps/system-upgrade     Delete resources from cluster  [destructive]
+  kubectl apply … luster/config/            Validate Kubernetes manifests
+  kubectl apply -f cluster/config/          Apply resources to cluster  [external]
+  kubectl delete -f cluster/config/         Delete resources from cluster  [destructive]
+  kubectl kustomize cluster/settings        Render Kubernetes manifests
+  kubectl apply -k cluster/settings         Apply resources to cluster  [external]
+  kubectl delete -k cluster/settings        Delete resources from cluster  [destructive]
+  kubectl kustomize components/alerts       Render Kubernetes manifests
+  kubectl apply -k components/alerts        Apply resources to cluster  [external]
+  kubectl delete -k components/alerts       Delete resources from cluster  [destructive]
+  kubectl kustomize … s/app-template        Render Kubernetes manifests
+  kubectl apply -k components/app-template  Apply resources to cluster  [external]
+  kubectl delete -k … s/app-template        Delete resources from cluster  [destructive]
+  kubectl kustomize … /kopiur/kopiur        Render Kubernetes manifests
+  kubectl apply -k … /kopiur/kopiur         Apply resources to cluster  [external]
+  kubectl delete -k … /kopiur/kopiur        Delete resources from cluster  [destructive]
+  kubectl kustomize components/kopiur/pvc   Render Kubernetes manifests
+  kubectl apply -k components/kopiur/pvc    Apply resources to cluster  [external]
+  kubectl delete -k components/kopiur/pvc   Delete resources from cluster  [destructive]
+  kubectl kustomize … /kopiur/secret        Render Kubernetes manifests
+  kubectl apply -k … /kopiur/secret         Apply resources to cluster  [external]
+  kubectl delete -k … /kopiur/secret        Delete resources from cluster  [destructive]
+  kubectl kustomize components/zeroscaler   Render Kubernetes manifests
+  kubectl apply -k components/zeroscaler    Apply resources to cluster  [external]
+  kubectl delete -k components/zeroscaler   Delete resources from cluster  [destructive]
+
+kubernetes/staging  [Kubernetes]
+  just default
+  just start                                Start staging cluster
+  just stop                                 Stop staging cluster
+  just reset                                Reset staging cluster
+  just rebuild                              Rebuild staging cluster
+  just browse-pvc                           Browse PVC  [external]
+  just node-shell                           Open shell on node  [destructive]
+  just prune-pods                           Delete Kubernetes resources  [destructive]
+  just apply-ks                             Apply local Flux Kustomization  [external]
+  just delete-ks                            Delete local Flux Kustomization  [destructive]
+  just sync-hr                              Sync single Flux HelmRelease  [external]
+  just sync-ks                              Sync single Flux Kustomizations  [external]
+  just sync-es                              Sync single ExternalSecret  [external]
+  just sync-all-hr                          Sync all Flux HelmReleases  [external]
+  just sync-all-ks                          Sync all Flux Kustomizations  [external]
+  just sync-all-es                          Sync all ExternalSecrets  [external]
+  just render-local-ks
+  just log
+  just template
+  kubectl kustomize apps/cert-manager       Render Kubernetes manifests
+  kubectl apply -k apps/cert-manager        Apply resources to cluster  [external]
+  kubectl delete -k apps/cert-manager       Delete resources from cluster  [destructive]
+  kubectl kustomize apps/dbms               Render Kubernetes manifests
+  kubectl apply -k apps/dbms                Apply resources to cluster  [external]
+  kubectl delete -k apps/dbms               Delete resources from cluster  [destructive]
+  kubectl kustomize apps/default            Render Kubernetes manifests
+  kubectl apply -k apps/default             Apply resources to cluster  [external]
+  kubectl delete -k apps/default            Delete resources from cluster  [destructive]
+  kubectl kustomize apps/external-secrets   Render Kubernetes manifests
+  kubectl apply -k apps/external-secrets    Apply resources to cluster  [external]
+  kubectl delete -k apps/external-secrets   Delete resources from cluster  [destructive]
+  kubectl kustomize apps/flux-system        Render Kubernetes manifests
+  kubectl apply -k apps/flux-system         Apply resources to cluster  [external]
+  kubectl delete -k apps/flux-system        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/kopiur-system      Render Kubernetes manifests
+  kubectl apply -k apps/kopiur-system       Apply resources to cluster  [external]
+  kubectl delete -k apps/kopiur-system      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/kube-system        Render Kubernetes manifests
+  kubectl apply -k apps/kube-system         Apply resources to cluster  [external]
+  kubectl delete -k apps/kube-system        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/media              Render Kubernetes manifests
+  kubectl apply -k apps/media               Apply resources to cluster  [external]
+  kubectl delete -k apps/media              Delete resources from cluster  [destructive]
+  kubectl kustomize apps/miroir-system      Render Kubernetes manifests
+  kubectl apply -k apps/miroir-system       Apply resources to cluster  [external]
+  kubectl delete -k apps/miroir-system      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/network            Render Kubernetes manifests
+  kubectl apply -k apps/network             Apply resources to cluster  [external]
+  kubectl delete -k apps/network            Delete resources from cluster  [destructive]
+  kubectl kustomize apps/observability      Render Kubernetes manifests
+  kubectl apply -k apps/observability       Apply resources to cluster  [external]
+  kubectl delete -k apps/observability      Delete resources from cluster  [destructive]
+  kubectl kustomize apps/rook-ceph          Render Kubernetes manifests
+  kubectl apply -k apps/rook-ceph           Apply resources to cluster  [external]
+  kubectl delete -k apps/rook-ceph          Delete resources from cluster  [destructive]
+  kubectl kustomize apps/self-hosted        Render Kubernetes manifests
+  kubectl apply -k apps/self-hosted         Apply resources to cluster  [external]
+  kubectl delete -k apps/self-hosted        Delete resources from cluster  [destructive]
+  kubectl kustomize apps/system             Render Kubernetes manifests
+  kubectl apply -k apps/system              Apply resources to cluster  [external]
+  kubectl delete -k apps/system             Delete resources from cluster  [destructive]
+  kubectl kustomize apps/system-upgrade     Render Kubernetes manifests
+  kubectl apply -k apps/system-upgrade      Apply resources to cluster  [external]
+  kubectl delete -k apps/system-upgrade     Delete resources from cluster  [destructive]
+  kubectl apply … luster/config/            Validate Kubernetes manifests
+  kubectl apply -f cluster/config/          Apply resources to cluster  [external]
+  kubectl delete -f cluster/config/         Delete resources from cluster  [destructive]
+  kubectl kustomize cluster/settings        Render Kubernetes manifests
+  kubectl apply -k cluster/settings         Apply resources to cluster  [external]
+  kubectl delete -k cluster/settings        Delete resources from cluster  [destructive]
+  kubectl kustomize … s/app-template        Render Kubernetes manifests
+  kubectl apply -k components/app-template  Apply resources to cluster  [external]
+  kubectl delete -k … s/app-template        Delete resources from cluster  [destructive]
+  kubectl kustomize … /kopiur/kopiur        Render Kubernetes manifests
+  kubectl apply -k … /kopiur/kopiur         Apply resources to cluster  [external]
+  kubectl delete -k … /kopiur/kopiur        Delete resources from cluster  [destructive]
+  kubectl kustomize components/kopiur/pvc   Render Kubernetes manifests
+  kubectl apply -k components/kopiur/pvc    Apply resources to cluster  [external]
+  kubectl delete -k components/kopiur/pvc   Delete resources from cluster  [destructive]
+  kubectl kustomize … /kopiur/secret        Render Kubernetes manifests
+  kubectl apply -k … /kopiur/secret         Apply resources to cluster  [external]
+  kubectl delete -k … /kopiur/secret        Delete resources from cluster  [destructive]

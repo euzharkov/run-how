@@ -1,0 +1,62 @@
+mealie-recipes_mealie  [Python, Docker, Playwright]
+
+  uv run mealie                             Run mealie command (mealie.main)
+  uv run pytest                             Run Python tests
+  uv run ruff check .                       Check Python source code with Ruff
+  uv run mypy .                             Run static type checking with mypy
+  uv run pre-commit run --all-files         Run pre-commit hooks on all files
+  task docs                                 Runs documentation server  ∞ long-running
+  task setup:ui                             Setup frontend dependencies  ↓ download
+  task setup:py                             Setup python dependencies  ↓ download
+  task setup:e2e                            Setup e2e test dependencies  ↓ download
+  task setup                                Setup all dependencies
+  task dev:generate                         Run code generators
+  task dev:services                         Starts postgres and mailpit containers  ∞ long-running
+  task dev:clean                            Cleans up dev environment !! removes all data files !!  [destructive]
+  task py:mypy                              Runs python type checking
+  task py:test                              Runs python tests in parallel across CPU cores (support args after '--')
+  task py:format                            Runs python code formatter
+  task py:lint                              Runs python linter
+  task py:check                             Runs all linters, type checkers, and formatters
+  task py:coverage                          Runs python coverage and generates html report
+  task py:package                           Builds Python packages (sdist and wheel) in top-level dist directory  [destructive]
+  task py                                   Runs backend server
+  task py:postgres                          Runs backend server configured for containerized postgres
+  task py:migrate                           Generates new database migration file e.g. task py:migrate -- "add new column"
+  task ui:build                             Builds frontend in frontend/dist
+  task ui:generate                          Generates static version of frontend in frontend/dist
+  task ui:lint                              Runs frontend linter
+  task ui:test                              Runs frontend tests
+  task ui:check                             Runs all frontend checks
+  task ui                                   Runs frontend server  ∞ long-running
+  task docker:build-from-package            Builds Docker image from existing Python package in dist/
+  task docker:prod                          Builds and runs production docker image locally
+  task e2e:build-image                      Builds e2e test docker image
+  task e2e:start-server                     Builds image and starts containers for e2e testing
+  task e2e:stop-server                      Shuts down e2e testing containers  [destructive]
+  task e2e:test                             Runs e2e tests
+  task e2e                                  Runs full e2e test suite  [destructive]
+  docker build -f docker/Dockerfile -t … .  Build Docker image
+  docker compose -f … up -d                 Start all Docker services
+  docker compose -f … up -d mealie          Start mealie service (built from source)
+  docker compose -f … logs -f               Follow Docker service logs  ∞ long-running
+  docker compose -f … build                 Build Docker service images
+  docker compose -f … down                  Stop and remove Docker services
+  docker compose -f … down -v               Stop Docker services and delete their volumes  [destructive]
+
+frontend  [Node.js, Nuxt, Vitest]
+  pnpm run dev            Start Nuxt development server  ∞ long-running
+  pnpm run build          Build Nuxt app
+  pnpm run start          Preview Nuxt production build  ∞ long-running
+  pnpm run generate       Generate static Nuxt site
+  pnpm run lint:js        Check source code with ESLint
+  pnpm run lint           Check source code with ESLint
+  pnpm run lint:log       Check source code with ESLint
+  pnpm run test           Run Vitest tests
+  pnpm run test:ci        Run Vitest tests in watch mode
+  pnpm run test:coverage  Run Vitest tests with coverage
+  pnpm run test:ui        Run Vitest tests with coverage
+  pnpm run cleanup        Run nuxt cleanup
+
+tests/e2e  [Node.js, Playwright]
+  pnpm exec playwright test  Run Playwright end-to-end tests

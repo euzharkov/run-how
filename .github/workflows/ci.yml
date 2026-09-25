@@ -45,3 +45,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Test every install channel against a local release mirror
         run: tests/install/run.sh
+
+  real-products:
+    name: Real products (Docker)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check rhow against the pinned real products
+        run: tests/integration/run.sh
+      - name: Keep the outputs and diffs of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-products-logs
+          path: tests/integration/logs/
+          retention-days: 14

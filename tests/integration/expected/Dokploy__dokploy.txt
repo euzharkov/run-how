@@ -1,0 +1,98 @@
+Dokploy_dokploy  [Node.js, Docker]
+
+  pnpm run dokploy:setup
+  pnpm run dokploy:dev                        ∞ long-running
+  pnpm run dokploy:build
+  pnpm run dokploy:start                      ∞ long-running
+  pnpm run test                             Run test in dokploy
+  pnpm run server:script                    Run switch:dev in server  ∞ long-running
+  pnpm run server:dev                         ∞ long-running
+  pnpm run server:build
+  pnpm run docker:build:canary
+  pnpm run typecheck                        Run typecheck in all workspace packages
+  pnpm run build                            Run build in all workspace packages
+  pnpm run format-and-lint                  Check lint and formatting with Biome
+  pnpm run check                            Fix lint and format issues with Biome
+  pnpm run format-and-lint:fix              Fix lint and format issues with Biome
+  pnpm run generate:openapi                 Run generate:openapi in dokploy
+  docker build -t dokploy_dokploy .         Build Docker image
+  docker build -f Dockerfile.cloud -t … .   Build Docker image from Dockerfile.cloud
+  docker build -f … .                       Build Docker image from Dockerfile.monitoring
+  docker build -f Dockerfile.schedule … .   Build Docker image from Dockerfile.schedule
+  docker build -f Dockerfile.server -t … .  Build Docker image from Dockerfile.server
+  ./scripts/assign-worktree-port.sh
+  ./scripts/install-worktree-deps.sh
+  ./scripts/spawn-agent-worktree.sh
+
+apps/api  [Node.js]
+  pnpm run dev          Run src/index.ts with auto-restart  ∞ long-running
+  pnpm run dev:inngest  Run inngest-cli@1.9.0 dev  ∞ long-running
+  pnpm run build        Delete dist, then compile TypeScript sources
+  pnpm run start        Run dist/index.js
+  pnpm run typecheck    Check TypeScript types
+
+apps/dokploy  [Node.js, Drizzle, Next.js, Vitest]
+  pnpm run build                  Run esbuild.config.ts, then build Next.js app
+  pnpm run start                  Run dist/migration.mjs, then run dist/server.mjs
+  pnpm run build-server           Run esbuild.config.ts
+  pnpm run build-next             Build Next.js app
+  pnpm run setup                  Run setup.ts, then run migration.ts
+  pnpm run wait-for-postgres      Run dist/wait-for-postgres.mjs
+  pnpm run wait-for-postgres-dev  Run wait-for-postgres.ts
+  pnpm run reset-password         Run dist/reset-password.mjs
+  pnpm run reset-2fa              Run dist/reset-2fa.mjs
+  pnpm run migrate-auth-secret    Run dist/migrate-auth-secret.mjs
+  pnpm run dev                    Run server/server.ts
+  pnpm run studio                 Open Drizzle Studio
+  pnpm run migration:generate     Generate Drizzle migrations
+  pnpm run migration:run          Run migration.ts
+  pnpm run manual-migration:run   Run migrate.ts
+  pnpm run migration:up           Run drizzle-kit up
+  pnpm run migration:drop         Delete Drizzle migration  [destructive]
+  pnpm run db:push                Push Drizzle schema to database
+  pnpm run db:truncate            Run server/db/reset.ts
+  pnpm run db:studio              Open Drizzle Studio
+  pnpm run check                  Fix lint and format issues with Biome
+  pnpm run format                 Format source code with Biome
+  pnpm run lint                   Check source code with Biome
+  pnpm run typecheck              Check TypeScript types
+  pnpm run db:seed                Run server/db/seed.ts
+  pnpm run db:clean               Run server/db/reset.ts
+  pnpm run docker:build
+  pnpm run docker:push
+  pnpm run docker:build:canary
+  pnpm run docker:push:canary
+  pnpm run version                Print message
+  pnpm run test                   Run Vitest tests in __test__/vitest.config.ts
+  pnpm run generate:openapi       Run scripts/generate-openapi.ts
+  pnpm run reset-onboarding       Run scripts/reset-onboarding.ts
+
+apps/monitoring  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  go run .        Run Go monitoring program
+
+apps/schedules  [Node.js]
+  pnpm run dev        Run src/index.ts with auto-restart  ∞ long-running
+  pnpm run build      Delete dist, then compile TypeScript sources
+  pnpm run start      Run dist/index.js
+  pnpm run typecheck  Check TypeScript types
+
+packages/server  [Node.js]
+  pnpm run build             Compile TypeScript sources (+3 more steps)
+  pnpm run build:types       Compile TypeScript sources
+  pnpm run switch:dev        Run scripts/switchToSrc.js
+  pnpm run switch:prod       Run scripts/switchToDist.js
+  pnpm run dev               Delete dist, then run esbuild.config.ts, then compile TypeScript sources
+  pnpm run esbuild           Run esbuild.config.ts, then compile TypeScript sources
+  pnpm run typecheck         Check TypeScript types
+  pnpm run dbml:generate     Run src/db/schema/dbml.ts
+  pnpm run generate:drizzle  Run @better-auth/cli generate
+
+packages/server/src/emails  [Node.js]
+  pnpm run build   Run email build
+  pnpm run dev     Run email dev  ∞ long-running
+  pnpm run export

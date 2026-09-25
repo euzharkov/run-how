@@ -1,0 +1,249 @@
+pixie-io_pixie  [Go, Kubernetes, Bazel]
+
+  go vet ./...                              Check Go source with go vet
+  go fmt ./...                              Format Go source
+  golangci-lint run                         Lint Go source with golangci-lint
+  go mod tidy                               Tidy Go module dependencies  ↓ download
+  go generate ./...                         Run go:generate directives
+  mypy .                                    Run static type checking with mypy
+  bazelisk build //...                      Build all Bazel targets
+  bazelisk test //...                       Run all Bazel tests
+  bazelisk query //...                      List all Bazel targets
+  bazelisk clean                            Delete Bazel outputs
+  buildifier -r .                           Format BUILD and .bzl files
+  make go                                   Simple go build that ensure that go code compiles
+  make clean                                Remove bazel build directories
+  make pristine                             Remove bazel build directories and purge build cache
+  make build                                Run full build
+  make test                                 Run all tests
+  make test-opt                             Run all tests, optimized build
+  make test-asan                            Run all tests, with address sanitizer
+  make test-tsan                            Run all tests, with thread sanitizer
+  make go-mod-tidy                          Ensure that go are cleaned up  ↓ download
+  make go-mod-ensure                        Ensure that go dependencies exist  ↓ download
+  make gazelle-repos                        Run gazelle and generate build rules for new deps in go.mod, and go.sum
+  make gazelle                              Run gazelle and autofix bazel dependencies for go targets
+  make buildifier                           Run bazel buildtools buildifier to format build files
+  make go-setup                             Run go setup to regenrate modules/build files
+  make dev-env-start                        Start K8s dev environment
+  make dev-env-stop                         Stop dev environment  ∞ long-running
+  make dev-env-teardown                     Clean up dev environment  ∞ long-running
+  make help                                 Print help for targets with comments
+  kubectl kustomize … _services_gclb        Render Kubernetes manifests for exposed_services_gclb
+  kubectl apply -k … _services_gclb         Apply exposed_services_gclb resources to cluster  [external]
+  kubectl delete -k … _services_gclb        Delete exposed_services_gclb resources from cluster  [destructive]
+  kubectl kustomize … d_services_ilb        Render Kubernetes manifests for exposed_services_ilb
+  kubectl apply -k … d_services_ilb         Apply exposed_services_ilb resources to cluster  [external]
+  kubectl delete -k … d_services_ilb        Delete exposed_services_ilb resources from cluster  [destructive]
+  kubectl kustomize … rvices_traefik        Render Kubernetes manifests for exposed_services_traefik
+  kubectl apply -k … rvices_traefik         Apply exposed_services_traefik resources to cluster  [external]
+  kubectl delete -k … rvices_traefik        Delete exposed_services_traefik resources from cluster  [destructive]
+  kubectl kustomize … ays/plugin_job        Render Kubernetes manifests for plugin_job
+  kubectl apply -k … ays/plugin_job         Apply plugin_job resources to cluster  [external]
+  kubectl delete -k … ays/plugin_job        Delete plugin_job resources from cluster  [destructive]
+  kubectl kustomize k8s/cloud_deps          Render Kubernetes manifests
+  kubectl apply -k k8s/cloud_deps           Apply resources to cluster  [external]
+  kubectl delete -k k8s/cloud_deps          Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/clusters/base       Render Kubernetes manifests
+  kubectl apply -k k8s/clusters/base        Apply resources to cluster  [external]
+  kubectl delete -k k8s/clusters/base       Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/clusters/prod       Render Kubernetes manifests
+  kubectl apply -k k8s/clusters/prod        Apply resources to cluster  [external]
+  kubectl delete -k k8s/clusters/prod       Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/clusters/staging    Render Kubernetes manifests
+  kubectl apply -k k8s/clusters/staging     Apply resources to cluster  [external]
+  kubectl delete -k k8s/clusters/staging    Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/clusters/testing    Render Kubernetes manifests
+  kubectl apply -k k8s/clusters/testing     Apply resources to cluster  [external]
+  kubectl delete -k k8s/clusters/testing    Delete resources from cluster  [destructive]
+  kubectl apply … ction-runners/            Validate Kubernetes manifests
+  kubectl apply -f … ction-runners/         Apply resources to cluster  [external]
+  kubectl delete -f … ction-runners/        Delete resources from cluster  [destructive]
+  kubectl apply … /cert-manager/            Validate Kubernetes manifests
+  kubectl apply -f … /cert-manager/         Apply resources to cluster  [external]
+  kubectl delete -f … /cert-manager/        Delete resources from cluster  [destructive]
+  kubectl apply … devinfra/prow/            Validate Kubernetes manifests
+  kubectl apply -f k8s/devinfra/prow/       Apply resources to cluster  [external]
+  kubectl delete -f k8s/devinfra/prow/      Delete resources from cluster  [destructive]
+  kubectl kustomize … ra/sourcegraph        Render Kubernetes manifests
+  kubectl apply -k … ra/sourcegraph         Apply resources to cluster  [external]
+  kubectl delete -k … ra/sourcegraph        Delete resources from cluster  [destructive]
+  kubectl apply … /grafana_demo/            Validate Kubernetes manifests
+  kubectl apply -f k8s/grafana_demo/        Apply resources to cluster  [external]
+  kubectl delete -f k8s/grafana_demo/       Delete resources from cluster  [destructive]
+  kubectl apply … erator/bundle/            Validate Kubernetes manifests
+  kubectl apply -f k8s/operator/bundle/     Apply resources to cluster  [external]
+  kubectl delete -f k8s/operator/bundle/    Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/operator/crd/base   Render Kubernetes manifests
+  kubectl apply -k k8s/operator/crd/base    Apply resources to cluster  [external]
+  kubectl delete -k k8s/operator/crd/base   Delete resources from cluster  [destructive]
+  kubectl kustomize … eployment/base        Render Kubernetes manifests
+  kubectl apply -k … eployment/base         Apply resources to cluster  [external]
+  kubectl delete -k … eployment/base        Delete resources from cluster  [destructive]
+  kubectl apply … tor/helm/crds/            Validate Kubernetes manifests
+  kubectl apply -f k8s/operator/helm/crds/  Apply resources to cluster  [external]
+  kubectl delete -f … tor/helm/crds/        Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/slackin             Render Kubernetes manifests
+  kubectl apply -k k8s/slackin              Apply resources to cluster  [external]
+  kubectl delete -k k8s/slackin             Delete resources from cluster  [destructive]
+  kubectl kustomize k8s/vizier              Render Kubernetes manifests
+  kubectl apply -k k8s/vizier               Apply resources to cluster  [external]
+  kubectl delete -k k8s/vizier              Delete resources from cluster  [destructive]
+  kubectl kustomize … deps/base/etcd        Render Kubernetes manifests
+  kubectl apply -k … deps/base/etcd         Apply resources to cluster  [external]
+  kubectl delete -k … deps/base/etcd        Delete resources from cluster  [destructive]
+  kubectl kustomize … deps/base/nats        Render Kubernetes manifests
+  kubectl apply -k … deps/base/nats         Apply resources to cluster  [external]
+  kubectl delete -k … deps/base/nats        Delete resources from cluster  [destructive]
+  kubectl apply … -f skaffold/              Validate Kubernetes manifests
+  kubectl apply -f skaffold/                Apply resources to cluster  [external]
+  kubectl delete -f skaffold/               Delete resources from cluster  [destructive]
+  kubectl apply … ream_loadtest/            Validate Kubernetes manifests
+  kubectl apply -f … ream_loadtest/         Apply resources to cluster  [external]
+  kubectl delete -f … ream_loadtest/        Delete resources from cluster  [destructive]
+  kubectl apply … iler_loadtest/            Validate Kubernetes manifests
+  kubectl apply -f … iler_loadtest/         Apply resources to cluster  [external]
+  kubectl delete -f … iler_loadtest/        Delete resources from cluster  [destructive]
+  kubectl apply … ocol_loadtest/            Validate Kubernetes manifests
+  kubectl apply -f … ocol_loadtest/         Apply resources to cluster  [external]
+  kubectl delete -f … ocol_loadtest/        Delete resources from cluster  [destructive]
+  kubectl apply … conn_loadtest/            Validate Kubernetes manifests
+  kubectl apply -f … conn_loadtest/         Apply resources to cluster  [external]
+  kubectl delete -f … conn_loadtest/        Delete resources from cluster  [destructive]
+  kubectl apply … al/multi_arch/            Validate Kubernetes manifests
+  kubectl apply -f … al/multi_arch/         Apply resources to cluster  [external]
+  kubectl delete -f … al/multi_arch/        Delete resources from cluster  [destructive]
+  kubectl apply … _apps/go_http/            Validate Kubernetes manifests
+  kubectl apply -f … _apps/go_http/         Apply resources to cluster  [external]
+  kubectl delete -f … _apps/go_http/        Delete resources from cluster  [destructive]
+  kubectl apply … stats/testing/            Validate Kubernetes manifests
+  kubectl apply -f … stats/testing/         Apply resources to cluster  [external]
+  kubectl delete -f … stats/testing/        Delete resources from cluster  [destructive]
+  kubectl apply … o_grpc_client/            Validate Kubernetes manifests
+  kubectl apply -f … o_grpc_client/         Apply resources to cluster  [external]
+  kubectl delete -f … o_grpc_client/        Delete resources from cluster  [destructive]
+  kubectl apply … o_grpc_server/            Validate Kubernetes manifests
+  kubectl apply -f … o_grpc_server/         Apply resources to cluster  [external]
+  kubectl delete -f … o_grpc_server/        Delete resources from cluster  [destructive]
+  kubectl apply … tainers/pgsql/            Validate Kubernetes manifests
+  kubectl apply -f … tainers/pgsql/         Apply resources to cluster  [external]
+  kubectl delete -f … tainers/pgsql/        Delete resources from cluster  [destructive]
+  kubectl apply … ing/demo_apps/            Validate Kubernetes manifests
+  kubectl apply -f … ing/demo_apps/         Apply resources to cluster  [external]
+  kubectl delete -f … ing/demo_apps/        Delete resources from cluster  [destructive]
+  ./ci/artifact_utils.sh
+  ./ci/bazel_build_deps.sh
+  ./ci/cli_build_release.sh                   [external]
+  ./ci/cli_merge_sign.sh
+  ./ci/cli_upload_signed.sh
+  ./ci/cloud_build_release.sh                 [external]
+  ./ci/collect_coverage.sh                  We use GCC for building coverage code
+  ./ci/gcs_utils.sh
+  ./ci/helm_build_release.sh                  [external]
+  ./ci/image_utils.sh
+  ./ci/operator_build_release.sh              [external]
+  ./ci/operator_helm_build_release.sh         [external]
+  ./ci/run_clang_tidy.sh
+  ./ci/run_copybara.sh
+  ./ci/save_diff_info.sh
+  ./ci/save_version_info.sh
+  ./ci/update_artifact_manifest.sh
+  ./ci/update_files_with_ … se_versions.sh    [external]
+  ./ci/vizier_build_release.sh                [external]
+  ./scripts/access_prod_db.sh
+  ./scripts/bazel_ignore_codes.sh
+  ./scripts/collect_heap_pprofs.sh
+  ./scripts/create_cloud_secrets.sh
+  ./scripts/create_gke_cluster.sh
+  ./scripts/create_releas … ev_artifact.sh    [external]
+  ./scripts/create_release_tag.sh           This creates new tag in git for current commit  [external]
+  ./scripts/deploy_cloud_deps.sh              [external]
+  ./scripts/deploy_cloud_prereqs.sh           [external]
+  ./scripts/download_heap … apped_files.sh
+  ./scripts/gen_compilation_database.sh
+  ./scripts/lint.sh                         Script Usage:
+  ./scripts/load_cloud_secrets.sh
+  ./scripts/push_ubuntu_debs_to_gcs.sh
+  ./scripts/run_all_bpf_tests.sh
+  ./scripts/run_docker.sh                   Script Usage:
+  ./scripts/run_docker_bpf.sh               Script Usage:
+  ./scripts/run_etcdctl.sh
+  ./scripts/script_utils.sh
+  ./scripts/sudo_bazel_run.sh               Invoke something using sudo. This is *just* to force password entry because
+  ./scripts/update_go_protos.sh
+  ./scripts/update_tls_certs.sh
+  ./scripts/update_ts_protos.sh
+
+src/api/python  [Python]
+  pytest  Run Python tests
+
+src/pxl_scripts
+  make all
+  make update_readme
+  make dev
+  ./test_script_bundle.sh
+
+src/stirling/k8s  [Kubernetes]
+  make create_namespace                 Create target namespace for Stirling deployment
+  make create_image_pull_secret         Print message
+  make deploy_stirling_pod              Deploy Stirling as pod on single node
+  make deploy_stirling_daemonset        Deploys stirling as daemonset on all nodes
+  make deploy_stirling_profiler_pod     Deploy Stirling profiler as pod on single node
+  make delete_stirling_pod              Delete previously deployed Stirling pod
+  make delete_stirling_daemonset        Delete previously deployed Stirling daemonset
+  make delete_stirling_profiler_pod     Delete previously deployed Stirling pod
+  kubectl apply --dry-run=client -f ./  Validate Kubernetes manifests
+  kubectl apply -f ./                   Apply resources to cluster  [external]
+  kubectl delete -f ./                  Delete resources from cluster  [destructive]
+  ./run_stirling_wrapper_on_k8s.sh
+
+src/stirling/source_connectors/socket_tracer/testing/containers/mysql  [Python, Docker]
+  docker build -t mysql .  Build Docker image
+  ./update_ghcr.sh         Increment this number on every upload
+
+src/stirling/testing/demo_apps/py_grpc  [Python, Docker]
+  docker build -t py_grpc .  Build Docker image
+  ./update_ghcr.sh           This version is identical to Python gRPC module version for easier recognition
+
+src/ui  [Node.js, Cypress, Jest, webpack]
+  yarn cypress run           Run Cypress end-to-end tests
+  yarn build_dev             Bundle with webpack, then compile TypeScript sources
+  yarn build_prod            Delete dist, then bundle with webpack, then compile TypeScript sources
+  yarn clean                 Delete dist
+  yarn dev                   Start webpack dev server, then compile TypeScript in watch mode  ∞ long-running
+  yarn typecheck             Compile TypeScript sources
+  yarn test                  Run Jest tests
+  yarn test_ci               Run Jest tests
+  yarn coverage              Run Jest tests with coverage
+  yarn coverage_ci           Run Jest tests with coverage
+  yarn license_check
+  yarn lint                  Compile TypeScript sources, then check source code with ESLint
+  yarn cypress:open:chrome   Open Cypress test runner
+  yarn cypress:open:firefox  Open Cypress test runner
+  yarn cypress:run:chrome    Run Cypress end-to-end tests
+  yarn cypress:run:firefox   Run Cypress end-to-end tests
+
+tools/chef
+  make build_and_push_base_image
+  make build_and_push_dev_images
+
+tools/docker  [Docker]
+  make build_clang_deb_image            Clang Build
+  make upload_clang_deb                 Target to build and upload clang deb image
+  make upload_libtinfo5_deb             Libtinfo5 upload  ↓ download
+  make build_gperftools_deb_image       GPerftools build
+  make upload_gperftools_deb            Target to build and upload gperftools deb image
+  make build_graalvm_archive_image      Graalvm build
+  make upload_graalvm_archive           Create .build (+3 more steps)
+  make upload_linux_headers             Target to build and upload linux headers image
+  make build_all_sysroots               Sysroots Build
+  make upload_all_sysroots
+  make build_and_upload_nats_image      Custom docker images
+  make build_and_upload_kratos_image
+  make build_and_upload_hydra_image
+  make build_and_upload_copybara_image  Build Docker image, then push Docker image to registry  [external]
+  make … icsearch_image                 Build Docker image, then push Docker image to registry  [external]
+  make upload_kernel_build              Run sha256sum, then run awk
+  make upload_etcd_image                Build Docker image
+  make clean                            Delete .build  [destructive]
+  make help                             Print help for targets with comments

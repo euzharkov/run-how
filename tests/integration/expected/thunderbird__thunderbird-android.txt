@@ -1,0 +1,58 @@
+thunderbird_thunderbird-android  [JVM, Gradle]
+
+  ./gradlew buildCliTools  Builds all CLI tools
+  ./gradlew run            Run app with Gradle
+  ./gradlew build
+  ./gradlew test           Run Gradle tests
+  ./gradlew check          Run Gradle checks (tests and linters)
+  ./gradlew spotlessApply  Format code with Spotless
+  ./gradlew clean          Delete Gradle build outputs
+  ./gradlew tasks          List all Gradle tasks
+  .\gradlew.bat            Copyright 2015 original author or authors
+
+app-k9mail  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+app-thunderbird  [JVM, Gradle]
+  gradle printConfigurations
+  gradle run                  Run app with Gradle
+
+backend/demo  [JVM, Gradle]
+  gradle updateDemoMailbox  Update mailbox/contents.json from src/main/resources/mailbox contents
+
+build-plugin  [JVM, Gradle]
+  gradle run     Run app with Gradle
+  gradle detekt  Analyse Kotlin code with detekt
+
+build-plugin/plugin  [JVM, Gradle]
+  gradle :plugin:run  Run app with Gradle
+
+cli/autodiscovery-cli  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+cli/html-cleaner-cli  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+cli/resource-mover-cli  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+cli/translation-cli  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+cli/weblate-cli  [JVM, Gradle]
+  gradle run  Run app with Gradle
+
+components/ui/catalog  [JVM, Gradle]
+  gradle :ui:catalog:run  Run app with Gradle
+
+scripts  [Python]
+  ./app_cycler.sh                         Android App Cycler
+  ./debian_build.sh
+  ./extract-eml.sh
+  ./merged-pr-report.sh                   Merged-prs-report
+  ./take_screenshot.sh
+  ./test_python_scripts.sh                Test Python scripts and dependencies in temporary environment
+  ./ci/manage-pr-comment.sh
+  ./ci/run-fluidattacks-scanners.sh
+  ./ci/validate-github-actions-pinned.sh
+  ./ci/validate-pr-report-labels.sh

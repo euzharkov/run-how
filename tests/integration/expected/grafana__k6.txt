@@ -1,0 +1,29 @@
+grafana_k6  [Go, Kubernetes, Docker]
+
+  go test ./...                         Run Go tests
+  go vet ./...                          Check Go source with go vet
+  go fmt ./...                          Format Go source
+  go mod tidy                           Tidy Go module dependencies  ↓ download
+  go run .                              Run Go v2 program
+  make proto-dependencies               Extract zip archive (+3 more steps)  ↓ download
+  make generate-tools-installs          Install Go binaries  ↓ download
+  make generate
+  make all                              Run Go tests with race detector (+3 more steps)
+  make build                            Build: Builds 'k6' binary
+  make format                           Format: Applies Go formatting to code
+  make grpc-server-run                  Grpc-server-run: Runs gRPC server example
+  make lint                             Lint: Run golangci-lint with k6-ci config + $(LINT_PATCH)
+  make update-lint-patch                Update-lint-patch: Regenerate $(LINT_PATCH) from locally edited $(LINT_FINAL)
+  make clean-lint                       Clean-lint: Remove $(LINT_DIR)
+  make tests                            Tests: Executes any unit tests
+  make check                            Check: Runs linters and tests
+  make help                             Help: Prints list of available build targets
+  make clean                            Clean: Removes any previously created build artifacts
+  docker build -t grafana_k6 .          Build Docker image
+  kubectl apply --dry-run=client -f ./  Validate Kubernetes manifests
+  kubectl apply -f ./                   Apply resources to cluster  [external]
+  kubectl delete -f ./                  Delete resources from cluster  [destructive]
+  ./build-release.sh                      [external]
+
+examples/grpc_server  [Go]
+  go run .  Run Go grpc_server program

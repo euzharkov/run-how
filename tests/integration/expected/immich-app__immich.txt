@@ -1,0 +1,136 @@
+immich-app_immich  [Node.js, Docker, Redis, PostgreSQL]
+
+  pnpm run format                     Check formatting with Prettier
+  pnpm run format:fix                 Check formatting with Prettier
+  docker compose -f … up -d           Start all Docker services
+  docker compose -f … immich-server   Start immich-server service (immich-server)
+  docker compose -f … chine-learning  Start immich-machine-learning service (immich-machine-learning)
+  docker compose -f … up -d redis     Start Valkey
+  docker compose -f … up -d database  Start PostgreSQL
+  docker compose -f … logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f … down            Stop and remove Docker services
+  docker compose -f … down -v         Stop Docker services and delete their volumes  [destructive]
+  ./install.sh
+  pnpm -r run lint                    Check source code with ESLint in every workspace package
+  pnpm -r run lint:fix                Fix lint issues with ESLint in every workspace package
+
+docs  [Node.js]
+  pnpm run docusaurus
+  pnpm run start               Start Docusaurus site locally  ∞ long-running
+  pnpm run copy:openapi
+  pnpm run build               Run jq, then build Docusaurus site
+  pnpm run swizzle             Run docusaurus swizzle
+  pnpm run deploy              Deploy Docusaurus site  [external]
+  pnpm run clear               Run docusaurus clear
+  pnpm run serve               Serve built Docusaurus site  ∞ long-running
+  pnpm run write-translations  Run docusaurus write-translations
+  pnpm run write-heading-ids   Run docusaurus write-heading-ids
+
+e2e  [Node.js, Playwright, Docker, Vitest]
+  pnpm exec playwright test             Run Playwright end-to-end tests
+  pnpm run test                         Run Vitest tests
+  pnpm run test:watch                   Run Vitest tests
+  pnpm run test:maintenance             Run Vitest tests in vitest.maintenance.config.ts
+  pnpm run test:web                     Run Playwright end-to-end tests
+  pnpm run test:web:maintenance         Run Playwright end-to-end tests
+  pnpm run test:web:ui                  Run Playwright end-to-end tests
+  pnpm run start:web                    Open Playwright test UI
+  pnpm run start:web:maintenance        Open Playwright test UI
+  pnpm run start:web:ui                 Open Playwright test UI
+  pnpm run check                        Check TypeScript types
+  docker compose up -d e2e-auth-server  Start e2e-auth-server service (built from source)
+  docker compose build                  Build Docker service images
+
+machine-learning  [Python]
+  uv run pytest               Run Python tests
+  uv run ruff check .         Check Python source code with Ruff
+  uv run ruff format .        Format Python code with Ruff
+  uv run mypy .               Run static type checking with mypy
+  ./scripts/configure-apt.sh
+
+mobile  [Flutter]
+  flutter run                             Run Flutter app  ∞ long-running  ⊙ device
+  flutter test                            Run Flutter tests
+  flutter analyze                         Analyze Dart source
+  dart format .
+  flutter build apk                       Build Android APK
+  flutter build appbundle                 Build Android App Bundle
+  flutter build ios                       Build iOS app
+  dart run build_runner … icting-outputs  Generate code with build_runner
+  flutter test integration_test           Run Flutter integration tests on device
+  flutter pub get                         Install Dart dependencies  ↓ download
+  ./scripts/checkout_ios.sh               Reconciles iOS project with current Flutter setup
+
+mobile/packages/ui  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+packages/cli  [Node.js, Vite, Vitest]
+  pnpm run build      Build app with Vite
+  pnpm run build:dev  Build app with Vite
+  pnpm run prepack    Build app with Vite
+  pnpm run test       Run Vitest tests
+  pnpm run test:cov   Run Vitest tests with coverage
+  pnpm run check      Check TypeScript types
+
+packages/e2e-auth-server  [Node.js]
+  pnpm run start  Run startup.ts
+
+packages/plugin-core  [Node.js]
+  pnpm run build       Check TypeScript types (+3 more steps)
+  pnpm run build:tsc   Run plugin-sdk, then check TypeScript types, then run esbuild.js
+  pnpm run build:wasm
+
+packages/plugin-sdk  [Node.js]
+  pnpm run test   Print message
+  pnpm run build  Run esbuild.js, then compile TypeScript sources, then run tsc-alias
+
+packages/scripts  [Node.js, Vite, Vitest]
+  pnpm run cli       Run dist/main.js
+  pnpm run build     Build app with Vite
+  pnpm run watch     Build app with Vite  ∞ long-running
+  pnpm run test      Run Vitest tests
+  pnpm run test:cov  Run Vitest tests with coverage
+  pnpm run check     Check TypeScript types
+
+packages/sdk  [Node.js]
+  pnpm run build  Compile TypeScript sources
+
+server  [Node.js, NestJS, Vitest, Docker]
+  pnpm run build                    Build NestJS app
+  pnpm run start                    Start NestJS app in watch mode  ∞ long-running
+  pnpm run nest                     Run NestJS CLI
+  pnpm run start:dev                Start NestJS app in watch mode  ∞ long-running
+  pnpm run start:debug              Start NestJS app in watch mode  ∞ long-running
+  pnpm run check                    Check TypeScript types
+  pnpm run check:code               Run formatting, linting, and type checks
+  pnpm run check:all                Run formatting, linting, type checks, and tests
+  pnpm run test                     Run Vitest tests in test/vitest.config.mjs
+  pnpm run test:cov                 Run Vitest tests in test/vitest.config.mjs
+  pnpm run test:medium              Run Vitest tests in test/vitest.config.medium.mjs
+  pnpm run migrations:debug
+  pnpm run migrations:generate
+  pnpm run migrations:create
+  pnpm run migrations:run
+  pnpm run migrations:revert
+  pnpm run migrations:sync-order
+  pnpm run migrations:verify-order
+  pnpm run schema:drop                [destructive]
+  pnpm run schema:reset               [destructive]
+  pnpm run email:dev                  ∞ long-running
+  docker build -f … -t server .     Build Docker image from Dockerfile.dev
+
+web  [Node.js, Vite, Vitest, SvelteKit]
+  pnpm run dev               Start Vite development server  ∞ long-running
+  pnpm run build             Build app with Vite
+  pnpm run build:stats       Build app with Vite
+  pnpm run package           Run SvelteKit
+  pnpm run preview           Preview production build with Vite  ∞ long-running
+  pnpm run check:svelte      Check Svelte components and types
+  pnpm run check:typescript  Check TypeScript types
+  pnpm run check:watch       Check Svelte components and types  ∞ long-running
+  pnpm run check:code        Run formatting, linting, and type checks
+  pnpm run check:all         Run formatting, linting, type checks, and tests
+  pnpm run test              Run Vitest tests
+  pnpm run test:cov          Run Vitest tests with coverage
+  pnpm run test:watch        Run Vitest tests in watch mode
+  pnpm run prepare           Run SvelteKit

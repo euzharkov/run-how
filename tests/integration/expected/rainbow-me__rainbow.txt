@@ -1,0 +1,81 @@
+rainbow-me_rainbow  [Node.js, React Native, Expo, Gradle, webpack]
+
+  yarn expo prebuild                       Generate native iOS and Android projects
+  yarn expo-doctor                         Check Expo project for common issues
+  yarn // Fetch backend networks
+  yarn adb-all                             Run adb devices, then run tail, then run cut, then run xargs  ⊙ device
+  yarn android                             Build and run app on Android  ∞ long-running  ⊙ device
+  yarn android:apk                         Install APK on device (+2 more steps)  ∞ long-running  ⊙ device
+  yarn android:bundle                      Run open (+2 more steps)
+  yarn android:load-apk                    Install APK on device  ∞ long-running  ⊙ device
+  yarn android:reinstall                   Uninstall app from device, then build and run app on Android  ∞ long-running  ⊙ device
+  yarn android-all:apk                     Run xargs (+5 more steps)  ⊙ device
+  yarn android-all:load-apk                Run adb devices, then run tail, then run cut, then run xargs  ⊙ device
+  yarn android-reverse-ports               Forward device port to host  ∞ long-running  ⊙ device
+  yarn android-reverse-ports-all           Run adb devices, then run tail, then run cut, then run xargs  ⊙ device
+  yarn anvil                               Run scripts/anvil.sh
+  yarn bundle-inpage                       Copy InjectedJSBundle.js to android/app/src/main/res/raw/injected_js_bundle.js (+1 more step)
+  yarn clean:android                       Delete ~/.gradle/caches (+3 more steps)  [destructive]  ⊙ device
+  yarn clean:ios                           Delete ios/build, then run pod deintegrate
+  yarn clean:node                          Delete node_modules
+  yarn clean:packager
+  yarn fast                                Run codegen in graphql (+5 more steps)  ↓ download
+  yarn fetch:networks                      Run scripts/networks.js
+  yarn format                              Format source code with Prettier
+  yarn format:check                        Check formatting with Prettier
+  yarn generate:emojis                     Run scripts/emojis.ts, then format source code with Prettier
+  yarn gradle                              Run Gradle
+  yarn graphql-codegen                     Run scripts/graph-ens-key.sh, then run codegen in graphql
+  yarn graphql-codegen:install               ↓ download
+  yarn graphql-prepare
+  yarn postinstall
+  yarn install-all                         Run codegen in graphql (+5 more steps)  ↓ download
+  yarn install-all-no-flipper              Run codegen in graphql (+5 more steps)  ↓ download
+  yarn install-bundle                      Install Ruby gems  ↓ download
+  yarn install-pods                        Install CocoaPods dependencies
+  yarn install-pods-fast                   Install CocoaPods dependencies
+  yarn install-pods-fast-jsc               Install CocoaPods dependencies
+  yarn install-pods-no-flipper             Install CocoaPods dependencies
+  yarn ios                                 Build and run app on iOS  ∞ long-running  ⊙ device
+  yarn lint                                Run formatting, type checks, and linting
+  yarn lint:ci                             Check source code with ESLint (+3 more steps)
+  yarn lint:deps                           Run tools/deps-check/index.ts
+  yarn lint:deps:baseline:update           Run tools/deps-check/index.ts
+  yarn lint:js                             Check source code with ESLint
+  yarn lint:js:ci                          Check source code with ESLint
+  yarn lint:js-types
+  yarn lint:ts                             Check TypeScript types
+  yarn nuke
+  yarn prepare                             Install Git hooks with Husky  ∆ git
+  yarn rc-push
+  yarn setup                               Run codegen in graphql (+4 more steps)
+  yarn setup-ci
+  yarn start                               Start Metro bundler  ∞ long-running
+  yarn start:clean                         Run watchman, then start Metro bundler  ∞ long-running
+  yarn start:client-logs                   Start Metro bundler  ∞ long-running
+  yarn test                                Run Jest tests
+  yarn ts-coverage
+  yarn ts-migrate-folder
+  yarn uninstall:android                   Uninstall app from device  ⊙ device
+  yarn uninstall:ios                       Print message
+  yarn update-dev-keystore
+  yarn update-env
+  yarn update-google-services
+  yarn update-token-list                   Run scripts/update-token-list.sh
+  yarn update-tokens                       Run scripts/update-token-list.sh
+  ./scripts/anvil.sh                       Get path to repo root
+  ./scripts/check-env.sh
+  ./scripts/e2e-android-ci.sh
+  ./scripts/e2e-android-perf-aws-test.sh
+  ./scripts/e2e-android-perf-ci-aws.sh
+  ./scripts/e2e-android-perf-ci-report.sh
+  ./scripts/e2e-android-perf-local.sh
+  ./scripts/e2e-ios-ci.sh
+  ./scripts/e2e-ios-enroll-biometrics.sh
+  ./scripts/e2e-run.sh
+  ./scripts/fetch-rainbow-env-file.sh      Fetches file from private rainbow-me/rainbow-env repo into this repo
+  ./scripts/update-token-list.sh
+
+src/graphql  [Node.js, GraphQL]
+  yarn allow-scripts  Print message
+  yarn codegen        Generate GraphQL types

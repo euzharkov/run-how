@@ -1,0 +1,138 @@
+ghostty-org_ghostty  [Zig, CMake]
+
+  zig build
+  zig build run                             Build and run Zig program
+  zig build test                            Run Zig tests
+  zig fmt .                                 Format Zig source
+  cmake -S . -B build                       Configure CMake project into build/
+  cmake --build build
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+  make init                                 Print message
+  make glad                                 Generator: https://gen.glad.sh/  [destructive]
+  make clean                                Delete zig-out, .zig-cache, macos/build, and macos/GhosttyKit.xcframework  [destructive]
+
+example/c-vt  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-build-info  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-color-scheme  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-colors  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-compression  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-effects  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-encode-focus  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-encode-key  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-encode-mouse  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-formatter  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-grid-ref-tracked  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-grid-traverse  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-kitty-graphics  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-modes  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-paste  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-render  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-search  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-selection  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-selection-gesture  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-sgr  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-size-report  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-snapshot  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-static  [Zig]
+  zig build run  Build and run Zig program
+
+example/c-vt-stream  [Zig]
+  zig build run  Build and run Zig program
+
+example/cpp-vt-stream  [Zig]
+  zig build run  Build and run Zig program
+
+example/swift-vt-xcframework  [Swift]
+  swift build
+  swift test   Run Swift tests
+  swift run    Run Swift executable
+
+example/zig-formatter  [Zig]
+  zig build run  Build and run Zig program
+
+example/zig-vt  [Zig]
+  zig build run  Build and run Zig program
+
+example/zig-vt-stream  [Zig]
+  zig build run  Build and run Zig program
+
+macos  [Xcode]
+  xcodebuild -project … build     Build Ghostty scheme for iOS Simulator  ⊙ device
+  xcodebuild -project … 16' test  Run Ghostty tests in iOS Simulator  ⊙ device
+
+pkg/dcimgui  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/fontconfig  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/freetype  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/glslang  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/harfbuzz  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/highway  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/macos  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/oniguruma  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/simdutf  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/spirv-cross  [Zig]
+  zig build run  Build and run Zig program
+
+pkg/wuffs  [Zig]
+  zig build run  Build and run Zig program
