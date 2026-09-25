@@ -1,0 +1,238 @@
+# Hand-picked commands each product's default view must keep: what a developer of that
+# product would type to run, test or build it, per its own docs. Unlike expected/, this file
+# is never re-recorded. If a command here leaves the default view, rhow regressed; change a
+# row only when the product itself changed (a new pinned commit renamed a script).
+# Format: <owner/repo> <project path> <command>. A path of "-" records why a product has no
+# must-have yet: its canonical commands are missing from the default view, a known gap.
+Kong/insomnia                                    .           npm run dev
+Kong/insomnia                                    .           npm run test
+Kong/insomnia                                    .           npm run lint
+excalidraw/excalidraw                            .           yarn start
+excalidraw/excalidraw                            .           yarn test
+excalidraw/excalidraw                            .           yarn build
+louislam/uptime-kuma                             .           npm run dev
+louislam/uptime-kuma                             .           npm run build
+louislam/uptime-kuma                             .           npm run lint
+hoppscotch/hoppscotch                            .           pnpm run dev
+hoppscotch/hoppscotch                            .           pnpm run test
+hoppscotch/hoppscotch                            .           pnpm run lint
+dubinc/dub                                       .           pnpm run dev
+dubinc/dub                                       .           pnpm run build
+dubinc/dub                                       .           pnpm run test
+Dokploy/dokploy                                  .           pnpm run dokploy:setup
+Dokploy/dokploy                                  .           pnpm run dokploy:dev
+Dokploy/dokploy                                  .           pnpm run dokploy:build
+actualbudget/actual                              .           yarn start
+actualbudget/actual                              .           yarn test
+actualbudget/actual                              .           yarn lint
+rainbow-me/rainbow                               .           yarn start
+rainbow-me/rainbow                               .           yarn ios
+rainbow-me/rainbow                               .           yarn android
+outline/outline                                  .           yarn dev:watch
+outline/outline                                  .           yarn test
+outline/outline                                  .           yarn build
+openstatusHQ/openstatus                          .           pnpm run dev
+openstatusHQ/openstatus                          .           pnpm run build
+openstatusHQ/openstatus                          .           pnpm run test
+midday-ai/midday                                 .           bun run dev
+midday-ai/midday                                 .           bun run build
+midday-ai/midday                                 .           bun run test
+sst/opencode                                     .           bun run dev
+sst/opencode                                     .           bun run typecheck
+ever-co/ever-gauzy                               .           yarn start
+ever-co/ever-gauzy                               .           yarn build
+ever-co/ever-gauzy                               .           yarn test
+TryGhost/Ghost                                   .           pnpm run dev
+TryGhost/Ghost                                   .           pnpm run test
+TryGhost/Ghost                                   .           pnpm run lint
+infinitered/reactotron                           .           yarn start
+infinitered/reactotron                           .           yarn build
+infinitered/reactotron                           .           yarn test
+formbricks/formbricks                            .           pnpm run dev
+formbricks/formbricks                            .           pnpm run build
+formbricks/formbricks                            .           pnpm run test
+unkeyed/unkey                                    .           make dev
+unkeyed/unkey                                    .           make test
+unkeyed/unkey                                    .           make build
+documenso/documenso                              .           npm run dx
+documenso/documenso                              .           npm run dev
+documenso/documenso                              .           npm run build
+louislam/its-mytabs                              .           deno task dev
+louislam/its-mytabs                              .           deno task start
+louislam/its-mytabs                              .           deno task test
+bewcloud/bewcloud                                .           make test
+bewcloud/bewcloud                                .           make build
+weise25/LocalSite-ai                             .           npm run dev
+weise25/LocalSite-ai                             .           npm run build
+mattermost/mattermost-mobile                     .           npm run start
+mattermost/mattermost-mobile                     .           npm run ios
+mattermost/mattermost-mobile                     .           npm run test
+bluesky-social/social-app                        .           pnpm run web
+bluesky-social/social-app                        .           pnpm run ios
+bluesky-social/social-app                        .           pnpm run test
+BlueWallet/BlueWallet                            .           npm run start
+BlueWallet/BlueWallet                            .           npm run android
+BlueWallet/BlueWallet                            .           npm run test
+zed-industries/zed                               crates/zed  cargo run -p zed
+zed-industries/zed                               .           cargo test --workspace
+sharkdp/bat                                      .           cargo test
+sharkdp/bat                                      .           cargo build
+helix-editor/helix                               .           cargo test --workspace
+helix-editor/helix                               .           cargo integration-test
+go-gitea/gitea                                   .           make build
+go-gitea/gitea                                   .           make test-backend
+go-gitea/gitea                                   .           make lint
+traefik/traefik                                  .           make binary
+traefik/traefik                                  .           make test-unit
+traefik/traefik                                  .           make lint
+grafana/k6                                       .           go test ./...
+grafana/k6                                       .           make build
+grafana/k6                                       .           make lint
+mealie-recipes/mealie                            .           task py
+mealie-recipes/mealie                            .           task ui
+mealie-recipes/mealie                            .           task py:test
+open-webui/open-webui                            .           npm run dev
+open-webui/open-webui                            .           npm run build
+home-assistant/core                              -           developers run plain pytest and hass in the script/setup venv; only uv run forms and a low-confidence tests/ pytest are found
+saleor/saleor                                    .           uv run poe start
+saleor/saleor                                    .           uv run poe test
+paperless-ngx/paperless-ngx                      .           uv run pytest
+paperless-ngx/paperless-ngx                      src         uv run python manage.py runserver
+paperless-ngx/paperless-ngx                      src-ui      pnpm run start
+netbox-community/netbox                          netbox      python manage.py runserver
+netbox-community/netbox                          netbox      python manage.py test
+chatwoot/chatwoot                                .           pnpm run dev
+chatwoot/chatwoot                                .           pnpm run test
+chatwoot/chatwoot                                .           bundle exec rspec
+mastodon/mastodon                                .           bin/setup
+mastodon/mastodon                                .           yarn test
+mastodon/mastodon                                .           bin/dev
+mastodon/mastodon                                .           bundle exec rspec
+rubygems/rubygems.org                            .           bin/setup
+rubygems/rubygems.org                            .           bin/dev
+rubygems/rubygems.org                            .           bin/rails test
+BookStackApp/BookStack                           .           npm run dev
+BookStackApp/BookStack                           .           npm run build
+BookStackApp/BookStack                           .           composer test
+BookStackApp/BookStack                           .           php artisan serve
+monicahq/monica                                  .           yarn dev
+monicahq/monica                                  .           yarn build
+monicahq/monica                                  .           php artisan serve
+monicahq/monica                                  .           php artisan test
+koel/koel                                        .           composer test
+koel/koel                                        .           pnpm run test
+bitwarden/server                                 .           dotnet build
+bitwarden/server                                 .           dotnet test
+bitwarden/server                                 src/Api     dotnet run
+jellyfin/jellyfin                                .           dotnet build
+jellyfin/jellyfin                                .           dotnet test
+jellyfin/jellyfin                                Jellyfin.Server  dotnet run
+files-community/Files                            -           a WinUI app built with Visual Studio or msbuild; the dotnet CLI commands shown are not its workflow
+halo-dev/halo                                    .           ./gradlew build
+halo-dev/halo                                    .           ./gradlew test
+halo-dev/halo                                    ui          pnpm run dev
+signalapp/Signal-Android                         .           ./gradlew qa
+signalapp/Signal-Android                         .           ./gradlew test
+thunderbird/thunderbird-android                  .           ./gradlew test
+thunderbird/thunderbird-android                  .           ./gradlew spotlessApply
+keycloak/keycloak                                js/apps/admin-ui  pnpm run dev
+keycloak/keycloak                                js/apps/keycloak-server  pnpm run start
+apache/dolphinscheduler                          .           ./mvnw spotless:apply
+apache/dolphinscheduler                          dolphinscheduler-ui  pnpm run dev
+openmrs/openmrs-core                             .           ./mvnw package
+openmrs/openmrs-core                             .           ./mvnw test
+openmrs/openmrs-core                             .           docker compose up -d
+pixie-io/pixie                                   .           make build
+pixie-io/pixie                                   .           make test
+envoyproxy/envoy                                 .           ./ci/run_envoy_docker.sh
+envoyproxy/envoy                                 .           ./ci/do_ci.sh
+envoyproxy/envoy                                 .           bazelisk build //...
+envoyproxy/envoy                                 .           bazelisk test //...
+kythe/kythe                                      .           bazelisk build //...
+kythe/kythe                                      .           bazelisk test //...
+kubernetes/k8s.io                                infra/aws/terraform/prow-build-cluster  make plan
+kubernetes/k8s.io                                groups      make test
+ministryofjustice/cloud-platform-infrastructure  -           every terraform plan of its Terraform roots is low confidence
+cds-snc/notification-terraform                   .           make fmt
+peer-calls/peer-calls                            .           npm run build
+peer-calls/peer-calls                            .           npm run test
+peer-calls/peer-calls                            .           npm run start
+zwave-js/zwave-js-ui                             .           npm run dev
+zwave-js/zwave-js-ui                             .           npm run test
+zwave-js/zwave-js-ui                             .           npm run build
+szinn/k8s-homelab                                -           only just main and task default are shown; their role is not documented
+immich-app/immich                                server      pnpm run test
+immich-app/immich                                server      pnpm run build
+immich-app/immich                                web         pnpm run dev
+nextcloud/all-in-one                             .           docker compose up -d
+getsentry/self-hosted                            .           ./install.sh
+getsentry/self-hosted                            .           docker compose up -d
+featurehub-io/featurehub                         .           mvn test
+featurehub-io/featurehub                         .           mvn package
+passportxyz/passport                             .           yarn test
+passportxyz/passport                             .           yarn build
+passportxyz/passport                             .           yarn start
+OpenPipe/OpenPipe                                app         pnpm run dev
+OpenPipe/OpenPipe                                app         pnpm run test
+OpenPipe/OpenPipe                                app         pnpm run build
+khuedoan/homelab                                 .           make configure
+debops/debops                                    .           make test
+debops/debops                                    .           make check
+debops/debops                                    .           make docs
+kubernetes-sigs/kubespray                        .           pre-commit run --all-files
+direktiv/direktiv                                .           task test:go-unit
+direktiv/direktiv                                .           go build ./...
+browser-use/desktop                              .           task up
+PierreBeucher/cloudypad                          .           task test-unit
+PierreBeucher/cloudypad                          .           pnpm run build
+PierreBeucher/cloudypad                          .           pnpm run test
+tareqimbasher/NetPad                             .           just dotnet-build
+tareqimbasher/NetPad                             .           just test-all
+pamburus/hl                                      .           make build
+pamburus/hl                                      .           make test
+pamburus/hl                                      .           just test
+GitoxideLabs/gitoxide                            .           just test
+GitoxideLabs/gitoxide                            .           just unit-tests
+redis/redis                                      .           make test
+prometheus/prometheus                            .           make build
+prometheus/prometheus                            .           make test
+neovim/neovim                                    .           make test
+neovim/neovim                                    .           make install
+wordpress-mobile/WordPress-iOS                   .           bundle exec rake dependencies
+wordpress-mobile/WordPress-iOS                   .           bundle exec rake init:oss
+wordpress-mobile/WordPress-iOS                   .           bundle exec rake xcode
+signalapp/Signal-iOS                             .           make dependencies
+exelban/stats                                    -           a macOS app built in Xcode; the only xcodebuild actions are low-confidence iOS Simulator ones
+AppFlowy-IO/AppFlowy                             frontend/appflowy_flutter  flutter run
+hiddify/hiddify-app                              .           flutter run
+localsend/localsend                              app         flutter run
+localsend/localsend                              app         flutter test
+firezone/firezone                                .           docker compose up -d
+firezone/firezone                                elixir      mix phx.server
+firezone/firezone                                elixir      mix test
+plausible/analytics                              .           mix test
+plausible/analytics                              .           make install
+plausible/analytics                              .           make server
+supabase/realtime                                .           mix test
+supabase/realtime                                .           mix phx.server
+tigerbeetle/tigerbeetle                          .           zig build
+tigerbeetle/tigerbeetle                          .           zig build test
+ghostty-org/ghostty                              .           zig build
+ghostty-org/ghostty                              .           zig build test
+ghostty-org/ghostty                              .           zig build run
+lightpanda-io/browser                            .           make build
+lightpanda-io/browser                            .           make test
+ggml-org/llama.cpp                               .           cmake --build build
+obsproject/obs-studio                            .           cmake --preset macos
+mumble-voip/mumble                               .           cmake -S . -B build
+mumble-voip/mumble                               .           cmake --build build
+logseq/logseq                                    .           pnpm run watch
+logseq/logseq                                    .           pnpm run test
+athensresearch/athens                            .           yarn dev
+athensresearch/athens                            .           yarn client:electron
+cljdoc/cljdoc                                    -           only deps.edn aliases are shown; its bb.edn tasks are not discovered
+simonmichael/hledger                             .           stack build
+simonmichael/hledger                             .           just test
+IntersectMBO/cardano-node                        -           root cabal build is hidden and cabal build all is not offered
+jgm/pandoc                                       .           make build
+jgm/pandoc                                       .           make test

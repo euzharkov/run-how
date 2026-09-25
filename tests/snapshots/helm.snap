@@ -4,7 +4,7 @@ assertion_line: 27
 expression: table
 ---
 ## . [helm] Root tools=kubernetes techs=Kubernetes,Helm
-k8s:render               Infrastructure inferred high   safe        .          helm template shop charts/app :: Render the shop Helm chart
-k8s:lint                 Quality        inferred high   safe        .          helm lint charts/app :: Validate the shop Helm chart
-k8s:install              Release        inferred medium external    .          helm upgrade --install shop charts/app :: Install or upgrade the shop Helm release
-k8s:uninstall            Infrastructure inferred low    destructive .          helm uninstall shop :: Uninstall the shop Helm release
+k8s:render               Infrastructure inferred high   safe        .          helm template shop charts/app :: Render shop Helm chart
+k8s:lint                 Quality        inferred high   safe        .          helm lint charts/app :: Validate shop Helm chart
+k8s:install              Release        inferred medium external    .          helm upgrade --install shop charts/app :: Install or upgrade shop Helm release
+k8s:uninstall            Infrastructure inferred low    destructive .          helm uninstall shop :: Uninstall shop Helm release

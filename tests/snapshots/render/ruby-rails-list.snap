@@ -1,22 +1,24 @@
 ---
 source: tests/render.rs
-assertion_line: 33
+assertion_line: 38
 expression: out
 ---
 ruby-rails  [Ruby, Rails]
 
-  bundle exec rake import          Import the product catalogue from CSV
-  bundle exec rake reports:weekly  Send the weekly sales report
+  bundle exec rake import          Import product catalogue from CSV
+  bundle exec rake reports:weekly  Send weekly sales report
   bundle exec rake db:seed:demo    Seed demo accounts
-  bundle exec rake db:reindex      Rebuild the search index
+  bundle exec rake db:reindex      Rebuild search index
   bundle exec rake data:anonymise  Anonymise customer records for staging
-  bin/dev                          Start the Rails app and its dev processes  ∞ long-running
-  bin/rails server                 Start the Rails server  ∞ long-running
-  bin/rails console                Open the Rails console  ∞ long-running
+  bin/dev                          Start Rails app and its dev processes  ∞ long-running
+  bin/rails server                 Start Rails server  ∞ long-running
+  bin/rails console                Open Rails console  ∞ long-running
   bin/rails db:migrate             Apply Rails migrations
-  bin/rails db:seed                Seed the database
-  bin/rails db:prepare             Create the database and apply migrations
-  bin/setup                        Set up the app (bin/setup)
+  bin/rails db:seed                Seed database
+  bin/rails db:prepare             Create database and apply migrations
+  bin/rails db:reset               Drop and recreate database  [destructive]
+  bin/rails routes                 List Rails routes
+  bin/setup                        Set up app (bin/setup)
   bundle exec rspec                Run RSpec tests
   bundle exec rubocop              Check Ruby source with RuboCop
-  bundle exec brakeman -q          Scan the Rails app with Brakeman
+  bundle exec brakeman -q          Scan Rails app with Brakeman

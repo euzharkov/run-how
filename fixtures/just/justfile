@@ -35,3 +35,12 @@ db-reset:
 
 watch:
     cargo watch -x run
+
+ai-help:
+    #!/bin/bash
+    cat <<EOS
+    AI usage scripts.
+    These are in groups, corresponding to various data sources:
+    1. ccusage - prints reports from recent logs
+    EOS
+    echo "see also: just ai-report"

@@ -15,11 +15,11 @@ Key `Action` fields:
 
 | Field | Meaning |
 |---|---|
-| `id` | Globally unique CLI name. Root actions keep their name; nested project actions are prefixed (`api:test`). A nested project's `run`/`dev` collapses to the project name when free |
-| `command` | The exact native command the project would run; `rhow <id>` shows it, never runs it |
+| `id` | Globally unique name, for `--json` consumers. Root actions keep their name; nested project actions are prefixed (`api:test`). A nested project's `run`/`dev` collapses to the project name when free |
+| `command` | The exact native command the project would run; rhow shows it, never runs it |
 | `working_directory` | Relative to the repo root. A workspace member's scripts are shown as run inside the member (`pnpm run dev` in `apps/web`), which is how the per-project listing reads |
 | `source` | `declared` (the project wrote it down) or `inferred` (ecosystem convention) |
-| `confidence` | `exact` for declared; `high`/`medium`/`low` for inferred. `low` is hidden without `--all` |
+| `confidence` | `exact` for declared; `high`/`medium`/`low` for inferred. `low` marks a guess (an unknown target, a project under `examples/`); it is still listed |
 | `risk` | `safe`, `external`, `destructive` |
 | `raw` (internal) | The text to analyse when it differs from `command` (the npm script body, the Make recipe) |
 
@@ -52,22 +52,33 @@ workspace lookups parse each root manifest once (`ctx.text`, `ctx.json`, `ctx.to
    or `make test` during analysis.
 5. Finalises each action: description (unless explicit), category (unless set), risk (max of
    adapter, analysis and textual heuristics).
-6. Hides what the default view does not need (all still available with `--all`):
+6. Drops what another action already covers; nothing is hidden, everything left is listed:
    - same-name or same-meaning actions from two tools in one project (declared beats inferred,
-     earlier adapter wins; same-tool variants such as `test:watch` are never touched);
+     earlier adapter wins, except that Bazel and Pants win over a language convention at the
+     root they build; same-tool variants such as `test:watch` are never touched). The keeper
+     must be able to stand in for the other: same ecosystem, or a generic runner (`make`,
+     `just`, `task`, Bazel) in front of a language's command. A Rails app's `yarn test` leaves
+     `bundle exec rspec` listed, its `make test` does not; `dotnet build` leaves the project's
+     own `build.ps1`, and `build.cmd` and `build.ps1` are two commands;
+   - an inferred command that is exactly the body of a declared script next to it
+     (`"services": "docker compose up -d"` and Compose's own `docker compose up -d`);
    - inferred non-Development actions of a nested project that its nearest ancestor project
      already offers with the same name and tool (workspace fan-out);
    - a declared script repeated with the same explanation in five or more nested packages;
      the root gains one inferred "run it in all packages" action for it instead;
-   - when more than twelve nested projects have actions, their inferred non-Development
-     actions (convention, not declaration);
-   - every action of a project under a demoted directory (`test/`, `examples/`, `fixtures/`,
-     `playground/`, `benches/`, `*-tests/`, …), which is set to low confidence.
+   - when more than twelve nested projects have actions, an inferred non-Development action
+     whose tool and name repeat in three or more of them (`cargo test` in 200 crates); one
+     that is a project's own (the one Pulumi stack's `pulumi up`, the Phoenix backend's
+     `mix test`) stays;
+   - a Taskfile `internal` task (`task` refuses to run it), an Nx `nx:noop` target, a Make
+     `.SPECIAL` or file target.
+   Projects under a demoted directory (`test/`, `examples/`, `fixtures/`, `playground/`,
+   `benches/`, `*-tests/`, …) keep their actions at low confidence; they are listed.
    Directories named `android/`, `ios/`, `macos/`, `linux/`, `windows/`, `web/` inside a
    Flutter, Expo or React Native app are shadowed entirely: nothing below them is detected.
 7. Assigns ids. Declared actions win collisions; an inferred action that loses its natural id is
-   hidden because the project already exposes that name. The built-in subcommands (`why`,
-   `support`) are reserved, so a script with one of those names gets a tool-prefixed id.
+   dropped when the holder could stand in for it (same ecosystem or a generic runner), because
+   the project already exposes that name.
 8. Optionally probes the local machine for runtime suggestions (Colima etc.).
 
 ### Adding an ecosystem
@@ -111,8 +122,8 @@ ordered by type, with a blank line between types.
 type it inside that project's directory (`pnpm run dev` in `apps/web`, not
 `pnpm --filter web dev` from the root), followed by the explanation and, when it applies, the
 risk marker. Column width is computed per block so one long command does not push every block's
-text right. Action ids (`web:test`) still exist for `--json` and `rhow why <id>`, but they are
-not what the listing shows; `rhow why '<command>'` accepts the command text as printed.
+text right. Action ids (`web:test`) exist for `--json`, but they are not what the listing
+shows.
 
 ## Analysis
 
@@ -132,6 +143,11 @@ Precedence: explicit description → command analysis → action-name heuristics
 
 Several steps combine to `Run linting, type checks, and tests` when every step has a noun,
 otherwise `A, then b`, otherwise the most significant step plus `(+N more steps)`.
+
+Every description, whatever its source, passes through `explain::terse`, which drops the
+articles `the`, `a` and `an` (`Build app with Vite`). Explicit descriptions additionally go
+through `explain::tidy` (first line, capitalised, no trailing period). Duplicate detection
+compares the final text, so two tools describing the same thing still match.
 
 ## Labels
 
@@ -188,7 +204,8 @@ infrastructure, other), with a blank line between types in a single-project repo
 ## Safety
 
 Discovery reads files. It never writes, never runs `npm`, `gradle`, `cargo metadata`,
-`kubectl`, `docker` or anything else. `tests/fixtures.rs::discovery_is_read_only` guards this.
+`kubectl`, `docker` or anything else. `tests/fixtures.rs::discovery_is_read_only` and
+`nothing_spawns_a_process_or_opens_a_socket` guard this.
 
 ## Performance
 

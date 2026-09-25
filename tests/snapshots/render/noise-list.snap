@@ -1,33 +1,47 @@
 ---
 source: tests/render.rs
-assertion_line: 33
+assertion_line: 38
 expression: out
 ---
 noise  [Node.js, Rust, Kubernetes, PHP, Laravel]
 
-  npm run lint                               Check source code with ESLint
-  npm run deploy                             Run tools/deploy.ts
+  npm run lint                            Check source code with ESLint
+  npm run deploy                          Run tools/deploy.ts
   cargo build --workspace
-  cargo check --workspace                    Type-check the Rust project for the whole workspace
-  cargo clippy --workspace                   Lint Rust source with Clippy for the whole workspace
-  cargo fmt --workspace                      Format Rust source
-  rake test                                  Run all tests
-  composer dev                               Start the Laravel development server  ∞ long-running
-  composer test                              Run Laravel tests
-  make docs                                  Build the HTML documentation
-  make clean                                 Delete _build/*
+  cargo test --workspace                  Run Rust tests for whole workspace
+  cargo check --workspace                 Type-check Rust project for whole workspace
+  cargo clippy --workspace                Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace                   Format Rust source
+  cargo bench --workspace                 Run Rust benchmarks
+  cargo doc --no-deps --workspace         Build Rust docs
+  rake test                               Run all tests
+  composer dev                            Start Laravel development server  ∞ long-running
+  composer test                           Run Laravel tests
+  make docs                               Build HTML documentation
+  make clean                              Delete _build/*
   make install
-  make help
-  kubectl apply --dry-run=client -f k8s/     Validate Kubernetes manifests
-  kubectl apply -f k8s/                      Apply resources to the cluster  [external]
-  npm run compile --workspaces --if-present  Compile TypeScript sources in every workspace package
+  make help                               Print message
+  kubectl apply --dry-run=client -f k8s/  Validate Kubernetes manifests
+  kubectl apply -f k8s/                   Apply resources to cluster  [external]
+  kubectl delete -f k8s/                  Delete resources from cluster  [destructive]
+  npm run compile … --if-present          Compile TypeScript sources in every workspace package
+
+examples/demo  [Node.js, Vite]
+  npm run dev  Start Vite development server  ∞ long-running
 
 mobile  [Flutter]
-  flutter run        Run the Flutter app  ∞ long-running  ⊙ device
-  flutter test       Run Flutter tests
-  flutter analyze    Analyze Dart source
+  flutter run              Run Flutter app  ∞ long-running  ⊙ device
+  flutter test             Run Flutter tests
+  flutter analyze          Analyze Dart source
   dart format .
-  flutter build apk  Build the Android APK
+  flutter build apk        Build Android APK
+  flutter build appbundle  Build Android App Bundle
+  flutter build ios        Build iOS app
+  flutter pub get          Install Dart dependencies  ↓ download
 
-packages/lib  [Node.js, Vitest]
-  npm run build  Build the package with tsup
+packages/lib  [Node.js]
+  npm run build  Build package with tsup
+
+packages/lib/test/apps/demo  [Node.js, Vite]
+  npm run dev    Start Vite development server  ∞ long-running
+  npm run build  Build app with Vite

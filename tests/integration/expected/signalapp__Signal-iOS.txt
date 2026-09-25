@@ -1,0 +1,46 @@
+signalapp_Signal-iOS  [Xcode]
+
+  xcodebuild -workspace … build     Build Signal scheme for iOS Simulator  ⊙ device
+  xcodebuild -workspace … 16' test  Run Signal tests in iOS Simulator  ⊙ device
+  pod install                       Install CocoaPods dependencies
+  make dependencies                 Delete untracked files (+4 more steps)  [destructive]
+  make pod-setup                    Delete untracked files (+3 more steps)  [destructive]  ∆ git
+  make backup-tests-setup           Update Git submodules  [external]  ∆ git
+  make fetch-ringrtc
+
+Scripts/sds_codegen
+  make default
+  make parse_and_regenerate
+  make regen
+  make regenerate
+  make clean
+  ./sds_codegen.sh
+  ./sds_codegen_ssk_objc.sh
+  ./sds_regenerate.sh
+
+Scripts/translation-tool  [Swift]
+  swift build
+  swift test   Run Swift tests
+  swift run    Run Swift executable
+
+Scripts/translation-validator  [Swift]
+  swift build
+  swift test   Run Swift tests
+  swift run    Run Swift executable
+
+SignalServiceKit/Protos  [Protobuf]
+  make all                         Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make signal_service_protos       Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make provisioning_protos         Compile Protobuf definitions
+  make fingerprint_protos          Compile Protobuf definitions
+  make signal_ios_protos           Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make storage_service_protos      Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make groups_protos               Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make device_transfer_protos      Compile Protobuf definitions, then run ../../Scripts/protos/ProtoWrappers.py
+  make session_record_protos       Compile Protobuf definitions
+  make svr_protos                  Compile Protobuf definitions
+  make mobilecoin_protos           Compile Protobuf definitions
+  make registration_protos         Compile Protobuf definitions
+  make backup_protos               Compile Protobuf definitions
+  make local_backup_protos         Compile Protobuf definitions
+  make call_quality_survey_protos  Compile Protobuf definitions

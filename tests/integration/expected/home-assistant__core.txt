@@ -1,0 +1,31 @@
+home-assistant_core  [Python, Docker]
+
+  uv run hass                            Run hass command (homeassistant.__main__)
+  uv run pytest                          Run Python tests
+  uv run ruff check .                    Check Python source code with Ruff
+  uv run ruff format .                   Format Python code with Ruff
+  uv run mypy .                          Run static type checking with mypy
+  uv run pre-commit run --all-files      Run pre-commit hooks on all files
+  docker build -t home-assistant_core .  Build Docker image
+  docker build -f Dockerfile.dev -t … .  Build Docker image from Dockerfile.dev
+
+homeassistant/components/mvglive  [Python]
+  ruff check .   Check Python source code with Ruff
+  ruff format .  Format Python code with Ruff
+
+pylint  [Python]
+  ruff check .   Check Python source code with Ruff
+  ruff format .  Format Python code with Ruff
+
+script  [Python]
+  ruff check .     Check Python source code with Ruff
+  ruff format .    Format Python code with Ruff
+  ./run-in-env.sh
+
+tests  [Python]
+  pytest         Run Python tests
+  ruff check .   Check Python source code with Ruff
+  ruff format .  Format Python code with Ruff
+
+tests/e2e  [Node.js, Playwright]
+  pnpm run test  Run Playwright end-to-end tests

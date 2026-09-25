@@ -1,0 +1,57 @@
+obsproject_obs-studio  [CMake]
+
+  cmake --preset macos                      Configure with macos CMake preset
+  cmake --build build
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+
+deps/libcaption
+  ./format.sh
+
+deps/w32-pthreads  [.NET]
+  dotnet build            Build pthread solution
+  dotnet restore          Restore NuGet packages  ↓ download
+  make help               Print message
+  make all                Delete pthread.def (+6 more steps)
+  make GC
+  make GC-debug
+  make GCE
+  make GCE-debug
+  make GC-inlined
+  make GC-inlined-debug
+  make GCE-inlined
+  make GCE-inlined-debug
+  make GC-static
+  make GC-static-debug
+  make tests
+  make clean              Delete pthread.def (+6 more steps)
+  make realclean          Delete libpthreadGC2d.a (+7 more steps)
+  .\builddmc.bat
+
+deps/w32-pthreads/tests
+  make help
+  make all             Delete *.i (+7 more steps)
+  make GC
+  make GC-asm
+  make GCE
+  make GCX
+  make GC-bench
+  make GCE-bench
+  make GC-debug
+  make GCE-debug
+  make GC-bench-debug
+  make GC-static
+  make GC-stress       Run @echo
+  make GCE-stress
+  make all-asm
+  make all-pass
+  make all-bench
+  make all-stress
+  make all-static
+  make clean           Delete *.i (+7 more steps)
+
+docs/sphinx  [Python]
+  make help   Put it first so that "make" without argument is like "make help"
+  .\make.bat  Command file for Sphinx documentation
+
+test/cmocka  [CMake]
+  ctest --test-dir build  Run CTest tests

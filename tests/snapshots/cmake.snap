@@ -4,7 +4,7 @@ assertion_line: 27
 expression: table
 ---
 ## . [cmake] Other tools=cmake techs=CMake
-configure                Build          inferred high   safe        .          cmake --preset dev :: Configure with the dev CMake preset
-build                    Build          inferred high   safe        .          cmake --build --preset dev :: Build with the dev CMake preset
-test                     Testing        inferred high   safe        .          ctest --preset dev :: Run CTest with the dev preset
+configure                Build          inferred high   safe        .          cmake --preset dev :: Configure with dev CMake preset
+build                    Build          inferred high   safe        .          cmake --build --preset dev :: Build with dev CMake preset
+test                     Testing        inferred high   safe        .          ctest --preset dev :: Run CTest with dev preset
 format                   Quality        inferred low    safe        .          find . -name '*.cpp' -o -name '*.h' | xargs clang-format -i :: Format C/C++ sources with clang-format

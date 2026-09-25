@@ -1,0 +1,48 @@
+neovim_neovim  [Zig, CMake]
+
+  zig build
+  zig build run                             Build and run Zig program
+  zig fmt .                                 Format Zig source
+  cmake --preset default                    Configure with default CMake preset
+  cmake --build build
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+  make all
+  make checkprefix
+  make nvim
+  make libnvim
+  make cmake                                Create empty files
+  make deps
+  make oldtest                              TODO: cmake 3.2+ add_custom_target() has USES_TERMINAL flag
+  make functionaltest-lua
+  make generated-sources                    Create empty files
+  make benchmark                            Create empty files
+  make doc
+  make test
+  make iwyu                                 Create iwyu-fix-includes shell script in your $PATH that invokes python script
+  make clean
+  make distclean                            Run clean make target
+  make install
+  make appimage                             Run scripts/genappimage.sh
+  ./scripts/genappimage.sh                  Package binaries built as AppImage
+  ./scripts/release.sh                        [external]
+  ./scripts/vim-patch.sh
+
+runtime
+  .\scripts\less.bat  Batch file to start Vim with less.vim
+  ./scripts/less.sh   Shell script to start Vim with less.vim
+
+src/man
+  make lint
+
+test/old/testdir
+  make default         Delete starttime (+2 more steps)
+  make nongui          Delete starttime (+2 more steps)
+  make report          Run /bin/sh, then delete starttime
+  make fixff           TODO: find way to avoid changing distributed files
+  make clean
+  make nolog           Delete test_result.log, test.log, messages, and starttime
+  make newtests
+  make newtestssilent
+  ./runnvim.sh
+  ./suite.sh
+  ./test.sh

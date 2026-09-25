@@ -1,0 +1,66 @@
+OpenPipe_OpenPipe
+
+app  [Node.js, Next.js, Prisma, Docker, Vitest]
+  pnpm run build                   Build Next.js app
+  pnpm run dev:next                Start Next.js development server  ∞ long-running
+  pnpm run dev:worker              Run tsconfig.server.json with auto-restart  ∞ long-running
+  pnpm run worker                  Run tsconfig.server.json
+  pnpm run dev                     Run scripts/run-dev.ts
+  pnpm run dev:tunnel              Run scripts/dev-tunnel.ts
+  pnpm run postinstall             Generate Prisma client
+  pnpm run lint                    Lint Next.js app
+  pnpm run start                   Start Next.js production server  ∞ long-running
+  pnpm run codegen:internalClient  Run src/server/scripts/internal-client-codegen.ts
+  pnpm run codegen:modal           Run src/server/modal-rpc/codegen-modal.ts
+  pnpm run codegen:clients         Run scripts/codegen-clients.ts
+  pnpm run codegen:db              Format source code with Prettier (+2 more steps)
+  pnpm run seed                    Run prisma/seed.ts
+  pnpm run check                   Compile TypeScript sources (+2 more steps)
+  pnpm run test                    Run Vitest tests
+  pnpm run repl                    Run scripts/repl.ts
+  pnpm run repl:watch              Run scripts/repl.ts with auto-restart  ∞ long-running
+  pnpm run dev:modal               Run modal serve  ∞ long-running
+  pnpm run email                   Run email dev  ∞ long-running
+  pnpm run tsx                     Run tsconfig.server.json
+  docker build -t app .            Build Docker image
+  ./scripts/copy-db.sh
+  ./scripts/debug-prod.sh
+  ./scripts/run-prod.sh
+  ./scripts/run-workers-prod.sh
+  ./scripts/test-docker.sh
+
+client-libs/python  [Python]
+  poetry run pytest   Run Python tests
+  poetry run black .  Format Python code with Black
+  ./publish.sh          [external]
+
+client-libs/typescript  [Node.js, Vitest]
+  pnpm run build
+  pnpm run build-update
+  pnpm run test          Run Vitest tests
+  ./publish.sh           Adapted from https://github.com/openai/openai-node/blob/master/build  [external]
+  ./update-app.sh
+
+examples/api  [Node.js]
+  pnpm run test  Print message
+
+inference  [Node.js]
+  pnpm run deploy  Run deploy.ts
+
+infra  [Node.js, Docker, Pulumi]
+  docker build -t infra .           Build Docker image
+  docker compose up -d              Start all Docker services
+  docker compose up -d test-deploy  Start test-deploy service (built from source)
+  docker compose logs -f            Follow Docker service logs  ∞ long-running
+  docker compose build              Build Docker service images
+  docker compose down               Stop and remove Docker services
+  pulumi preview                    Preview Pulumi changes  [external]
+  pulumi up                         Deploy Pulumi stack  [external]
+  pulumi destroy                    Destroy Pulumi stack  [destructive]
+  ./scripts/push-build-image.sh
+  ./scripts/test-deploy.sh            [external]
+
+trainer  [Python]
+  poetry run black .      Format Python code with Black
+  ./deploy-modal-apps.sh  Exit on error  [external]
+  ./openapi-codegen.sh

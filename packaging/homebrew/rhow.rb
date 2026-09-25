@@ -33,6 +33,6 @@ class Rhow < Formula
   end
 
   test do
-    assert_match "Development", shell_output("cd #{testpath} && echo '{\"scripts\":{\"dev\":\"vite\"}}' > package.json && #{bin}/rhow --no-runtime")
+    assert_match "npm run dev", shell_output("cd #{testpath} && echo '{\"scripts\":{\"dev\":\"vite\"}}' > package.json && #{bin}/rhow --no-runtime")
   end
 end

@@ -1,0 +1,204 @@
+formbricks_formbricks  [Node.js, Turborepo, Kubernetes, Helm, Docker]
+
+  pnpm run agents:update
+  pnpm run clean:all                       Delete node_modules, pnpm-lock.yaml, .turbo, coverage, and out (+1 more step)  [destructive]
+  pnpm run clean                           Delete node_modules, .turbo, coverage, and out (+1 more step)
+  pnpm run clean:cache                     Delete .turbo/cache and apps/web/.next
+  pnpm run build                           Run build across packages with Turborepo
+  pnpm run build:dev                       Run build:dev across packages with Turborepo
+  pnpm run db:migrate:dev                  Run db:migrate:dev across packages with Turborepo
+  pnpm run db:migrate:deploy               Run db:migrate:deploy across packages with Turborepo
+  pnpm run db:start                        Run db:start across packages with Turborepo
+  pnpm run db:push                         Run db:push across packages with Turborepo
+  pnpm run db:seed                         Run db:seed across packages with Turborepo
+  pnpm run db:seed:clear                   Run db:seed across packages with Turborepo
+  pnpm run db:up                           Run scripts/setup-dev-env.sh, then start Docker services in background
+  pnpm run db:down                         Stop and remove Docker services
+  pnpm run authzed:backfill
+  pnpm run authzed:perf
+  pnpm run authzed:health
+  pnpm run authzed:schema
+  pnpm run authzed:smoke                   Run docker/authzed-smoke.sh
+  pnpm run authzed:validate                Run authzed/validate.sh
+  pnpm run authzed:upgrade
+  pnpm run go                              Start Docker services in background (+3 more steps)
+  pnpm run dev                             Run dev across packages with Turborepo  ∞ long-running
+  pnpm run pre-commit                      Run linters on staged files  ∆ git
+  pnpm run start                           Run start across packages with Turborepo  ∞ long-running
+  pnpm run format                          Format source code with Prettier
+  pnpm run format:check                    Check formatting with Prettier
+  pnpm run generate                        Run generate across packages with Turborepo
+  pnpm run catalog:check                   Run scripts/check-catalog.mjs
+  pnpm run lint                            Run lint across packages with Turborepo (+2 more steps)
+  pnpm run typecheck                       Run typecheck across packages with Turborepo
+  pnpm run test                            Run test across packages with Turborepo
+  pnpm run test:coverage                   Run test:coverage across packages with Turborepo
+  pnpm run test:e2e                        Run Playwright end-to-end tests
+  pnpm run test-e2e:azure                  Run Playwright end-to-end tests
+  pnpm run prepare                         Install Git hooks with Husky  ∆ git
+  pnpm run storybook                       Run storybook across packages with Turborepo
+  pnpm run fb-migrate-dev                  Run create-migration in @formbricks/database (+1 more step)
+  pnpm run i18n:surveys:generate           Run i18n:generate in @formbricks/surveys
+  pnpm run i18n:web:generate               Run i18n:generate in @formbricks/web
+  pnpm run generate-translations           Run i18n:generate in @formbricks/surveys (+1 more step)
+  pnpm run scan-translations
+  pnpm run i18n                            Run i18n:generate in @formbricks/surveys (+2 more steps)
+  pnpm run i18n:validate
+  pnpm run api:v3:bundle                   Run docs/api-v3-reference/scripts/bundle.mjs
+  pnpm run api:v3:lint                     Run docs/api-v3-reference/scripts/bundle.mjs
+  pnpm run api:v3:check                    Run docs/api-v3-reference/scripts/bundle.mjs
+  pnpm run dev:setup                       Run scripts/setup-dev-env.sh
+  pnpm run dev:authzed                     Run scripts/dev-authzed-up.sh
+  turbo run db:setup                       Run db:setup across packages with Turborepo
+  helm template … rts/formbricks           Render formbricks Helm chart
+  helm lint charts/formbricks              Validate formbricks Helm chart
+  helm upgrade --install … rts/formbricks  Install or upgrade formbricks Helm release  [external]
+  helm uninstall formbricks                Uninstall formbricks Helm release  [destructive]
+  helm template … icedb-operator           Render spicedb-operator Helm chart
+  helm lint charts/spicedb-operator        Validate spicedb-operator Helm chart
+  helm upgrade --install … icedb-operator  Install or upgrade spicedb-operator Helm release  [external]
+  helm uninstall spicedb-operator          Uninstall spicedb-operator Helm release  [destructive]
+  ./scripts/dev-env.sh                     Read only literal value; never execute environment-file contents as shell code
+  ./scripts/setup-dev-env.sh
+  ./scripts/start-authzed-ci.sh
+  pnpm -r run lint:fix                     Fix lint issues with ESLint in every workspace package
+  pnpm -r run lint:report                  Check source code with ESLint in every workspace package
+
+apps/storybook  [Node.js, Storybook]
+  pnpm run storybook        Start Storybook  ∞ long-running
+  pnpm run build-storybook  Build static Storybook
+  pnpm run clean            Delete .turbo, node_modules, dist, and storybook-static
+
+apps/web  [Node.js, Next.js, Vite, Docker, Vitest]
+  pnpm run clean                         Delete .turbo, node_modules, .next, and coverage
+  pnpm run dev                           Start Next.js development server  ∞ long-running
+  pnpm run go                            Start Next.js development server  ∞ long-running
+  pnpm run build                         Build Next.js app, then build app with Vite
+  pnpm run build:authzed-cli             Build app with Vite
+  pnpm run build:env-validator           Build app with Vite
+  pnpm run build:dev                     Build Next.js app, then build app with Vite
+  pnpm run start                         Start Next.js production server  ∞ long-running
+  pnpm run typecheck                     Run scripts/typegen.ts, then check TypeScript types
+  pnpm run typegen                       Run scripts/typegen.ts
+  pnpm run test:integration              Run integration/gen-boolean-client.mjs, then run Vitest tests
+  pnpm run generate-api-specs
+  pnpm run merge-client-endpoints        Run scripts/openapi/merge-client-endpoints.ts
+  pnpm run generate-and-merge-api-specs  Run scripts/openapi/merge-client-endpoints.ts (+1 more step)
+  pnpm run i18n:generate
+  docker build -t web .                  Build Docker image
+
+docker  [Node.js, Docker, PostgreSQL, Redis]
+  docker compose up -d                     Start all Docker services
+  docker compose up -d postgres            Start PostgreSQL with pgvector
+  docker compose up -d … d-db-bootstrap    Start PostgreSQL with pgvector
+  docker compose up -d spicedb-migrate     Start spicedb-migrate service (${spicedb_image_ref)
+  docker compose up -d spicedb             Start spicedb service (${spicedb_image_ref)
+  docker compose up -d redis               Start Redis
+  docker compose up -d formbricks-migrate  Start formbricks-migrate service (formbricks)
+  docker compose up -d formbricks          Start formbricks service (formbricks)
+  docker compose up -d authzed-ops         Start authzed-ops service (formbricks)
+  docker compose up -d authzed-initialize  Start authzed-initialize service (formbricks)
+  docker compose up -d hub-migrate         Start hub-migrate service (hub${hub_image_ref)
+  docker compose up -d hub                 Start hub service (hub${hub_image_ref)
+  docker compose up -d hub-worker          Start hub-worker service (hub${hub_image_ref)
+  docker compose up -d taxonomy            Start taxonomy service (taxonomy${taxonomy_image_ref)
+  docker compose up -d vllm                Start vllm service (${qwen_vllm_image)
+  docker compose up -d cube                Start cube service (cube)
+  docker compose --profile … up -d         Start Docker services in authzed-ops profile
+  docker compose --profile taxonomy up -d  Start Docker services in taxonomy profile
+  docker compose --profile qwen up -d      Start Docker services in qwen profile
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose down                      Stop and remove Docker services
+  docker compose down -v                   Stop Docker services and delete their volumes  [destructive]
+  ./authzed-compose-contract.sh
+  ./authzed-postgres-bootstrap.sh
+  ./authzed-smoke.sh
+  ./formbricks.sh
+  ./migrate-to-v4.sh
+  ./rustfs-init.sh                         Shared RustFS bootstrap script
+
+packages/ai  [Node.js, Vite]
+  pnpm run build  Delete dist, then build app with Vite, then compile TypeScript sources
+
+packages/cache  [Node.js, Vite]
+  pnpm run build  Build app with Vite
+
+packages/config-prettier  [Node.js]
+  pnpm run clean  Delete node_modules and .turbo
+
+packages/config-typescript  [Node.js]
+  pnpm run clean  Delete node_modules, dist, and .turbo
+
+packages/database  [Node.js, Prisma, Vite]
+  pnpm run clean                           Delete .turbo, node_modules, and dist
+  pnpm run build                           Compile TypeScript sources (+3 more steps)
+  pnpm run dev                             Build app with Vite  ∞ long-running
+  pnpm run db:migrate:deploy               Run dist/scripts/apply-migrations.js
+  pnpm run db:migrate:dev                  Compile TypeScript sources (+4 more steps)
+  pnpm run db:migrate:ci                   Run dist/scripts/apply-migrations.js
+  pnpm run db:create-saml-database:deploy  Run dist/scripts/create-saml-database.js
+  pnpm run db:create-saml-database:dev     Run dist/scripts/create-saml-database.js
+  pnpm run db:push                         Push Prisma schema, accepting data loss  [destructive]
+  pnpm run db:seed                         Run src/seed.ts
+  pnpm run db:seed:clear                   Run src/seed.ts
+  pnpm run db:seed:contract                Run src/scripts/seed-contract-fixtures.ts
+  pnpm run db:setup                        Compile TypeScript sources (+5 more steps)
+  pnpm run db:start                        Compile TypeScript sources (+5 more steps)
+  pnpm run check:migration-drift           Run src/scripts/check-migration-drift.ts
+  pnpm run format                          Format Prisma schema
+  pnpm run generate                        Run src/scripts/clean-generated-prisma.mjs, then generate Prisma client
+  pnpm run lint:migrations
+  pnpm run generate-data-migration         Run src/scripts/generate-data-migration.ts
+  pnpm run create-migration                Run src/scripts/create-migration.ts
+
+packages/email  [Node.js]
+  pnpm run dev  Run email dev  ∞ long-running
+
+packages/i18n-utils  [Node.js, Vite, Vitest]
+  pnpm run build              Delete dist, then compile TypeScript sources, then build app with Vite
+  pnpm run test:watch         Run Vitest tests
+  pnpm run scan-translations  Run src/scan-translations.ts
+
+packages/jobs  [Node.js, Vite]
+  pnpm run build  Compile TypeScript sources, then build app with Vite
+
+packages/js-core  [Node.js, Vite]
+  pnpm run dev        Build app with Vite  ∞ long-running
+  pnpm run build      Build app with Vite
+  pnpm run build:dev  Build app with Vite
+  pnpm run clean      Delete .turbo, node_modules, dist, and coverage
+
+packages/logger  [Node.js, Vite]
+  pnpm run build  Delete dist, then build app with Vite, then compile TypeScript sources
+
+packages/storage  [Node.js, Vite]
+  pnpm run build  Build app with Vite, then compile TypeScript sources
+
+packages/survey-ui  [Node.js, Vite]
+  pnpm run dev             Build app with Vite  ∞ long-running
+  pnpm run build           Build app with Vite, then run scripts/assert-scoped-css.mjs
+  pnpm run build:dev       Build app with Vite, then run scripts/assert-scoped-css.mjs
+  pnpm run preview         Preview production build with Vite  ∞ long-running
+  pnpm run prepack         Run scripts/assert-pnpm-publish.mjs
+  pnpm run prepublishOnly  Run scripts/assert-pnpm-publish.mjs
+  pnpm run clean           Delete .turbo, node_modules, dist, and coverage
+  pnpm run ui:add
+
+packages/surveys  [Node.js, Vite]
+  pnpm run dev            Build app with Vite  ∞ long-running
+  pnpm run build          Build app with Vite, then compile TypeScript sources
+  pnpm run build:analyze  Build app with Vite, then compile TypeScript sources
+  pnpm run build:dev      Build app with Vite, then compile TypeScript sources
+  pnpm run preview        Preview production build with Vite  ∞ long-running
+  pnpm run clean          Delete .turbo, node_modules, and dist
+  pnpm run i18n:generate
+
+packages/types  [Node.js, Vitest]
+  pnpm run test:watch  Run Vitest tests
+  pnpm run clean       Delete node_modules and .turbo
+
+packages/vite-plugins  [Node.js]
+  pnpm run clean  Delete .turbo, node_modules, and dist
+
+packages/workflows  [Node.js, Vite]
+  pnpm run build  Build app with Vite, then lint package for publishing

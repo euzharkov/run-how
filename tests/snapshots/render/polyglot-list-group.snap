@@ -1,51 +1,55 @@
 ---
 source: tests/render.rs
-assertion_line: 33
+assertion_line: 38
 expression: out
 ---
 polyglot  [Node.js, Docker, Kubernetes, Kafka, EF Core]
 
-  pnpm run dev                                         Run dev in web, then run the api project  ∞ long-running
-  pnpm run k8s:apply                                   Apply Kubernetes resources  [external]
-  pnpm run test
-  pnpm run lint
-  pnpm run typecheck
-  pnpm run migrate                                     Apply EF Core migrations to the database
-  pnpm run services                                    Start Docker services in the background
-  pnpm run kafka:topics                                List Kafka topics  [external]
-  pnpm run kafka:reset                                 Delete Kafka topics  [destructive]
-  pnpm run k8s:render                                  Render Kustomize manifests from k8s
-  pnpm run reset                                       Stop Docker services and delete their volumes (+2 more steps)  [destructive]
-  docker compose -f docker/compose.yml up -d postgres  Start PostgreSQL
-  docker compose -f docker/compose.yml up -d kafka     Start local Kafka broker
-  docker compose -f docker/compose.yml logs -f         Follow Docker service logs  ∞ long-running
-  docker compose -f docker/compose.yml down            Stop and remove Docker services
-  ./scripts/setup.sh                                   Bootstrap a fresh development machine
+  pnpm run dev                        Run dev in web, then run api project  ∞ long-running
+  pnpm run k8s:apply                  Apply Kubernetes resources  [external]
+  pnpm run test                       Run test in all workspace packages
+  pnpm run lint                       Run lint in all workspace packages
+  pnpm run typecheck                  Run typecheck in all workspace packages
+  pnpm run migrate                    Apply EF Core migrations to database
+  pnpm run services                   Start Docker services in background
+  pnpm run kafka:topics               List Kafka topics  [external]
+  pnpm run kafka:reset                Delete Kafka topics  [destructive]
+  pnpm run k8s:render                 Render Kustomize manifests from k8s
+  pnpm run reset                      Stop Docker services and delete their volumes (+2 more steps)  [destructive]
+  docker compose -f … up -d postgres  Start PostgreSQL
+  docker compose -f … up -d kafka     Start local Kafka broker
+  docker compose -f … logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f … down            Stop and remove Docker services
+  docker compose -f … down -v         Stop Docker services and delete their volumes  [destructive]
+  kubectl delete -k k8s               Delete resources from cluster  [destructive]
+  ./scripts/setup.sh                  Bootstrap fresh development machine
 
 apps/api  [.NET]
-  dotnet run                 Start the .NET Api web app
-  dotnet build               Build the Api project
+  dotnet run                 Start .NET Api web app
+  dotnet watch run           Start Api with hot reload  ∞ long-running
+  dotnet build               Build Api project
   dotnet publish -c Release  Publish Api for deployment
 
 apps/api.tests  [.NET]
   dotnet test  Run Api.Tests tests
 
 apps/web  [Node.js, Vite, Vitest, Playwright]
-  pnpm run dev        Start the Vite development server  ∞ long-running
-  pnpm run build      Build the app with Vite
+  pnpm run dev        Start Vite development server  ∞ long-running
+  pnpm run build      Build app with Vite
   pnpm run test       Run Vitest tests
   pnpm run test:e2e   Run Playwright end-to-end tests
   pnpm run lint       Check source code with ESLint
   pnpm run typecheck  Check TypeScript types
 
 packages/ui  [Node.js, Vitest]
-  pnpm run build  Build the package with tsup
+  pnpm run build  Build package with tsup
   pnpm run test   Run Vitest tests
   pnpm run lint   Check source code with ESLint
 
 services/worker  [Go]
-  go run .        Run the Go worker program
+  go run .        Run Go worker program
   go build ./...
   go test ./...   Run Go tests
   go vet ./...    Check Go source with go vet
   go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download

@@ -4,9 +4,9 @@ assertion_line: 27
 expression: table
 ---
 ## . [npm-basic] JavaScript tools=npm,sh techs=Node.js,Vite,Vitest,Prisma,Playwright
-dev                      Development    declared exact  safe        .          npm run dev :: Start the Vite development server [long-running]
-build                    Build          declared exact  safe        .          npm run build :: Compile TypeScript sources, then build the app with Vite
-preview                  Development    declared exact  safe        .          npm run preview :: Preview the production build with Vite [long-running]
+dev                      Development    declared exact  safe        .          npm run dev :: Start Vite development server [long-running]
+build                    Build          declared exact  safe        .          npm run build :: Compile TypeScript sources, then build app with Vite
+preview                  Development    declared exact  safe        .          npm run preview :: Preview production build with Vite [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Vitest tests
 test:e2e                 Testing        declared exact  safe        .          npm run test:e2e :: Run Playwright end-to-end tests
 test:watch               Testing        declared exact  safe        .          npm run test:watch :: Run Vitest tests in watch mode [long-running]
@@ -16,14 +16,13 @@ typecheck                Quality        declared exact  safe        .          n
 format                   Quality        declared exact  safe        .          npm run format :: Format source code with Prettier
 check                    Quality        declared exact  safe        .          npm run check :: Run linting, type checks, and tests
 clean                    Build          declared exact  safe        .          npm run clean :: Delete dist and coverage
-xyz                      Other          declared exact  safe        .          npm run xyz :: Regenerate the icon sprite
+xyz                      Other          declared exact  safe        .          npm run xyz :: Regenerate icon sprite
 deploy                   Release        declared exact  external    .          npm run deploy :: Run scripts/deploy.sh
 db:migrate               Database       declared exact  safe        .          npm run db:migrate :: Apply pending Prisma migrations
-db:reset                 Database       declared exact  destructive .          npm run db:reset :: Reset the database and re-apply migrations
+db:reset                 Database       declared exact  destructive .          npm run db:reset :: Reset database and re-apply migrations
 nuke                     Build          declared exact  destructive .          npm run nuke :: Delete ~/.cache/thing
-release                  Release        declared exact  external    .          npm run release :: Publish the package to npm
+release                  Release        declared exact  external    .          npm run release :: Publish package to npm
 start                    Development    declared exact  safe        .          npm run start :: Run dist/server.js
-prepare                  Other          declared exact  safe        hidden .          npm run prepare :: Install Git hooks with Husky [git]
-pretest                  Quality        declared exact  safe        hidden .          npm run pretest :: Check source code with ESLint
-postinstall              Other          declared exact  safe        hidden .          npm run postinstall :: Apply local dependency patches
-sh:deploy                Release        inferred medium external    hidden .          ./scripts/deploy.sh :: Run scripts/deploy.sh
+prepare                  Other          declared exact  safe        .          npm run prepare :: Install Git hooks with Husky [git]
+pretest                  Quality        declared exact  safe        .          npm run pretest :: Check source code with ESLint
+postinstall              Other          declared exact  safe        .          npm run postinstall :: Apply local dependency patches

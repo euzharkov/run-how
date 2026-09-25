@@ -1,0 +1,181 @@
+ggml-org_llama.cpp  [Python, CMake]
+
+  uv run llama-convert-hf-to-gguf           Run llama-convert-hf-to-gguf command (convert_hf_to_gguf)
+  uv run llama-convert-llama-ggml-to-gguf   Run llama-convert-llama-ggml-to-gguf command (convert_llama_ggml_to_gguf)
+  uv run llama-convert-lora-to-gguf         Run llama-convert-lora-to-gguf command (convert_lora_to_gguf)
+  uv run llama-ggml-vk-generate-shaders     Run llama-ggml-vk-generate-shaders command (ggml_vk_generate_shaders)
+  uv run pytest                             Run Python tests
+  uv run flake8                             Check Python source code with Flake8
+  uv run mypy .                             Run static type checking with mypy
+  uv run pre-commit run --all-files         Run pre-commit hooks on all files
+  cmake --preset x64-linux-gcc-debug        Configure with x64-linux-gcc-debug CMake preset
+  cmake --build build
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+  make Build                                Run build make target (+7 more steps)
+  make system                               Run build make target (+7 more steps)
+  make changed                              Run build make target (+7 more steps)
+  ./build-xcframework.sh                    Builds: ios-sim ios-device macos visionos visionos-sim tvos-sim tvos-device
+  ./ci/run.sh                               Sample usage:
+  ./scripts/bench-models.sh
+  ./scripts/build-info.sh
+  pwsh ./scripts/build-profile.ps1
+  ./scripts/build-profile.sh                Compile-time profiling using clang -ftime-trace + ClangBuildAnalyzer
+  ./scripts/ccache-clear.sh                 Delete GitHub Actions caches matching key prefix, oldest first
+  ./scripts/check-apiabi-compat.sh          Check for backwards-incompatible API and ABI changes between two builds
+  ./scripts/check-release-apiabi.sh         Check API/ABI compatibility between previous release tag and current HEAD  [external]
+  ./scripts/check-requirements.sh
+  ./scripts/compare-commits.sh
+  ./scripts/debug-test.sh
+  ./scripts/gen-authors.sh
+  ./scripts/get-hellaswag.sh                Vim: set ts=4 sw=4 et:
+  ./scripts/get-pg.sh
+  ./scripts/get-wikitext-2.sh               Vim: set ts=4 sw=4 et:
+  ./scripts/get-winogrande.sh               Vim: set ts=4 sw=4 et:
+  ./scripts/git-bisect-run.sh
+  ./scripts/git-bisect.sh
+  ./scripts/hf.sh                           Shortcut for downloading HF models
+  .\scripts\install-oneapi.bat              MIT license
+  ./scripts/make-release-checks.sh          Run all pre-release checks and determine release version  [external]
+  ./scripts/make-release-desc.sh            Generate description of release: previous release version,  [external]
+  ./scripts/pr2wt.sh                        Initialize new worktree from PR number:
+  ./scripts/release.sh                      Release preparation script for llama.cpp  [external]
+  ./scripts/sync-ggml-am.sh                 Synchronize ggml changes to llama.cpp
+  ./scripts/sync-ggml.sh
+  ./scripts/tool_bench.sh
+  ./scripts/wc2wt.sh                        Initialize new worktree from branch name:
+
+examples
+  ./reason-act.sh
+  ./server-llama2-13B.sh
+
+examples/batched.swift  [Swift]
+  swift test  Run Swift tests
+  swift run   Run Swift executable
+  make build  Build with Xcode (+2 more steps)  ⊙ device
+
+examples/llama.android  [JVM, Gradle]
+  ./gradlew run    Run app with Gradle
+  ./gradlew tasks  List all Gradle tasks
+
+examples/llama.android/app  [JVM, Gradle]
+  ./gradlew :app:run
+
+examples/llama.android/lib  [JVM, Gradle]
+  ./gradlew :lib:publish  Publish artifacts with Gradle  [external]
+
+examples/llama.swiftui  [Xcode]
+  xcodebuild -project … build     Build llama.swiftui scheme for iOS Simulator  ⊙ device
+  xcodebuild -project … 16' test  Run llama.swiftui tests in iOS Simulator  ⊙ device
+
+examples/model-conversion  [Python]
+  make causal-convert-model-bf16           Casual Model targets/recipes
+  make causal-convert-model-debug
+  make causal-convert-model
+  make causal-convert-mm-model-bf16
+  make causal-convert-mm-model
+  make causal-convert-mmproj
+  make causal-run-original-model             ∞ long-running
+  make causal-run-converted-model            ∞ long-running
+  make causal-verify-logits
+  make causal-compare-logits
+  make causal-run-original-embeddings
+  make causal-run-converted-embeddings
+  make causal-verify-embeddings
+  make causal-inspect-original-model
+  make causal-list-original-model-tensors
+  make causal-inspect-converted-model
+  make causal-start-embedding-server         ∞ long-running
+  make causal-curl-embedding-endpoint
+  make causal-quantize-Q8_0
+  make causal-quantize-Q4_0
+  make causal-quantize-qat-Q4_0            Token embedding and output types to Q8_0 instead of default Q6_K
+  make causal-quantize-model
+  make causal-run-quantized-model            ∞ long-running
+  make embedding-convert-model-bf16
+  make embedding-convert-model
+  make embedding-convert-model-st
+  make embedding-run-original-model          ∞ long-running
+  make embedding-run-original-model-st     Run embedding-run-original-model make target (+1 more step)  ∞ long-running
+  make embedding-run-converted-model         ∞ long-running
+  make embedding-verify-logits
+  make embedding-verify-logits-st
+  make embedding-inspect-original-model
+  make embedding-inspect-converted-model
+  make embedding-start-embedding-server      ∞ long-running
+  make embedding-curl-embedding-endpoint
+  make embedding-quantize-Q8_0
+  make embedding-quantize-Q4_0
+  make embedding-quantize-qat-Q4_0         Token embedding and output types to Q8_0 instead of default Q6_K
+  make embedding-quantize-model
+  make embedding-run-quantized-model         ∞ long-running
+  make perplexity-data-gen                 Perplexity targets/recipes
+  make perplexity-run-full                   ∞ long-running
+  make perplexity-run                        ∞ long-running
+  make hf-create-model
+  make hf-create-model-dry-run               ∞ long-running
+  make hf-create-model-embedding
+  make hf-create-model-embedding-dry-run     ∞ long-running
+  make hf-create-model-private
+  make hf-upload-gguf-to-model
+  make hf-create-collection
+  make hf-add-model-to-collection
+  make clean                               Delete data, .converted_embedding_model.txt, .converted_model.txt, .embedding_model_name.txt, a…  [destructive]
+
+examples/sycl
+  ./build.sh
+  ./run-llama2.sh
+  ./start-svr.sh
+  ./test.sh
+  ./update-ops-doc.sh
+  .\win-build-sycl.bat      MIT license
+  .\win-run-llama2.bat      MIT license
+  .\win-start-svr.bat       MIT license
+  .\win-test.bat            MIT license
+  .\win-update-ops-doc.bat  MIT license
+
+examples/test-cmake
+  ./build-install.sh
+  ./build.sh
+
+ggml/src/ggml-et/et-kernels
+  ./scripts/check_unimple … nstructions.sh
+
+ggml/src/ggml-openvino  [CMake]
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+
+gguf-py  [Python]
+  poetry run gguf-convert-endian  Run gguf-convert-endian command (gguf.scripts.gguf_convert_endian)
+  poetry run gguf-dump            Run gguf-dump command (gguf.scripts.gguf_dump)
+  poetry run gguf-editor-gui      Run gguf-editor-gui command (gguf.scripts.gguf_editor_gui)
+  poetry run gguf-new-metadata    Run gguf-new-metadata command (gguf.scripts.gguf_new_metadata)
+  poetry run gguf-set-metadata    Run gguf-set-metadata command (gguf.scripts.gguf_set_metadata)
+
+tests
+  ./test-lora-conversion-inference.sh
+  ./test-rpc-multi-server.sh
+  ./test-tokenizer-0.sh                Test-tokenizer-0.sh <name> <input>
+  ./test-tokenizers-repo.sh
+
+tools/ui  [Node.js, Vitest, Playwright, SvelteKit, Vite]
+  npm run build             Build app with Vite (+2 more steps)
+  npm run build-pwa-assets  Run pwa-assets-generator, then run scripts/make-icons-circular.js
+  npm run dev               Run scripts/dev.sh
+  npm run preview           Preview production build with Vite  ∞ long-running
+  npm run prepare           Run SvelteKit
+  npm run check             Run SvelteKit, then check Svelte components and types
+  npm run check:watch       Run SvelteKit, then check Svelte components and types  ∞ long-running
+  npm run reset             Delete .svelte-kit and node_modules
+  npm run format            Run linting and formatting
+  npm run lint              Run formatting and linting
+  npm run test              Run tests and end-to-end tests
+  npm run test:e2e          Run Playwright end-to-end tests
+  npm run test:e2e:pwa      Run Playwright end-to-end tests
+  npm run test:client       Run Vitest tests
+  npm run test:unit         Run Vitest tests
+  npm run test:unit:pwa     Run Vitest tests in tests/unit/pwa.spec.ts
+  npm run test:pwa          Run tests and end-to-end tests
+  npm run test:ui           Run Vitest tests
+  npm run storybook         Start Storybook  ∞ long-running
+  npm run build-storybook   Build static Storybook
+  npm run cleanup           Delete .svelte-kit, build, node_modules, test-results, dist, dev-dist, debug-storybook.log, sta…  [destructive]
+  ./scripts/dev.sh          Development script for llama-ui

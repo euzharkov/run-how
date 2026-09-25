@@ -1,0 +1,175 @@
+sst_opencode  [Node.js, Bun, Turborepo, SST, Storybook]
+
+  bun run dev                     Run src/index.ts with Bun
+  bun run dev:desktop             Run src/index.ts with Bun
+  bun run dev:web                 Run src/index.ts with Bun
+  bun run dev:console             Run ulimit, then run src/index.ts with Bun
+  bun run dev:stats               Run sst shell
+  bun run dev:storybook           Start Storybook  ∞ long-running
+  bun run lint                    Check source code with Oxlint
+  bun run typecheck               Run typecheck across packages with Turborepo
+  bun run upgrade-opentui         Run script/upgrade-opentui.ts with Bun
+  bun run postinstall
+  bun run prepare                 Install Git hooks with Husky  ∆ git
+  bun run random                  Print message
+  bun run sso                     Call AWS sso login  [external]
+  bun run translate:app           Run script/translate-app.ts with Bun
+  bun run test                    Print message
+  turbo run build                 Run build across packages with Turborepo
+  pwsh ./script/sign-windows.ps1
+
+artifacts/glm52-rise-video  [Node.js]
+  bun run render
+  bun run render:sheep
+  bun run render:novel
+  bun run render:flash
+  bun run render:minimax
+  bun run still:june
+
+packages/app  [Node.js, Bun, Playwright, Vite]
+  bun run typecheck        Build TypeScript project references
+  bun run typecheck:e2e    Compile TypeScript sources
+  bun run start            Start Vite development server  ∞ long-running
+  bun run build            Build app with Vite
+  bun run serve            Preview production build with Vite  ∞ long-running
+  bun run test             Run tests with Bun and run tests with Bun
+  bun run test:unit        Run tests with Bun
+  bun run test:browser     Run tests with Bun
+  bun run test:unit:watch  Run tests with Bun  ∞ long-running
+  bun run test:e2e         Run Playwright end-to-end tests
+  bun run test:e2e:local   Run Playwright end-to-end tests
+  bun run test:e2e:ui      Open Playwright test UI
+  bun run test:e2e:report  Open Playwright HTML report
+  bun run test:stability   Run tests and end-to-end tests
+  bun run test:bench       Run tests and end-to-end tests
+
+packages/cli  [Node.js, Bun]
+  bun run build  Run script/build.ts with Bun
+  bun run dev    Run src/index.ts with Bun
+
+packages/client  [Node.js, Bun]
+  bun run generate         Run script/build.ts with Bun
+  bun run check:generated  Run script/build.ts with Bun, then inspect Git repository
+
+packages/console/app  [Node.js, Vite, SST, Bun]
+  bun run dev:remote  Run sst shell
+  bun run build       Build app with Vite (+2 more steps)
+  bun run start       Run vite start
+
+packages/console/core  [Node.js, SST]
+  bun run db                      Run sst shell
+  bun run db-dev                  Run sst shell
+  bun run db-prod                 Run sst shell
+  bun run shell                   Run sst shell
+  bun run shell-dev               Run sst shell
+  bun run shell-prod              Run sst shell
+  bun run update-models
+  bun run promote-models-to-dev   Run script/promote-models.ts dev  ∞ long-running
+  bun run promote-models-to-prod
+  bun run pull-models-from-dev    Run script/pull-models.ts dev  ∞ long-running
+  bun run pull-models-from-prod
+  bun run update-limits
+  bun run promote-limits-to-dev   Run script/promote-limits.ts dev  ∞ long-running
+  bun run promote-limits-to-prod
+
+packages/console/mail  [Node.js]
+  bun run dev  Run email preview  ∞ long-running
+
+packages/console/support  [Node.js, SST]
+  bun run dev  Run sst shell
+
+packages/core  [Node.js, Bun, Drizzle]
+  bun run db            Run Drizzle Kit
+  bun run migration     Run script/migration.ts with Bun
+  bun run fix-node-pty  Run script/fix-node-pty.ts with Bun
+
+packages/desktop  [Node.js, Electron, Bun]
+  bun run typecheck      Build TypeScript project references
+  bun run predev         Run scripts/predev.ts with Bun
+  bun run dev            Run electron-vite dev  ∞ long-running
+  bun run prebuild       Run scripts/prebuild.ts with Bun
+  bun run build          Run electron-vite build
+  bun run preview        Run electron-vite preview  ∞ long-running
+  bun run package        Package Electron app
+  bun run package:mac    Package Electron app
+  bun run package:win    Package Electron app
+  bun run package:linux  Package Electron app
+  bun run native:build   Install dependencies with Bun  ↓ download
+
+packages/enterprise  [Node.js, Vite, SST]
+  bun run build             Build app with Vite
+  bun run build:cloudflare  Build app with Vite
+  bun run start             Run vite start
+  bun run shell-prod        Run sst shell
+
+packages/http-recorder  [Node.js, Bun]
+  bun run build           Run script/build.ts with Bun
+  bun run verify:package  Run script/verify-package.ts with Bun
+
+packages/llm  [Node.js, Bun]
+  bun run setup:recording-env  Run script/setup-recording-env.ts with Bun
+
+packages/opencode  [Node.js, Bun, Docker]
+  bun run test:httpapi        Run script/httpapi-exercise.ts with Bun
+  bun run bench:test          Run script/bench-test-suite.ts with Bun
+  bun run profile:test        Run script/profile-test-files.ts with Bun
+  bun run build               Run script/build.ts with Bun
+  bun run dev                 Run src/index.ts with Bun
+  bun run dev:temporary       Run src/temporary.ts with Bun
+  docker build -t opencode .  Build Docker image
+
+packages/plugin  [Node.js]
+  bun run build  Compile TypeScript sources
+
+packages/sdk/js  [Node.js, Bun]
+  bun run build  Run script/build.ts with Bun
+
+packages/slack  [Node.js, Bun]
+  bun run dev  Run src/index.ts with Bun
+
+packages/stats/app  [Node.js, Vite]
+  bun run build  Build app with Vite
+  bun run start  Run vite start
+
+packages/stats/core  [Node.js, Bun, Drizzle]
+  bun run db:generate             Generate Drizzle migrations
+  bun run db:check-unique-users   Run src/ensure-unique-users.ts with Bun
+  bun run db:ensure-unique-users  Run src/ensure-unique-users.ts with Bun
+  bun run db:migrate              Run src/migrate.ts with Bun
+  bun run db:push                 Push Drizzle schema to database
+  bun run db:studio               Open Drizzle Studio
+  bun run honeycomb:backfill      Run src/honeycomb-backfill.ts with Bun
+
+packages/stats/server  [Node.js, Docker, Bun]
+  bun run start             Run src/server.ts with Bun
+  docker build -t server .  Build Docker image
+
+packages/storybook  [Node.js, Storybook]
+  bun run storybook  Start Storybook  ∞ long-running
+  bun run build      Build static Storybook
+
+packages/ui  [Node.js, Bun]
+  bun run build              Delete dist, then compile TypeScript sources
+  bun run generate:tailwind  Run script/tailwind.ts with Bun
+  bun run generate:v2-oc2    Run script/build-oc2-v2-overrides.ts with Bun
+
+packages/web  [Node.js, Astro]
+  bun run dev         Start Astro development server  ∞ long-running
+  bun run dev:remote  Start Astro development server  ∞ long-running
+  bun run start       Start Astro development server  ∞ long-running
+  bun run build       Build Astro site
+  bun run preview     Preview Astro production build  ∞ long-running
+  bun run astro       Start Astro development server  ∞ long-running
+
+sdks/vscode  [Node.js]
+  bun run vscode:prepublish  Check source code with ESLint (+2 more steps)
+  bun run compile            Check source code with ESLint (+2 more steps)
+  bun run watch:esbuild      Run esbuild.js  ∞ long-running
+  bun run watch:tsc          Check TypeScript types  ∞ long-running
+  bun run package            Check source code with ESLint (+2 more steps)
+  bun run compile-tests      Compile TypeScript sources
+  bun run watch-tests        Compile TypeScript in watch mode  ∞ long-running
+  bun run pretest            Compile TypeScript sources (+3 more steps)
+  bun run check-types        Check TypeScript types
+  bun run lint               Check source code with ESLint
+  bun run test

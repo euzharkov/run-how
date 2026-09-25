@@ -308,7 +308,16 @@ impl Discoverer for Make {
             .flat_map(|t| t.deps.iter().map(String::as_str))
             .collect();
         for t in &targets {
-            let expanded: Vec<String> = t.recipe.iter().map(|r| expand(r, &vars)).collect();
+            // `ECHO = @echo` puts the silence prefix back after expansion; strip it again.
+            let expanded: Vec<String> = t
+                .recipe
+                .iter()
+                .map(|r| {
+                    expand(r, &vars)
+                        .trim_start_matches(['@', '-', '+'])
+                        .to_string()
+                })
+                .collect();
             // Lines that still hold `$(shell …)`, `$(foreach …)` or automatic variables would
             // only produce nonsense like "Run $(foreach"; leave them out of the analysis.
             let opaque = !expanded.is_empty() && expanded.iter().all(|r| unexpanded(r));
@@ -318,7 +327,13 @@ impl Discoverer for Make {
                 .cloned()
                 .collect();
             if raw.is_empty() && !opaque {
-                raw = t.deps.iter().map(|d| format!("make {d}")).collect();
+                // `ci: $(CI_TARGETS)`: a dependency list rhow cannot expand says nothing.
+                raw = t
+                    .deps
+                    .iter()
+                    .filter(|d| !unexpanded(d))
+                    .map(|d| format!("make {d}"))
+                    .collect();
             }
             let raw = raw.iter().take(8).cloned().collect::<Vec<_>>().join(" && ");
             out.script("make", &t.name, &raw);
@@ -331,10 +346,12 @@ impl Discoverer for Make {
             } else if opaque {
                 a = a.inferred_desc(format!("Run the {} make target", t.name));
             }
-            let internal = t.name.starts_with('_') || t.name.starts_with('.');
+            // `.PHONY`, `.DEFAULT` and file targets (`build/app.o`) are make's bookkeeping,
+            // not commands; an `_internal` target is still one a developer can type.
+            let special = t.name.starts_with('.');
             let filey = looks_like_file(&t.name) && !t.phony;
-            if internal || filey {
-                a = a.hidden();
+            if special || filey {
+                a = a.redundant();
             } else if has_phony && !t.phony && t.comment.is_none() {
                 // Undeclared, undocumented target while the file does use .PHONY: probably internal.
                 a = a.confidence(Confidence::Low);

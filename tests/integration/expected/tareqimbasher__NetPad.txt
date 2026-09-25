@@ -1,0 +1,120 @@
+tareqimbasher_NetPad  [Tauri, .NET, Rust]
+
+  just default
+  just paths                                Prints all important paths
+  just version                              Print current app version
+  just bump-version                         Bump version across all config files (usage: just bump-version 0.13.0)
+  just doctor                               Verify prerequisites are installed (node, dotnet, cargo, etc.)
+  just npm-install-all                      Run `npm install` for all package.json files  ↓ download
+  just web-run-backend                      Web: run Web backend
+  just web-run-frontend                     Web: run Web frontend  ∞ long-running
+  just web-build-release                    Web: build local release version (self-contained, runtime: {{var_rid}})
+  just web-run-release                      Web: run built release version
+  just tauri-run-backend                    Tauri: run Tauri backend
+  just tauri-run-frontend                   Tauri: run Tauri frontend  ∞ long-running
+  just tauri-build-release-win-x64          Tauri: build release binary for Windows x64
+  just tauri-build-release-win-arm64        Tauri: build release binary for Windows ARM64
+  just tauri-build-release-linux-x64        Tauri: build release binary for Linux x64
+  just tauri-build-release-linux-arm64      Tauri: build release binary for Linux ARM64
+  just tauri-build-release-mac-x64          Tauri: build release binary for macOS x64
+  just tauri-build-release-mac-arm64        Tauri: build release binary for macOS ARM64
+  just tauri-info                           Tauri: print Tauri environment info
+  just electron-run-backend                 Electron: run Electron backend  ∞ long-running
+  just electron-run-backend-mac-arm64       Electron: run Electron backend (macOS ARM64)  ∞ long-running
+  just electron-run-backend-linux-arm64     Electron: run Electron backend (Linux ARM64)  ∞ long-running
+  just electron-run-backend-win-arm64       Electron: run Electron backend (Windows ARM64)  ∞ long-running
+  just electron-run-frontend                Electron: run Electron frontend  ∞ long-running
+  just electron-build-release-win-x64       Electron: build release binary for Windows x64
+  just electron-build-release-win-arm64     Electron: build release binary for Windows ARM64
+  just electron-build-release-linux-x64     Electron: build release binary for Linux x64
+  just electron-build-release-linux-arm64   Electron: build release binary for Linux ARM64
+  just electron-build-release-mac-x64       Electron: build release binary for macOS x64
+  just electron-build-release-mac-arm64     Electron: build release binary for macOS ARM64
+  just cli-run                              CLI: run npad CLI
+  just cli-build                            CLI: build npad
+  just cli-build-release                    CLI: build local release version of npad (self-contained, runtime: {{var_rid}})
+  just cli-run-release                      CLI: run built release version of npad
+  just cli-nuget-pack                       CLI: pack npad as NuGet package
+  just cli-nuget-push                       CLI: push npad NuGet package (requires NUGET_API_KEY)
+  just docs-serve                           Docs: serve documentation site locally with docsify  ∞ long-running
+  just dotnet-restore                       .NET: restore NuGet packages  ↓ download
+  just dotnet-build                         .NET: build solution
+  just dotnet-build-release                 .NET: build solution in Release configuration
+  just dotnet-clean                         .NET: clean solution
+  just dotnet-format                        .NET: format code
+  just dotnet-test                          .NET: run tests
+  just dotnet-test-all                      .NET: run tests including integration tests
+  just dotnet-ts-gen                        .NET: generate TypeScript API clients using NSwag
+  just dotnet-ts-gen-check                  .NET: check if generated TypeScript API clients are up to date
+  just dotnet-outdated                      .NET: list outdated NuGet packages
+  just js-build-electron                    JavaScript: build SPA (Electron target)
+  just js-build-web                         JavaScript: build SPA (Web target)
+  just js-lint                              JavaScript: run all linters (eslint, htmlhint, stylelint)
+  just js-test                              JavaScript: run tests
+  just js-analyze                           JavaScript: analyze webpack bundle (interactive server)
+  just js-analyze-static                    JavaScript: analyze webpack bundle (static HTML report)
+  just js-update-browsers                   JavaScript: update browserslist database
+  just js-outdated                          JavaScript: list outdated npm packages  ↓ download
+  just rust-check                           Rust: check rust code
+  just rust-build                           Rust: build rust code
+  just rust-test                            Rust: run rust tests
+  just rust-format                          Rust: format rust code
+  just rust-lint                            Rust: check rust code formatting and run clippy
+  just clean-all                            Clean all build artifacts (bin, obj, dist, node_modules/.cache)
+  just test-all                             Run all tests
+  just check-all                            Run all tests, lints, and checks
+  ./scripts/nuget-pack-npad.sh              Used to pack NetPad CLI (npad)
+  ./scripts/nuget-push-npad.sh              Used to push NetPad CLI (npad) .nupkg files to NuGet.org
+  ./scripts/package-electron_deprecated.sh  Used to build and distribute packages of Electron app to dist/ folder
+
+src  [.NET]
+  dotnet restore  Restore NuGet packages  ↓ download
+  dotnet clean    Delete .NET build outputs
+
+src/Apps/NetPad.Apps.App  [.NET, Docker]
+  dotnet run                         Start .NET NetPad.Apps.App web app
+  dotnet watch run                   Start NetPad.Apps.App with hot reload  ∞ long-running
+  docker build -t netpad.apps.app .  Build Docker image
+
+src/Apps/NetPad.Apps.App/App  [Node.js, webpack, Jest]
+  npm run lint:js             Check source code with ESLint
+  npm run lint:html
+  npm run lint:css            Check stylesheets with Stylelint
+  npm run lint                Check stylesheets with Stylelint (+2 more steps)
+  npm run start               Start webpack dev server  ∞ long-running
+  npm run start-web           Start webpack dev server  ∞ long-running
+  npm run build               Delete dist, then bundle with webpack
+  npm run build-web           Delete dist, then bundle with webpack
+  npm run analyze             Delete dist, then bundle with webpack
+  npm run test                Run Jest tests
+  npm run pretest_disabled    Check stylesheets with Stylelint (+2 more steps)
+  npm run precommit_disabled  Run Jest tests (+3 more steps)
+
+src/Apps/NetPad.Apps.App/ElectronHostHook  [Node.js]
+  npm run test  Print message
+
+src/Apps/NetPad.Apps.Cli  [.NET]
+  dotnet run   Run .NET NetPad.Apps.Cli app
+  dotnet pack  Create NetPad.Apps.Cli NuGet package
+
+src/Apps/NetPad.Apps.Mcp  [.NET]
+  dotnet run   Run .NET NetPad.Apps.Mcp app
+  dotnet pack  Create NetPad.Apps.Mcp NuGet package
+
+src/Apps/NetPad.Apps.ScriptHost  [.NET]
+  dotnet run        Start .NET NetPad.Apps.ScriptHost web app
+  dotnet watch run  Start NetPad.Apps.ScriptHost with hot reload  ∞ long-running
+
+src/Apps/NetPad.Apps.Shells.Tauri/TauriApp/src-tauri  [Rust]
+  cargo run            Run Rust program
+  cargo build          Build crate
+  cargo test           Run Rust tests
+  cargo check          Type-check Rust project
+  cargo clippy         Lint Rust source with Clippy
+  cargo fmt            Format Rust source
+  cargo bench          Run Rust benchmarks
+  cargo doc --no-deps  Build Rust docs
+
+src/Plugins/NetPad.Plugins.OmniSharp  [.NET]
+  dotnet run        Start .NET NetPad.Plugins.OmniSharp web app
+  dotnet watch run  Start NetPad.Plugins.OmniSharp with hot reload  ∞ long-running

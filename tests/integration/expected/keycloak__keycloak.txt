@@ -1,0 +1,108 @@
+keycloak_keycloak  [JVM, Maven]
+
+  ./mvnw package         Package all Maven modules
+  ./mvnw test            Run Maven tests
+  ./mvnw verify          Run Maven verification (integration tests)
+  ./mvnw install         Install artifacts to local Maven repo
+  ./mvnw clean           Delete Maven build outputs
+  ./mvnw spotless:apply  Format code with Spotless
+  ./mvnw deploy          Deploy artifacts to Maven repository  [external]
+  ./get-version.sh
+  .\mvnw.cmd             ----------------------------------------------------------------------------
+  ./set-version.sh
+
+distribution/licenses-common  [JVM]
+  ./check-licenses.sh
+  ./download-license-files.sh
+  ./update-licenses.sh
+
+docs/documentation  [JVM]
+  ./build-auto.sh
+  ./get-version.sh
+
+js  [Node.js]
+  pnpm run prepare  Install Git hooks with Husky  ∆ git
+  pnpm run build
+
+js/apps/account-ui  [Node.js, Vite, Playwright]
+  pnpm run dev        Start Vite development server  ∞ long-running
+  pnpm run build      Build app with Vite
+  pnpm run build-lib  Build app with Vite
+  pnpm run preview    Preview production build with Vite  ∞ long-running
+  pnpm run lint       Check source code with ESLint
+  pnpm run test       Run Playwright end-to-end tests
+
+js/apps/admin-ui  [Node.js, Vite, Vitest, Playwright]
+  pnpm run dev               Start Vite development server  ∞ long-running
+  pnpm run build             Build app with Vite
+  pnpm run build-lib         Build app with Vite
+  pnpm run preview           Preview production build with Vite  ∞ long-running
+  pnpm run lint              Check source code with ESLint
+  pnpm run test              Run Vitest tests
+  pnpm run test:integration  Run Playwright end-to-end tests
+
+js/apps/create-keycloak-theme  [Node.js]
+  pnpm run start  Run create.js
+
+js/apps/keycloak-server  [Node.js]
+  pnpm run start          Run scripts/start-server.js
+  pnpm run delete-data    Delete server/data  [destructive]
+  pnpm run delete-server  Delete server  [destructive]
+
+js/libs/keycloak-admin-client  [Node.js]
+  pnpm run build             Compile TypeScript sources
+  pnpm run lint              Check source code with ESLint
+  pnpm run test              Run Mocha tests
+  pnpm run generate:openapi  Run kiota generate
+  pnpm run prepublishOnly    Compile TypeScript sources
+
+js/libs/ui-shared  [Node.js, Vite, Vitest]
+  pnpm run build  Build app with Vite
+  pnpm run lint   Check source code with ESLint
+  pnpm run test   Run Vitest tests
+
+js/themes-vendor  [Node.js]
+  pnpm run build                 Bundle with Rollup, then run scripts/rewrite-imports.js
+  pnpm run build:rewrite-import  Run scripts/rewrite-imports.js
+
+misc/test-stability  [JVM]
+  ./download-logs.sh
+  ./parse-logs.sh
+  ./schedule-runs.sh
+  ./status.sh
+
+operator  [JVM, Kubernetes, Maven, Docker]
+  ./mvnw -pl operator -am quarkus:dev       Start Quarkus in dev mode
+  docker build -t operator .                Build Docker image
+  kubectl kustomize src/main/kubernetes     Render Kubernetes manifests
+  kubectl apply -k src/main/kubernetes      Apply resources to cluster  [external]
+  kubectl delete -k src/main/kubernetes     Delete resources from cluster  [destructive]
+  ./scripts/build-testing-docker-images.sh
+  ./scripts/check-crd-installed.sh
+  ./scripts/check-examples-installed.sh
+  ./scripts/create-olm-bundle.sh
+  ./scripts/create-olm-test-catalog.sh
+  ./scripts/create-olm-test-resources.sh
+  ./scripts/deploy-examples.sh                [external]
+  ./scripts/install-keycloak-operator.sh
+  ./scripts/install-olm.sh
+  ./scripts/olm-testing.sh
+  ./scripts/post-process-helm-chart.sh      Post-processes chart emitted by quarkus-helm so it covers things
+  ./scripts/prepare-olm-test.sh
+  ./scripts/undeploy-examples.sh
+
+quarkus  [JVM]
+  ./set-quarkus-version.sh
+
+quarkus/server  [JVM, Maven]
+  mvn -pl server -am quarkus:dev  Start Quarkus in dev mode
+
+tests/base  [JVM]
+  ./check-base-suites.sh
+
+tests/migration-util  [JVM]
+  ./commit-migration.sh
+  ./migrate.sh
+
+testsuite/model  [JVM]
+  ./test-all-profiles.sh  To include test coverage data, use -Djacoco.skip=false parameter

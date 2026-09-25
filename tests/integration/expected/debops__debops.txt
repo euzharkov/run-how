@@ -1,0 +1,156 @@
+debops_debops  [Python, Ansible, Docker]
+
+  pre-commit run --all-files         Run pre-commit hooks on all files  ∆ git
+  make all                           Print message
+  make help                          Print message
+  make check                         Perform project sanity checks
+  make clean                         Clean up project directory  [destructive]
+  make clean-git                     Clean up directories and files ignored by git  ∆ git
+  make collection                    Build collection of Ansible artifacts with ansible-galaxy
+  make spdx                          Check copyright and license information (REUSE, SPDX)
+  make versions                      Check versions of upstream software
+  make docker                        Check Docker image build
+  make spell                         Check common misspellings using codespell
+  make docs                          Build Sphinx documentation
+  make man                           Build manual pages from Sphinx documentation
+  make links                         Check external links in documentation
+  make pep8                          Test Python PEP8 compliance
+  make shell                         Test shell script syntax
+  make syntax                        Check Ansible playbook syntax  [external]
+  make lint                          Check Ansible roles using ansible-lint
+  make test                          Perform all DebOps tests  [destructive]
+  make yaml                          Test YAML syntax using yamllint
+  make sdist                         Create Python sdist package
+  make sdist-quiet                   Run setup.py
+  make sdist-sign                    Create signed Python sdist package
+  make make-collection
+  make clean-sdist                   Delete debops.egg-info and dist/debops-*.tar.gz*
+  make wheel                         Create Python wheel package
+  make wheel-quiet                   Run setup.py
+  make wheel-sign                    Create signed Python wheel package
+  make clean-wheel                   Delete build and dist/debops-*.whl*
+  make twine-upload                  Upload Python packages to PyPI  [external]
+  make test-all                      Delete .coverage, docs/_build/*, docs/ansible/roles/*/defaults.rst, and docs/ansible/roles/*/de…  [destructive]
+  make test-pep8                     Run pycodestyle, then run lib/tests/check-pep8
+  make test-shell                    Run lib/tests/check-shell
+  make test-docker-build
+  make test-spdx                     Run reuse lint
+  make clean-tests                   Delete .coverage, docs/_build/*, docs/ansible/roles/*/defaults.rst, and docs/ansible/roles/*/de…  [destructive]
+  make check-versions
+  make test-spell                    Run codespell
+  make test-docs                     Build Sphinx docs
+  make test-man                      Build Sphinx docs
+  make check-links                   Build Sphinx docs
+  make install-collections           Install Ansible roles and collections
+  make test-playbook-syntax          Run ansible/playbooks/bootstrap.yml Ansible playbook  [external]
+  make test-ansible-lint             Lint Ansible playbooks
+  make test-yaml                     Run yamllint
+  make test-debops-tools             Run nose2-3, then run nose2
+  make test-debops-ansible_plugins   Run ansible/roles/ansible_plugins/filter_plugins/debops_filter_plugins.py
+  make fail-if-git-dirty             Inspect Git repository
+  make precommit                     Run pre-commit on all files
+  make pc
+  make pre-commit                    Run pre-commit hooks  ∆ git
+  docker build -t debops_debops .    Build Docker image
+  ansible-playbook … strap-ldap.yml  Dry-run bootstrap-ldap playbook  [external]
+  ansible-playbook … strap-ldap.yml  Run bootstrap-ldap Ansible playbook  [external]
+  ansible-playbook … tstrap-sss.yml  Dry-run bootstrap-sss playbook  [external]
+  ansible-playbook … tstrap-sss.yml  Run bootstrap-sss Ansible playbook  [external]
+  ansible-playbook … /bootstrap.yml  Dry-run bootstrap playbook  [external]
+  ansible-playbook … /bootstrap.yml  Run bootstrap Ansible playbook  [external]
+  ansible-playbook … oks/common.yml  Dry-run common playbook  [external]
+  ansible-playbook … oks/common.yml  Run common Ansible playbook  [external]
+  ansible-playbook … ooks/nixos.yml  Dry-run nixos playbook  [external]
+  ansible-playbook … ooks/nixos.yml  Run nixos Ansible playbook  [external]
+  ansible-playbook … oks/reboot.yml  Dry-run reboot playbook  [external]
+  ansible-playbook … oks/reboot.yml  Run reboot Ansible playbook  [external]
+  ansible-playbook … ooks/scope.yml  Dry-run scope playbook  [external]
+  ansible-playbook … ooks/scope.yml  Run scope Ansible playbook  [external]
+  ansible-playbook … books/site.yml  Dry-run site playbook  [external]
+  ansible-playbook … books/site.yml  Run site Ansible playbook  [external]
+  ansible-playbook … ks/upgrade.yml  Dry-run upgrade playbook  [external]
+  ansible-playbook … ks/upgrade.yml  Run upgrade Ansible playbook  [external]
+  ansible-playbook … ooks/btrfs.yml  Dry-run btrfs playbook  [external]
+  ansible-playbook … ooks/btrfs.yml  Run btrfs Ansible playbook  [external]
+  ansible-playbook … s/firejail.yml  Dry-run firejail playbook  [external]
+  ansible-playbook … s/firejail.yml  Run firejail Ansible playbook  [external]
+  ansible-playbook … books/fuse.yml  Dry-run fuse playbook  [external]
+  ansible-playbook … books/fuse.yml  Run fuse Ansible playbook  [external]
+  ansible-playbook … ot_snapper.yml  Dry-run snapshot_snapper playbook  [external]
+  ansible-playbook … ot_snapper.yml  Run snapshot_snapper Ansible playbook  [external]
+  ansible-playbook … 2go_server.yml  Dry-run x2go_server playbook  [external]
+  ansible-playbook … 2go_server.yml  Run x2go_server Ansible playbook  [external]
+
+docs  [Python, Ansible]
+  make The                           User-friendly check for sphinx-build
+  make command                       User-friendly check for sphinx-build
+  make was                           User-friendly check for sphinx-build
+  make not                           User-friendly check for sphinx-build
+  make Make                          User-friendly check for sphinx-build
+  make sure                          User-friendly check for sphinx-build
+  make you                           User-friendly check for sphinx-build
+  make have                          User-friendly check for sphinx-build
+  make Sphinx                        User-friendly check for sphinx-build
+  make installed,                    User-friendly check for sphinx-build
+  make then                          User-friendly check for sphinx-build
+  make set                           User-friendly check for sphinx-build
+  make the                           User-friendly check for sphinx-build
+  make SPHINXBUILD                   User-friendly check for sphinx-build
+  make environment                   User-friendly check for sphinx-build
+  make variable                      User-friendly check for sphinx-build
+  make to                            User-friendly check for sphinx-build
+  make point                         User-friendly check for sphinx-build
+  make full                          User-friendly check for sphinx-build
+  make path                          User-friendly check for sphinx-build
+  make of                            User-friendly check for sphinx-build
+  make Alternatively                 User-friendly check for sphinx-build
+  make can                           User-friendly check for sphinx-build
+  make add                           User-friendly check for sphinx-build
+  make directory                     User-friendly check for sphinx-build
+  make with                          User-friendly check for sphinx-build
+  make executable                    User-friendly check for sphinx-build
+  make your                          User-friendly check for sphinx-build
+  make If                            User-friendly check for sphinx-build
+  make don't                         User-friendly check for sphinx-build
+  make grab                          User-friendly check for sphinx-build
+  make it                            User-friendly check for sphinx-build
+  make from                          User-friendly check for sphinx-build
+  make https                         User-friendly check for sphinx-build
+  make help                          Print message
+  make clean                         Delete _build/*
+  make html                          Print message
+  make dirhtml                       Print message
+  make singlehtml                    Print message
+  make pickle                        Print message
+  make json                          Print message
+  make htmlhelp                      Print message
+  make qthelp                        Print message
+  make applehelp                     Print message
+  make devhelp                       Print message
+  make epub                          Print message
+  make epub3                         Print message
+  make latex                         Print message
+  make latexpdf                      Run all-pdf make target
+  make latexpdfja                    Run all-pdf-ja make target
+  make text                          Print message
+  make man                           Print message
+  make texinfo                       Print message
+  make info
+  make gettext                       Print message
+  make changes                       Print message
+  make linkcheck                     Print message
+  make doctest                       Print message
+  make coverage                      Print message
+  make xml                           Print message
+  make pseudoxml                     Print message
+  make dummy                         Print message
+  ansible-playbook … ks/console.yml  Dry-run console playbook  [external]
+  ansible-playbook … ks/console.yml  Run console Ansible playbook  [external]
+  ansible-playbook … soft-nginx.yml  Dry-run foodsoft-nginx playbook  [external]
+  ansible-playbook … soft-nginx.yml  Run foodsoft-nginx Ansible playbook  [external]
+  ansible-playbook … s/foodsoft.yml  Dry-run foodsoft playbook  [external]
+  ansible-playbook … s/foodsoft.yml  Run foodsoft Ansible playbook  [external]
+
+lib/images
+  make all    Delete debops-small-tmp.png (+3 more steps)
+  make clean  Delete *.png, *.svg, and .ico

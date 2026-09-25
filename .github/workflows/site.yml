@@ -1,0 +1,56 @@
+name: Site
+
+# Publishes site/ to Cloudflare Pages (project "runhow", custom domain runhow.line-19.com).
+# The site is static: no build step, the directory is uploaded as-is.
+#
+# Secrets (repository settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   an API token with "Cloudflare Pages: Edit" on the account
+#   CLOUDFLARE_ACCOUNT_ID  the account id shown on the Cloudflare dashboard
+#
+# The Pages project itself is created once in the Cloudflare dashboard ("Direct Upload"),
+# where the custom domain is attached; every push to main that touches site/ deploys.
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/site.yml"]
+  pull_request:
+    paths: ["site/**", ".github/workflows/site.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check the script
+        run: node --check site/main.js
+      - name: Validate HTML
+        run: npx --yes html-validate@8 site/index.html
+
+  deploy:
+    name: Deploy
+    needs: check
+    # Pull requests get a preview deployment on a branch alias; main goes to production.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=runhow --branch=${{ github.head_ref || github.ref_name }} --commit-dirty=true

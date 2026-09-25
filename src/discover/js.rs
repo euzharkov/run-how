@@ -28,28 +28,6 @@ impl Pm {
     }
 }
 
-const LIFECYCLE: &[&str] = &[
-    "prepare",
-    "prepublish",
-    "prepublishOnly",
-    "prepack",
-    "postpack",
-    "publish",
-    "postpublish",
-    "preinstall",
-    "install",
-    "postinstall",
-    "preuninstall",
-    "uninstall",
-    "postuninstall",
-    "preversion",
-    "version",
-    "postversion",
-    "dependencies",
-    "prerestart",
-    "postrestart",
-];
-
 fn read_pkg(ctx: &Context, dir: &DirInfo) -> Option<Rc<Value>> {
     ctx.json(dir, "package.json")
 }
@@ -155,20 +133,6 @@ const YARN_BUILTINS_FOR_RUN: [&str; 28] = [
     "list",
     "global",
 ];
-
-fn is_lifecycle(name: &str, scripts: &[&str]) -> bool {
-    if LIFECYCLE.contains(&name) {
-        return true;
-    }
-    for pre in ["pre", "post"] {
-        if let Some(rest) = name.strip_prefix(pre) {
-            if scripts.contains(&rest) || LIFECYCLE.contains(&rest) {
-                return true;
-            }
-        }
-    }
-    false
-}
 
 impl Discoverer for Js {
     fn id(&self) -> &'static str {
@@ -430,7 +394,6 @@ impl Discoverer for Js {
         let Some(scripts) = pkg.get("scripts").and_then(|s| s.as_object()) else {
             return out;
         };
-        let names: Vec<&str> = scripts.keys().map(|k| k.as_str()).collect();
         for (name, val) in scripts {
             let Some(body) = val.as_str() else { continue };
             let wire: Option<String> = if body.trim() == "wireit" {
@@ -448,10 +411,6 @@ impl Discoverer for Js {
             let mut a = Action::new(name, command).tool(tool).raw(body);
             if let Some(d) = descriptions(name) {
                 a = a.desc(d);
-            }
-            // Lifecycle hooks and `_private` / `.private` scripts are not meant to be typed.
-            if is_lifecycle(name, &names) || name.starts_with('_') || name.starts_with('.') {
-                a = a.hidden();
             }
             out.actions.push(a);
         }

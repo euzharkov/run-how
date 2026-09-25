@@ -1,0 +1,98 @@
+chatwoot_chatwoot  [Node.js, Docker, Rails, Vite, Vitest]
+
+  pnpm run eslint                           Check source code with ESLint
+  pnpm run eslint:fix                       Fix lint issues with ESLint
+  pnpm run test                             Run Vitest tests
+  pnpm run test:watch                       Run Vitest tests
+  pnpm run test:coverage                    Run Vitest tests with coverage
+  pnpm run start:dev                        Start processes from Procfile  ∞ long-running
+  pnpm run start:test                       Start processes from Procfile  ∞ long-running
+  pnpm run dev                              Start processes from Procfile  ∞ long-running
+  pnpm run ruby:prettier                    Check Ruby source with RuboCop
+  pnpm run build:sdk                        Build app with Vite
+  pnpm run analyze:bundles                  Build app with Vite
+  pnpm run analyze:bundle:sdk               Build app with Vite
+  pnpm run analyze:bundle:widget            Build app with Vite
+  pnpm run prepare                          Install Git hooks with Husky  ∆ git
+  pnpm run size                             Check bundle size
+  pnpm run story:dev                        Run histoire dev  ∞ long-running
+  pnpm run story:build                      Run histoire build
+  pnpm run story:preview                    Run histoire preview  ∞ long-running
+  pnpm run sync:i18n
+  bundle exec rake … _conversations         Apply SLA policy to existing conversations
+  bundle exec rake assets:rm_node_modules   Remove 'node_modules' folder
+  bundle exec rake assignment_v2:migrate    Migrate max_assignment_limit inbox settings to agent capacity policies
+  bundle exec rake … ets_precompile
+  bundle exec rake … :generate_bulk         Generate bulk conversations with contacts and movie dialogue messages
+  bundle exec rake … ation:generate         'Generate structured migration drafts. Usage: rake captain:assistant_migration:generate IDS=1,2…
+  bundle exec rake … igration:apply         Apply reviewed migration drafts. Usage: rake captain:assistant_migration:apply INPUT=tmp/review…
+  bundle exec rake … store_messages         Restore conversation message config from migration backup. Usage: rake captain:assistant_migrat…
+  bundle exec rake captain:chat             Start interactive chat with Captain assistant - Usage: rake captain:chat[assistant_id] or rake …
+  bundle exec rake companies:backfill       Backfill companies from existing contact email domains
+  bundle exec rake … issing_avatars         Fetch favicons for companies without avatars
+  bundle exec rake chatwoot_prepare         Runs setup if database does not exist, or runs migrations if it does
+  bundle exec rake download_report:agent    Download agent summary report as CSV
+  bundle exec rake download_report:inbox    Download inbox summary report as CSV
+  bundle exec rake download_report:label    Download label summary report as CSV
+  bundle exec rake feature_defaults:toggle  Interactively toggle feature on/off in ACCOUNT_LEVEL_FEATURE_DEFAULTS (affects new account sign…
+  bundle exec rake … stributed_data         Generate large, distributed test data
+  bundle exec rake data:cleanup_test_data   Clean up existing test data
+  bundle exec rake … ion_identifier         Get installation identifier
+  bundle exec rake ip_lookup:setup
+  bundle exec rake mfa:reset                Reset MFA for specific user by email
+  bundle exec rake mfa:reset_all            Reset MFA for all users in system
+  bundle exec rake … e_backup_codes         Generate new backup codes for user
+  bundle exec rake … ollup:backfill         Backfill rollup table from historical reporting events
+  bundle exec rake … p:set_timezone         Interactively set account.reporting_timezone and show recommended backfill run times
+  bundle exec rake ruby_llm:refresh_models  Refresh RubyLLM model registry from models.dev
+  bundle exec rake search:setup_test_data   Create test messages for advanced search manual testing across multiple inboxes
+  bundle exec rake db:seed:reports_data     Seed test data for reports with conversations, contacts, agents, teams, and realistic reporting…
+  bundle exec rake … broadcast_jobs         Clear ActionCableJobs from sidekiq's critical queue
+  bundle exec rake … provider_names         Backfill provider names. Options: DRY_RUN, ACCOUNT_ID, PROVIDER, LIMIT, AFTER_ID, DELAY_SECONDS…
+  bundle exec rake storage:migrate          Migrate blobs from one storage service to another
+  bundle exec rake swagger:build            Build combined swagger.json file from all fragmented definitions and paths inside swagger folder
+  bundle exec rake … ild_tag_groups         Build separate swagger files for each tag group
+  bundle exec rake swagger:build_for_docs   Build swagger files and create symlinks in developer-docs
+  bin/rails server                          Start Rails server  ∞ long-running
+  bin/rails db:migrate                      Apply Rails migrations
+  bin/rails db:seed                         Seed database
+  bin/rails db:prepare                      Create database and apply migrations
+  bin/rails db:reset                        Drop and recreate database  [destructive]
+  bin/rails routes                          List Rails routes
+  bundle exec rspec                         Run RSpec tests
+  bundle exec brakeman -q                   Scan Rails app with Brakeman
+  make setup                                Targets  ↓ download
+  make db_create
+  make db_migrate
+  make db_seed
+  make db_reset
+  make db
+  make console
+  make server                                 ∞ long-running
+  make burn                                 Install Ruby gems, then install dependencies with pnpm  ↓ download
+  make run                                  Start processes from Procfile  ∞ long-running
+  make force_run                            Start processes from Procfile (+4 more steps)  ∞ long-running
+  make force_run_tunnel                     Start processes from Procfile (+4 more steps)  ∞ long-running
+  make debug                                Start processes from Procfile  ∞ long-running
+  make debug_worker                         Start processes from Procfile  ∞ long-running
+  make docker                               Build Docker image
+  docker compose up -d                      Start all Docker services
+  docker compose up -d base                 Start base service (built from source)
+  docker compose up -d rails                Start rails service (built from source)
+  docker compose up -d sidekiq              Start sidekiq service (chatwoot-rails)
+  docker compose up -d vite                 Start vite service (built from source)
+  docker compose up -d postgres             Start PostgreSQL with pgvector
+  docker compose up -d redis                Start Redis
+  docker compose up -d mailhog              Start MailHog (test mail server)
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose build                      Build Docker service images
+  docker compose down                       Stop and remove Docker services
+  docker compose down -v                    Stop Docker services and delete their volumes  [destructive]
+  docker build -f docker/Dockerfile -t … .  Build Docker image
+
+tests/playwright  [Node.js, Playwright]
+  pnpm run lint                Check source code with ESLint
+  pnpm run lint:fix            Fix lint issues with ESLint
+  pnpm run playwright:open     Open Playwright test UI
+  pnpm run playwright:run      Run Playwright end-to-end tests
+  pnpm run playwright:codegen  Record Playwright test interactively

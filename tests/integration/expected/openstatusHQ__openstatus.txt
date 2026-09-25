@@ -1,0 +1,154 @@
+openstatusHQ_openstatus  [Node.js, Docker, Turborepo, Deno, Bun]
+
+  pnpm run build                         Run build across packages with Turborepo
+  pnpm run dev                           Run dev across packages with Turborepo  ∞ long-running
+  pnpm run env                           Run env.ts with Bun
+  pnpm run lint                          Check source code with Oxlint
+  pnpm run lint:fix                      Check source code with Oxlint
+  pnpm run lint:type                     Check source code with Oxlint
+  pnpm run format                        Run oxfmt, then check source code with Oxlint
+  pnpm run format:check                  Run oxfmt, then check source code with Oxlint
+  pnpm run lint:turbo                    Run lint across packages with Turborepo
+  pnpm run check                         Run check across packages with Turborepo
+  pnpm run check:docs                    Run scripts/check-doc-refs.mts
+  pnpm run verify                        Run check across packages with Turborepo (+3 more steps)
+  pnpm run verify:test                   Run test across packages with Turborepo
+  pnpm run dev:web                       Run dev across packages with Turborepo  ∞ long-running
+  pnpm run dev:status-page               Run dev across packages with Turborepo  ∞ long-running
+  pnpm run dev:dashboard                 Run dev across packages with Turborepo  ∞ long-running
+  pnpm run dx                            Run dx across packages with Turborepo
+  pnpm run tsc                           Compile TypeScript sources
+  pnpm run test                          Run test across packages with Turborepo
+  deno fmt                               Format source code with Deno
+  turbo run registry:build               Run registry:build across packages with Turborepo
+  turbo run seed                         Run seed across packages with Turborepo
+  turbo run migrate                      Run migrate across packages with Turborepo
+  docker compose up -d                   Start all Docker services
+  docker compose up -d libsql            Start libsql service (libsql-server)
+  docker compose up -d tinybird-local    Start tinybird-local service (tinybird-local)
+  docker compose up -d db-migrate        Start db-migrate service (built from source)
+  docker compose up -d workflows         Start workflows service (built from source)
+  docker compose up -d server            Start SQL Server
+  docker compose up -d private-location  Start private-location service (built from source)
+  docker compose up -d dashboard         Start dashboard service (built from source)
+  docker compose up -d status-page       Start status-page service (built from source)
+  docker compose logs -f                 Follow Docker service logs  ∞ long-running
+  docker compose build                   Build Docker service images
+  docker compose down                    Stop and remove Docker services
+  docker compose down -v                 Stop Docker services and delete their volumes  [destructive]
+
+apps/checker  [Go]
+  golangci-lint run     Lint Go source with golangci-lint
+  go run ./cmd/private  Run private command
+  go run ./cmd/server   Run server command
+  just build-probe      Build probe
+  just build-private    Build provider
+  just dev-probe        Run Go app with live reload  ∞ long-running
+  just dev-private      Run Go app with live reload  ∞ long-running
+  just clean            Delete main
+  just test             Run Go tests
+
+apps/dashboard  [Node.js, Next.js]
+  pnpm run dev    Start Next.js development server  ∞ long-running
+  pnpm run build  Build Next.js app
+  pnpm run start  Start Next.js production server  ∞ long-running
+  pnpm run lint   Lint Next.js app
+  pnpm run check  Check TypeScript types
+
+apps/private-location  [Go]
+  golangci-lint run  Lint Go source with golangci-lint
+  just all           Build application
+  just build         Print message
+  just dev           Run Go app with live reload  ∞ long-running
+  just run           Run application
+  just test          Test application
+  just clean         Clean binary
+
+apps/railway-proxy  [Go]
+  go run .  Run Go railway-proxy program
+
+apps/screenshot-service  [Node.js, Bun]
+  pnpm run dev    Run src/index.ts with Bun and auto-reload  ∞ long-running
+  pnpm run start  Run src/index.ts with Bun
+
+apps/server  [Node.js, Deno]
+  pnpm run dev                  Run src/serve.ts with Deno  ∞ long-running
+  pnpm run start                Run src/serve.ts with Deno
+  pnpm run slack:manifest:prod  Print file
+  pnpm run slack:manifest:dev   Run scripts/slack-manifest-dev.ts with Deno
+  pnpm run eval:mcp             Run src/routes/mcp/evals/run.ts with Deno
+  pnpm run openapi:json         Run scripts/build-openapi-json.ts with Deno, then run oxfmt
+  pnpm run openapi:v1           Run scripts/build-openapi-v1-json.ts with Deno, then run oxfmt
+  ./fly.sh
+
+apps/ssh-server  [Go]
+  go run .  Run Go ssh-server program
+
+apps/status-page  [Node.js, Next.js]
+  pnpm run dev    Start Next.js development server  ∞ long-running
+  pnpm run build  Build Next.js app
+  pnpm run start  Start Next.js production server  ∞ long-running
+  pnpm run lint   Lint Next.js app
+
+apps/web  [Node.js, Next.js, Turborepo]
+  pnpm run dev             Start Next.js development server  ∞ long-running
+  pnpm run build:registry  Run registry:build across packages with Turborepo
+  pnpm run build           Build Next.js app (+1 more step)
+  pnpm run start           Start Next.js production server  ∞ long-running
+  pnpm run lint            Lint Next.js app
+
+apps/workflows  [Node.js, Deno, Docker]
+  pnpm run dev                         Run src/serve.ts with Deno  ∞ long-running
+  pnpm run start                       Run src/serve.ts with Deno
+  docker compose up -d workflows-test  Start workflows-test service (built from source)
+  ./start.sh
+
+packages/ai  [Node.js]
+  pnpm run lint  Check source code with Oxlint
+
+packages/db  [Node.js, Drizzle, Deno]
+  pnpm run generate  Generate Drizzle migrations
+  pnpm run push      Push Drizzle schema to database
+  pnpm run migrate   Run src/migrate.mts with Deno
+  pnpm run studio    Open Drizzle Studio
+  pnpm run seed      Run src/seed.mts with Deno
+  pnpm run dev       Run turso dev  ∞ long-running
+
+packages/emails  [Node.js]
+  pnpm run dev:email    ∞ long-running
+
+packages/header-analysis  [Node.js, Deno]
+  pnpm run test:watch  Run Deno tests  ∞ long-running
+
+packages/icons  [Node.js]
+  pnpm run lint  Check source code with Oxlint
+
+packages/importers  [Node.js, Deno]
+  pnpm run test:watch  Run Deno tests  ∞ long-running
+
+packages/proto  [Node.js, Protobuf, Deno, Go]
+  pnpm run buf:openapi       Generate code from Protobuf with buf (+1 more step)
+  pnpm run buf:ts            Generate code from Protobuf with buf
+  pnpm run buf:go            Generate code from Protobuf with buf
+  pnpm run buf:lint          Lint Protobuf definitions
+  pnpm run buf:lint:api      Lint Protobuf definitions
+  pnpm run build             Generate code from Protobuf with buf
+  pnpm run clean             Delete gen/ts  [destructive]
+  just init                  Install Go binaries  ↓ download
+  just buf
+  just gen-private-location  Generate code from Protobuf with buf
+  just gen-api               Generate code from Protobuf with buf
+
+packages/react  [Node.js]
+  pnpm run dev             Build with tsup in watch mode, then run @tailwindcss/cli  ∞ long-running
+  pnpm run dev:tailwind      ∞ long-running
+  pnpm run build:tailwind
+  pnpm run build           Compile TypeScript sources (+2 more steps)
+
+packages/status-fetcher  [Node.js, Deno]
+  pnpm run test:watch  Run Deno tests  ∞ long-running
+
+packages/ui  [Node.js]
+  pnpm run build           Print message
+  pnpm run registry:build  Run shadcn build (+2 more steps)
+  pnpm run lint            Check source code with Oxlint

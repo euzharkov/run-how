@@ -10,15 +10,15 @@ test                     Testing        declared exact  safe        .          p
 lint                     Quality        declared exact  safe        .          pnpm run lint :: Run lint across packages with Turborepo
 check                    Quality        declared exact  safe        .          pnpm run check :: Run typecheck in all workspace packages
 release                  Release        declared exact  external    .          pnpm run release :: Publish packages with Changesets [git]
-changeset                Release        declared exact  safe        .          pnpm run changeset :: Create a changeset entry
+changeset                Release        declared exact  safe        .          pnpm run changeset :: Create changeset entry
 ## apps/mobile [mobile] JavaScript tools=pnpm techs=Node.js,Expo,Jest
-mobile                   Development    declared exact  safe        apps/mobile pnpm run start :: Start the Expo development server [long-running]
-mobile:ios               Development    declared exact  safe        apps/mobile pnpm run ios :: Build and run the app on iOS [long-running,device]
-mobile:android           Development    declared exact  safe        apps/mobile pnpm run android :: Build and run the app on Android [long-running,device]
+mobile                   Development    declared exact  safe        apps/mobile pnpm run start :: Start Expo development server [long-running]
+mobile:ios               Development    declared exact  safe        apps/mobile pnpm run ios :: Build and run app on iOS [long-running,device]
+mobile:android           Development    declared exact  safe        apps/mobile pnpm run android :: Build and run app on Android [long-running,device]
 mobile:test              Testing        declared exact  safe        apps/mobile pnpm run test :: Run Jest tests
 ## apps/web [web] JavaScript tools=pnpm techs=Node.js,Vite,Vitest
-web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start the Vite development server [long-running]
-web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build the app with Vite
+web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start Vite development server [long-running]
+web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build app with Vite
 web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
 web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Check source code with ESLint
 web:typecheck            Quality        declared exact  safe        apps/web   pnpm run typecheck :: Check Vue and TypeScript types

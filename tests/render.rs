@@ -1,8 +1,13 @@
-//! Snapshot tests over the terminal renderers: the listing (default and `--all`), `--ci`,
-//! `why`, and `rhow support`, each on a handful of fixtures with colour off, plus one
-//! colour-on listing that pins the glyph and bracket fallback rules (AGENTS.md §7).
+//! Snapshot tests over the terminal renderers, with colour off unless stated. Each view is
+//! pinned only where its output differs from another fixture's: `tests/fixtures.rs` pins the
+//! model, these pin what a developer actually sees, and a snapshot that repeats another
+//! fixture's rendering proves nothing new.
 //!
-//! `tests/fixtures.rs` pins the model; these pin what a developer actually sees.
+//! - The default listing, on every fixture.
+//! - `--ci`, once with pipelines (ci) and once without (polyglot).
+//! - `rhow support`, once with versions detected across nested projects (polyglot) and once
+//!   with nothing detected (nx). The static registry header is the same everywhere.
+//! - One colour-on listing that pins the glyph and bracket fallback rules (AGENTS.md §7).
 
 use rhow::ui::{self, RenderOptions, Style};
 use rhow::{discover, Options, Repo};
@@ -34,56 +39,56 @@ fn snap(name: &str, out: String) {
     });
 }
 
-fn render_all(fixture: &str, why: [&str; 2]) {
-    let repo = load(fixture);
-    let style = plain();
-    for all in [false, true] {
-        let out = ui::render(&repo, &style, &RenderOptions { all, group: false });
-        snap(
-            &format!("{fixture}-list{}", if all { "-all" } else { "" }),
-            out,
-        );
-    }
-    snap(&format!("{fixture}-ci"), ui::render_ci(&repo, &style));
-    for id in why {
-        let out = ui::render_why(&repo, id, &style)
-            .unwrap_or_else(|| panic!("{fixture}: no action `{id}`"));
-        snap(&format!("{fixture}-why-{}", id.replace(':', "-")), out);
-    }
+fn list(fixture: &str) {
+    let out = ui::render(&load(fixture), &plain(), &RenderOptions { group: false });
+    snap(&format!("{fixture}-list"), out);
+}
+
+fn ci(fixture: &str) {
+    snap(
+        &format!("{fixture}-ci"),
+        ui::render_ci(&load(fixture), &plain()),
+    );
+}
+
+fn support(fixture: &str) {
     snap(
         &format!("{fixture}-support"),
-        ui::support::render(Some(&repo), &style),
+        ui::support::render(Some(&load(fixture)), &plain()),
     );
 }
 
 #[test]
 fn polyglot() {
-    render_all("polyglot", ["dev", "reset"]);
+    list("polyglot");
+    ci("polyglot");
+    support("polyglot");
 }
 
 #[test]
 fn noise() {
-    render_all("noise", ["lint", "test"]);
+    list("noise");
 }
 
 #[test]
 fn nx() {
-    render_all("nx", ["test", "api:build"]);
+    list("nx");
+    support("nx");
 }
 
 #[test]
-fn ci() {
-    render_all("ci", ["test", "deploy"]);
+fn ci_fixture() {
+    list("ci");
+    ci("ci");
 }
 
 #[test]
 fn ruby_rails() {
-    render_all("ruby-rails", ["import", "db:reset"]);
+    list("ruby-rails");
 }
 
-/// With colour on, risk is a coloured dot and a word, notes are dimmed glyphs, and the
-/// footer appears (a TTY); with colour off the same lines carry `[external]` and the label
-/// text only. The escape codes are part of the snapshot on purpose.
+/// With colour on, risk is a coloured dot and a word and notes are dimmed glyphs; with
+/// colour off the same lines carry `[external]` and the label text only. The escape codes are part of the snapshot on purpose.
 #[test]
 fn polyglot_with_colour() {
     let repo = load("polyglot");
@@ -93,18 +98,7 @@ fn polyglot_with_colour() {
     };
     snap(
         "polyglot-list-colour",
-        ui::render(
-            &repo,
-            &style,
-            &RenderOptions {
-                all: false,
-                group: false,
-            },
-        ),
-    );
-    snap(
-        "polyglot-why-reset-colour",
-        ui::render_why(&repo, "reset", &style).unwrap(),
+        ui::render(&repo, &style, &RenderOptions { group: false }),
     );
 }
 
@@ -115,13 +109,6 @@ fn polyglot_grouped() {
     let repo = load("polyglot");
     snap(
         "polyglot-list-group",
-        ui::render(
-            &repo,
-            &plain(),
-            &RenderOptions {
-                all: false,
-                group: true,
-            },
-        ),
+        ui::render(&repo, &plain(), &RenderOptions { group: true }),
     );
 }

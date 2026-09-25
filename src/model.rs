@@ -171,8 +171,12 @@ pub struct Action {
     pub category: Category,
     /// Which tool family produced the action (`npm`, `make`, `cargo`, `compose`, …).
     pub tool: &'static str,
-    /// Internal / private / lifecycle actions that only show with `--all`.
-    pub hidden: bool,
+    /// Set during discovery when another action already covers this one (the same command
+    /// from a second tool, a per-package copy of a root command) or it cannot be run (a
+    /// Taskfile `internal` task, an Nx no-op). Discovery removes these before it returns,
+    /// so nothing outside `discover` ever sees one: rhow shows everything it reports.
+    #[serde(skip)]
+    pub redundant: bool,
     /// What running it involves (long-running, device, download, git). See [`Note`].
     pub notes: Vec<Note>,
     /// The command text to analyse when it differs from `command`
@@ -206,7 +210,7 @@ impl Action {
             risk: Risk::Safe,
             category: Category::Other,
             tool: "",
-            hidden: false,
+            redundant: false,
             notes: Vec::new(),
             raw: None,
             explicit_description: false,
@@ -237,7 +241,7 @@ impl Action {
 
     /// A description produced by the adapter from observable facts (not project-declared).
     pub fn inferred_desc(mut self, d: impl Into<String>) -> Self {
-        self.description = d.into();
+        self.description = crate::explain::terse(&d.into());
         self
     }
 
@@ -267,8 +271,8 @@ impl Action {
         self
     }
 
-    pub fn hidden(mut self) -> Self {
-        self.hidden = true;
+    pub fn redundant(mut self) -> Self {
+        self.redundant = true;
         self
     }
 
@@ -288,11 +292,6 @@ impl Action {
     /// The text that command analysis should look at.
     pub fn analysis_text(&self) -> &str {
         self.raw.as_deref().unwrap_or(&self.command)
-    }
-
-    /// Shown by default (without `--all`)?
-    pub fn is_primary(&self) -> bool {
-        !self.hidden && self.confidence != Confidence::Low
     }
 }
 

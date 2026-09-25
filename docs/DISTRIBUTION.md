@@ -68,3 +68,19 @@ Release checklist:
 2. Tag `vX.Y.Z` and push. Wait for the release workflow.
 3. Copy hashes from `SHA256SUMS` into the Homebrew, Scoop, WinGet and AUR files.
 4. `npm publish` from `packaging/npm`.
+
+## Website
+
+`site/` is the landing page at <https://runhow.line-19.com>: static HTML, CSS and JavaScript
+with no build step and no dependencies beyond two Google Fonts. `.github/workflows/site.yml`
+validates it (`node --check`, `html-validate`) and deploys it to the Cloudflare Pages project
+`runhow` with `wrangler pages deploy` on every push to `main` that touches `site/`; pull
+requests get a preview deployment on a branch alias. The workflow needs two repository
+secrets, `CLOUDFLARE_API_TOKEN` (Cloudflare Pages: Edit) and `CLOUDFLARE_ACCOUNT_ID`; the
+Pages project and its custom domain are set up once in the Cloudflare dashboard.
+
+The copy on the page only claims what the binary does: the terminal examples are real fixture
+output, the ecosystem list follows the README table, and the install channels are the ones in
+this document. When a flag, channel or ecosystem changes, change the page in the same pull
+request. Preview locally with any static server, for example
+`python3 -m http.server 4173 --directory site`.

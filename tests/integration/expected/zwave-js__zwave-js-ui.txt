@@ -1,0 +1,46 @@
+zwave-js_zwave-js-ui  [Node.js, Docker, Kubernetes, Vitest, Vite]
+
+  npm run dev                               Start Vite development server  ∞ long-running
+  npm run dev-https                         Start Vite development server  ∞ long-running
+  npm run dev:server                        Run app with auto-restart  ∞ long-running
+  npm run server                            Run api/bin/www.ts
+  npm run fake-stick
+  npm run start                             Run server/bin/www.js
+  npm run bundle                            Run esbuild.js
+  npm run lint                              Run all lint:* scripts
+  npm run lint-fix                          Run all lint-fix:* scripts
+  npm run lint:eslint                       Check source code with ESLint
+  npm run lint-fix:eslint                   Fix lint issues with ESLint
+  npm run lint:markdownlint                 Check Markdown files
+  npm run lint-fix:markdownlint             Check Markdown files
+  npm run test                              Run Vitest tests
+  npm run test:watch                        Run Vitest tests
+  npm run test:server                       Run Vitest tests
+  npm run test:ui                           Run Vitest tests
+  npm run docs                              Run docsify serve  ∞ long-running
+  npm run docs:generate                     Run generateDocs.ts
+  npm run coverage                          Run Vitest tests with coverage
+  npm run build                             Run all build:* scripts
+  npm run build:server                      Compile TypeScript sources
+  npm run build:ui                          Build app with Vite
+  npm run clean                             Build TypeScript project references
+  npm run pkg                               Change file permissions, then run package.sh
+  npm run changelog                         Generate changelog, then stage files  ∆ git
+  npm run changelog-init                    Generate changelog
+  npm run release                           Run read, then cut release with release-it  [external]  ∆ git
+  npm run generate-pwa-assets
+  npm run browser
+  npm run docker:build                      Build Docker image
+  npm run docker:run                        Run 8092:8092 container
+  docker build -f docker/Dockerfile -t … .  Build Docker image
+  docker build -f … .                       Build Docker image from Dockerfile.contrib
+  docker build -f … .                       Build Docker image from Dockerfile.debian
+  docker compose -f … up -d                 Start all Docker services
+  docker compose -f … -d zwave-js-ui        Start zwave-js-ui service (zwave-js-ui)
+  docker compose -f … logs -f               Follow Docker service logs  ∞ long-running
+  docker compose -f … down                  Stop and remove Docker services
+  docker compose -f … down -v               Stop Docker services and delete their volumes  [destructive]
+  kubectl kustomize .                       Render Kubernetes manifests
+  kubectl apply -k .                        Apply resources to cluster  [external]
+  kubectl delete -k .                       Delete resources from cluster  [destructive]
+  ./package.sh

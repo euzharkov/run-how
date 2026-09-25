@@ -1,0 +1,23 @@
+weise25_LocalSite-ai  [Node.js, Deno, Docker, Vite, SvelteKit]
+
+  npm run dev                             Start Vite development server  ∞ long-running
+  npm run build                           Build app with Vite
+  npm run start                           Run build
+  npm run preview                         Preview production build with Vite  ∞ long-running
+  npm run check                           Run SvelteKit, then check Svelte components and types
+  npm run check:watch                     Run SvelteKit, then check Svelte components and types  ∞ long-running
+  deno task dev                           Run npm:vite with Deno
+  deno task build                         Run npm:vite with Deno
+  deno task preview                       Run npm:vite with Deno
+  deno task start                         Run build/index.js with Deno
+  deno task sync                          Run npm:@sveltejs/kit with Deno
+  deno task check                         Run sync Deno task, then run npm:svelte-check with Deno
+  deno task lint                          Check source code with Deno lint
+  deno test                               Run Deno tests
+  deno fmt                                Format source code with Deno
+  docker build -t weise25_localsite-ai .  Build Docker image
+  docker compose up -d                    Start all Docker services
+  docker compose up -d localsite-ai       Start localsite-ai service (built from source)
+  docker compose logs -f                  Follow Docker service logs  ∞ long-running
+  docker compose build                    Build Docker service images
+  docker compose down                     Stop and remove Docker services

@@ -1,0 +1,15 @@
+{
+  "name": "storefront",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "services": "docker compose up -d postgres redis",
+    "e2e": "pnpm --filter web exec playwright test"
+  },
+  "devDependencies": { "turbo": "^2.0.0" }
+}

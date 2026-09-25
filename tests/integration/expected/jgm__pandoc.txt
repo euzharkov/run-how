@@ -1,0 +1,85 @@
+jgm_pandoc  [Haskell, .NET]
+
+  stack run                             Run executable with Stack
+  make all                              Build executable and run tests
+  make build                            Build executable
+  make prof                             Build with profiling and optimizations
+  make binpath                          Print path of built pandoc executable
+  make ghcid
+  make repl                             Run cabal repl  ∞ long-running
+  make linecounts                       Print line counts for each module
+  make test                             Unoptimized build and run tests with cabal
+  make quick-stack                      Unoptimized build and tests with stack
+  make prerelease                       Prerelease checks  ∞ long-running
+  make uncommitted_changes
+  make authors                          Prints unique authors since last released version
+  make LOG.md
+  make check-stack
+  make check-cabal                      Run ! (+5 more steps)
+  make check-version-sync               Print message
+  make check-changelog                  Print message
+  make check-manversion                 Print message
+  make checkdocs                        Run !
+  make bench                            Build and run benchmarks
+  make reformat                         Reformat with stylish-haskell
+  make lint                             Run hlint
+  make fix_spacing                      Fix trailing newlines and spaces
+  make changes_github                   Copy this release's changes in gfm
+  make man                              Build man pages  ∞ long-running
+  make latex-package-dependencies       Print packages used by default latex template
+  make coverage                         Code coverage information
+  make transitive-deps                  Print transitive dependencies
+  make debpkg                           Create linux package
+  make doc/lua-filters.md               Update lua-filters.md module docs
+  make download_stats                   Print download stats from GitHub releases  ↓ download
+  make pandoc-templates                 Update pandoc-templates repo
+  make update-website                   Update website and upload
+  make update-translations              Update data/translations from Babel and Polyglossia
+  make validate-docx-golden-tests       Validate docx golden tests against schema  [external]
+  make validate-docx-golden-tests2      Validate docx golden tests using OOXMLValidator  [external]
+  make validate-epub                    Generate epub and validate it with epubcheck and ace
+  make moduledeps                       Print transitive dependencies of module ROOT
+  make clean                            Clean up
+  make help                             Display this help
+  make release-checklist
+  make hie.yaml                         Regenerate hie.yaml
+  make pandoc.wasm                      Build pandoc.wasm
+  ./tools/build-and-upload-api-docs.sh
+  ./tools/build-arm.sh                  Old version:
+  ./tools/changelog-helper.sh           Generate preliminary list of changes since changelog
+  ./tools/diff-golden-tests.sh
+  ./tools/diff-zip.sh
+  ./tools/github-upload.sh
+  ./tools/validate-docx.sh              Modified by edwintorok from https://github.com/devoidfury/docx-validator
+  ./tools/validate-docx2.sh
+
+macos
+  make all
+  make notarize
+  make clean
+  make distclean
+  ./make_macos_release.sh    [external]
+
+pandoc-cli  [Haskell]
+  cabal build
+  cabal test   Run tests with Cabal
+  cabal run    Run executable with Cabal
+
+pandoc-lua-engine  [Haskell]
+  cabal build
+  cabal test   Run tests with Cabal
+  cabal run    Run executable with Cabal
+
+pandoc-server  [Haskell]
+  cabal build
+  cabal test   Run tests with Cabal
+  cabal run    Run executable with Cabal
+
+wasm  [Python]
+  make site    Create $@ (+4 more steps)
+  make upload  Copy files to or from remote host  [external]
+  make serve   Serve current directory over HTTP  ∞ long-running
+  make clean   Delete site/*  [destructive]
+
+windows
+  make all

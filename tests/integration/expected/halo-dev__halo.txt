@@ -1,0 +1,102 @@
+halo-dev_halo  [JVM, Gradle, Docker]
+
+  ./gradlew run                    Run app with Gradle
+  ./gradlew build
+  ./gradlew test                   Run Gradle tests
+  ./gradlew check                  Run Gradle checks (tests and linters)
+  ./gradlew spotlessApply          Format code with Spotless
+  ./gradlew clean                  Delete Gradle build outputs
+  ./gradlew tasks                  List all Gradle tasks
+  docker build -t halo-dev_halo .  Build Docker image
+  .\gradlew.bat                    Copyright 2015 original author or authors
+  ./hack/cherry_pick_pull.sh       Checkout PR from GitHub. (Yes, this is sitting in Git tree. How
+  pnpm -r run prepublishOnly       Run vp in every workspace package
+
+api  [JVM, Gradle]
+  ./gradlew :api:bootRun  Start Spring Boot app
+  ./gradlew :api:publish  Publish artifacts with Gradle  [external]
+
+application  [JVM, Gradle, Kubernetes]
+  ./gradlew :application:createChecksums
+  ./gradlew :application:copyUiDist
+  ./gradlew … dPluginPresets
+  ./gradlew :application:publishToGhcr    Build and publish Docker image to GitHub Container Registry
+  ./gradlew … ishToDockerHub              Build and publish Docker image to Docker Hub
+  ./gradlew … oAllRegistries              Build and publish Docker image to all configured registries
+  ./gradlew :application:bootRun          Start Spring Boot app
+  ./gradlew :application:publish          Publish artifacts with Gradle  [external]
+  kubectl apply … ain/resources/          Validate Kubernetes manifests
+  kubectl apply -f src/main/resources/    Apply resources to cluster  [external]
+  kubectl delete -f src/main/resources/   Delete resources from cluster  [destructive]
+
+platform/application  [JVM, Gradle]
+  ./gradlew :platform:application:bootRun  Start Spring Boot app
+  ./gradlew :platform:application:publish  Publish artifacts with Gradle  [external]
+
+platform/plugin  [JVM, Gradle]
+  ./gradlew :platform:plugin:run      Run app with Gradle
+  ./gradlew :platform:plugin:publish  Publish artifacts with Gradle  [external]
+
+ui  [Node.js, Gradle]
+  pnpm run prepare          Install Git hooks with Husky  ∆ git
+  pnpm run dev
+  pnpm run build
+  pnpm run build:packages
+  pnpm run api-client:gen
+  pnpm run test:unit
+  pnpm run test:unit:watch
+  pnpm run test:unit:ui
+  pnpm run typecheck
+  pnpm run lint
+  pnpm run format           Run vp fmt
+  pnpm run format:check     Run vp fmt
+  ./gradlew :ui:doClean
+  ./gradlew :ui:doBuild
+  ./gradlew :ui:test
+  ./gradlew :ui:lint
+  ./gradlew :ui:typecheck
+  ./gradlew :ui:dev
+  make install              Install console  ↓ download
+  make build-packages       Build packages of console
+  make build                Build console
+  make lint                 Lint console
+  make test                 Test console
+  make check                Check console
+  make dev                  Run console with development environment
+  make api-client-gen       Generate API client
+  make help                 Print this help
+
+ui/packages/api-client  [Node.js]
+  pnpm run build
+  pnpm run gen    Delete src/**, then generate API client code  [destructive]
+
+ui/packages/components  [Node.js, Storybook]
+  pnpm run build               Run vp build
+  pnpm run build-storybook     Build static Storybook
+  pnpm run dev                 Run vp build  ∞ long-running
+  pnpm run storybook           Start Storybook  ∞ long-running
+  pnpm run test:unit           Run vp test
+  pnpm run test:unit:coverage  Run vp test
+  pnpm run test:unit:ui        Run vp test  ∞ long-running
+  pnpm run test:unit:watch     Run vp test  ∞ long-running
+  pnpm run typecheck           Check Vue and TypeScript types
+
+ui/packages/editor  [Node.js]
+  pnpm run build      Run vp build
+  pnpm run dev        Run vp build  ∞ long-running
+  pnpm run test:unit  Run vp test
+  pnpm run typecheck  Check Vue and TypeScript types
+
+ui/packages/shared  [Node.js]
+  pnpm run build
+  pnpm run dev          ∞ long-running
+  pnpm run test:unit  Run vp test
+  pnpm run typecheck  Check TypeScript types
+
+ui/packages/ui-plugin-bundler-kit  [Node.js]
+  pnpm run build
+  pnpm run dev                  ∞ long-running
+  pnpm run snapshot:check     Run scripts/generate-runtime-snapshot.mjs
+  pnpm run snapshot:generate  Run scripts/generate-runtime-snapshot.mjs
+  pnpm run test:unit          Run vp test
+  pnpm run typecheck          Check TypeScript types
