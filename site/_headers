@@ -1,0 +1,12 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+/og.png
+  Cache-Control: public, max-age=86400
+/*.png
+  Cache-Control: public, max-age=604800
+/*.svg
+  Cache-Control: public, max-age=604800

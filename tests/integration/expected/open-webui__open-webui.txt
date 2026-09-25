@@ -1,0 +1,47 @@
+open-webui_open-webui  [Node.js, Docker, Vite, SvelteKit, Cypress]
+
+  npm run dev                              Run scripts/prepare-pyodide.js, then start Vite development server  ∞ long-running
+  npm run dev:5050                         Run scripts/prepare-pyodide.js, then start Vite development server  ∞ long-running
+  npm run build                            Run scripts/prepare-pyodide.js, then build app with Vite
+  npm run build:watch                      Run scripts/prepare-pyodide.js, then build app with Vite  ∞ long-running
+  npm run preview                          Preview production build with Vite  ∞ long-running
+  npm run check                            Run SvelteKit, then check Svelte components and types
+  npm run check:watch                      Run SvelteKit, then check Svelte components and types  ∞ long-running
+  npm run lint                             Check Python source code with Pylint (+3 more steps)
+  npm run lint:frontend                    Fix lint issues with ESLint
+  npm run lint:types                       Run SvelteKit, then check Svelte components and types
+  npm run lint:backend                     Check Python source code with Pylint
+  npm run format                           Format source code with Prettier
+  npm run format:backend                   Format Python code with Ruff
+  npm run i18n:parse                       Run i18next, then format source code with Prettier
+  npm run cy:open                          Open Cypress test runner
+  npm run test:frontend                    Run Vitest tests
+  npm run pyodide:fetch                    Run scripts/prepare-pyodide.js
+  uv run open-webui                        Run open-webui command (open_webui)
+  uv run pytest                            Run Python tests
+  uv run ruff check .                      Check Python source code with Ruff
+  uv run pre-commit run --all-files        Run pre-commit hooks on all files
+  make install                             Start Docker services in background
+  make remove                              Change file permissions, then run confirm_remove.sh
+  make start                               Start Docker services
+  make startAndBuild                       Build and start Docker services
+  make stop                                Stop Docker services
+  make update                              Set up project  ↓ download
+  docker build -t open-webui_open-webui .  Build Docker image
+  docker compose up -d ollama              Start Ollama
+  docker compose up -d open-webui          Start open-webui service (built from source)
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose build                     Build Docker service images
+  docker compose down                      Stop and remove Docker services
+  docker compose down -v                   Stop Docker services and delete their volumes  [destructive]
+  ./docker-cleanup.sh
+  ./docker-compose-launcher.sh
+  ./docker-ollama.sh
+  ./docker-run.sh
+  ./docker-update-models.sh
+  ./scripts/generate-sbom.sh               Generate-sbom.sh — Generate clean CycloneDX SBOM using Syft
+
+backend  [Python]
+  ./dev.sh
+  ./start.sh
+  .\start_windows.bat  This method is not recommended, and we recommend you use `start.sh` file with WSL instead

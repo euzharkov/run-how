@@ -1,0 +1,10 @@
+mumble-voip_mumble  [CMake]
+
+  cmake -S . -B build                       Configure CMake project into build/
+  cmake --build build
+  ctest --test-dir build                    Run CTest tests
+  find . -name '*.cpp' -o -name '*.h' … -i  Format C/C++ sources with clang-format
+  ./scripts/runClangFormat.sh
+
+overlay
+  .\scripts\build_overlay_xcompile.cmd  Copyright Mumble Developers. All rights reserved

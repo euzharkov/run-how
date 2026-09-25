@@ -1,0 +1,279 @@
+simonmichael_hledger  [Haskell, Docker]
+
+  stack build
+  stack run                               Run executable with Stack
+  stack ghci                              Open GHCi with project loaded  ∞ long-running
+  hlint .                                 Check Haskell source with HLint
+  make site                               Print message
+  just _help                              List recipes, optionally filtered by REGEX. Useful when there's many, but slower than just -ul
+  just _chk                               Check this justfile for errors and non-standard format
+  just _fmt                               If this justfile is error free but in non-standard format, reformat and commit it  ∆ git
+  just _watch                             Rerun RECIPE when any watched-by-default file changes
+  just BUILDING                           ** Building ------------------------------------------------------------
+  just buildtimes                         Build hledger package showing ghc codegen times/allocations
+  just hledgerprof                        Build hledger with profiling enabled at bin/hledgerprof (using stack-prof.yaml and its own work…
+  just ghcid                              Run ghcid on hledger-lib + hledger
+  just ghcid-ui                           Run ghcid autobuilder on hledger-lib + hledger + hledger-ui
+  just ghcid-web                          Run ghcid autobuilder on hledger-lib + hledger + hledger-web
+  just ghcid-web-run                      Run ghcid autobuilding and running hledger-web with sample journal on port 5001
+  just ghcid-doctest                      Run ghcid autobuilding and running hledger-lib doctests
+  just ghcid-shake                        Run ghcid autobuilder on Shake.hs
+  just TESTING                            ** Testing ------------------------------------------------------------
+  just ghci                               Run ghci on hledger-lib + hledger
+  just ghci-echo                          Echo full command that just ghci would run
+  just ghci-prof                          Run ghci on hledger-lib + hledger with profiling/call stack information
+  just ghcitui                            Run ghcitui on hledger-lib + hledger
+  just ghci-ui                            Run ghci on hledger-lib + hledger + hledger-ui
+  just ghci-web                           Run ghci on hledger-lib + hledger + hledger-web
+  just ghci-web-test                      Run ghci on hledger-lib + hledger + hledger-web + hledger-web test suite
+  just ghci-doctest                       Run ghci on hledger-lib doctests
+  just ghci-shake                         Run ghci on Shake.hs
+  just test                               Run most tests (files, unit, doc, functional). doctest is slow, requiring its own build
+  just embedtest                          Check all files embedded with file-embed are declared in extra-source-files
+  just anchortest                         Check that internal links in manuals' source files point to existing headings
+  just pkgtest                            Run all test suites in hledger packages
+  just doctest                            Run doctests in hledger-lib module/function docs. DOCTESTARGS is passed through but seems not t…
+  just unittest                           Run hledger & hledger-lib unit tests (do stack build hledger first)
+  just functest                           Build hledger warning-free and run functional tests, with any shelltest OPTS
+  just browsertest                        Run hledger-web's browser tests against current build, with any playwright OPTS (needs setup, s…
+  just perfhelp                           Remind how to test performance
+  just perftest                           Run performance tests with hledger in PATH, logging to perf.log and expecting certain txns/s. A…
+  just compare-balance                    Compare hledger's and ledger's balance report
+  just hlinttest                          Generate hlint report
+  just haddocktest                        Check that haddock can generate docs without dying
+  just cabalfilestest                     Check cabal files' syntax
+  just installtest                        Run hledger-install.sh not from inside haskell project
+  just BENCHMARKING                       ** Benchmarking ------------------------------------------------------------
+  just samplejournals                     Generate standard sample journals in examples/. Run just tools first
+  just bench                              Run benchmark commands in bench/bench.sh (or another -f file) with quickbench. Eg: just bench -…
+  just bench-throughput                   Show throughput at various data sizes with given hledger executable (requires samplejournals)
+  just bench-throughput-dev               Show throughput at various data sizes with latest hledger dev build, optimised or not (requires…
+  just bench-throughput-recent            Show throughput of recent hledger versions (requires samplejournals)
+  just quickprof                          Run hledger CMD against sample journal and display execution profile (build hledgerprof first)
+  just heap                               Generate and archive graphical heap profile
+  just DOCUMENTING                        ** Documenting ------------------------------------------------------------
+  just manuals                            Update manuals - build hledger, regenerate flag docs, regenerate manuals
+  just manuals-site                       Update site's snapshot of manuals for this branch's major release version
+  just generaloptionshelp                 Update general options help shown in manuals (doc/common.m4) from hledger's --help output
+  just changelogs                         Add latest commit messages to changelogs. (Runs ./Shake changelogs [OPTS])
+  just changelogs-check                   Check changelogs for stale resume points, bad issue links, leftover draft markers. (Runs ./Shak…
+  just changelogs-reset                   Drop any uncommitted changes to project and package changelogs  ∆ git
+  just changelogs-catchup                 Set changelog headings to specified commit, or HEAD. Rarely needed now (changelogs auto-relocat…
+  just changelogs-finalise                Set changelog headings for full release today. Run on release branch  ∆ git
+  just site                               Update website (the live one if run on hledger.org)
+  just site-watch                         Open browser on website (in ./site) and rerender when docs or web pages change
+  just site-restart                       Restart hledger.org's caddy server, after config changes
+  just haddock                            Regenerate haddock docs for hledger packages
+  just haddock-and-open                   Regenerate haddock docs for hledger packages and open them
+  just haddock-open                       Open haddock packages contents page in browser
+  just packagediags                       Generate packages diagrams for hledger packages
+  just packagediags-view                  View packages diagrams
+  just modulediags                        Generate modules diagrams for hledger packages
+  just modulediags-view                   View modules diagrams
+  just modulediag                         Generate modules diagram for hledger package
+  just releasediag                        Optimise and commit RELEASING.png diagram after export from obsidian  ∆ git
+  just docupdatediag                      Optimise and commit doc-update.png diagram after export from obsidian  ∆ git
+  just unreleased                         Show changes since last release in given CHANGES.md file or all of them. (Run after ./Shake cha…
+  just pushfaq                            Commit and push FAQ edits  ∆ git
+  just tldr-diff                          Show diffs between upstream hledger tldr pages and local copies in this repo
+  just log-save                           Save copy of full jj log showing all commits and branches
+  just log-headtail                       Log-headtail [y] - show start and end of saved log, optionally in color
+  just log-push                           Upload copy of log to website, on side since it's large  [external]
+  just bin-short                          Update short version of hledger script example (by removing docs)
+  just site-caching-open
+  just RELEASING                          ** Releasing ------------------------------------------------------------
+  just relbranch                          Create or switch to this release branch, and set version string in various places
+  just completions                        Update shell completions in hledger package
+  just installpage                        Update release version on hledger.org Install page (site/src/install.md). NEWVER defaults to ./…
+  just relnotes                           Make draft release notes from changelogs. Run on release branch. Run just tools first
+  just hackageupload                      Upload all packages to hackage (run from release branch)
+  just hackagerevise
+  just reltags                            Make git tags for full release today, but don't push them yet. Run on release branch  ∆ git
+  just oldest                             Push current HEAD to github oldest branch, testing build with oldest supported GHC  [destructive]  ∆ git
+  just ghbin                              Push current HEAD to github binaries branch, generating platform binaries  [destructive]  ∆ git
+  just ghbin-open                         Browse latest run of platform binaries workflows  [external]
+  just reltags-push                       Push current release's tags (made by reltags, named per */.version) to github. Do this after bu…  [external]  ∆ git
+  just ghbin-download                     If release tag matching ./.version exists, each run is checked to be built from that tag's comm…  [destructive]
+  just ghrel                              For tagged commit. Safe to re-run  [external]
+  just ghrel-local                        Fallback for release branches that don't have release.yml workflow  [external]  ∆ git
+  just ghrel-publish                      Publish current version's draft github release, making it visible to world. ⚠  [external]  ∆ git
+  just ghrel-open                         Browse latest github release  [external]  ∆ git
+  just ghrel-notes                        Upload release notes to configured github release  [external]  ∆ git
+  just ghrel-upload                       After ghbin-download: upload downloaded binaries to current release branch's github release  [external]  ∆ git
+  just devver                             After major release: in main, bump versions for new dev cycle ("OLDVER.99")
+  just INSTALLING                         ** Installing ------------------------------------------------------------
+  just installas                          Install hledger binaries as bin/old/hledger*-VER
+  just installallas                       Install all hledger executables as bin/old/hledger*-VER
+  just installasdbg                       Install hledger with stack traces and ghc-debug support enabled, as bin/hledger*-dbg
+  just installallasdbg                    Install all hledger executables with stack traces and ghc-debug support enabled, as bin/hledger…
+  just installrel                         Download specified version of github release binaries, for current OS and ARCH, to bin/old/hled…
+  just symlink-binary                     Add easier symlink for this minor hledger release (hledger-1.29 -> hledger-1.29.2, etc.)
+  just INFO                               ** Info ------------------------------------------------------------
+  just tags                               List git tags approximately most recent first (grouped by package). available fields vary over …  ∆ git
+  just rel                                Show last release date and version (of hledger package)
+  just reldate                            Show last release date (of hledger package)
+  just relver                             Show last release version (of hledger package)
+  just relauthors                         Show commit author names since last release
+  just contribs                           Show contributor commits and names in main and site repos since DATE
+  just contribs-main                      Show contributor commits and names in main repo since DATE
+  just contribs-site                      Show contributor commits and names in site repo since DATE
+  just contribs-finance                   Show contributor commits and names in finance repo since DATE
+  just rels                               Show all release dates and versions (of hledger package)
+  just rels-major                         Show major release dates and versions (of hledger package)
+  just showrelnotes                       Show release notes for VERSION
+  just scc                                Count lines of code with scc
+  just sccv                               Count lines of code with scc, showing all files
+  just schedule                           Show upcoming planned dated tasks
+  just branches                           Show recent branches summary with jj
+  just branchesv                          Show recent branches detail with jj
+  just _lastweek                          Show activity over last N days (eg 7), for This Week In Hledger
+  just _listsourcefiles                   Show sorted, unique files matched by SOURCEFILES
+  just _listsourcedirs                    Show sorted, unique subdirectories containing hs files
+  just _listghcversions                   Show ghc versions used by all stack files
+  just _dbgmsgs                           Show bunch of debug messages
+  just _projectcommits                    Extract ledger/hledger/beancount commit stats to project-commits.j
+  just usage                              Show some big directory sizes
+  just time                               Hledger time report
+  just google-search-console              Open google search console report for hledger.org
+  just _versionMajorPart                  First 0-2 parts of dotted version number
+  just _versionMinorPart                  Third part of dotted version number, if any
+  just _versionFourthPart                 Fourth part of dotted version number, if any
+  just _versionIsDev                      Is this dev version number (ending in .99) ? Eg: 1.99, 1.52.99
+  just _versionIsPreview                  Is this preview version number (a .99 part followed by one more part) ? Eg: 1.99.3, 1.52.99.1
+  just ver                                Show hledger version number that's configured for current branch
+  just majorver                           Show hledger major version number that's configured for current branch
+  just _versionReleaseBranch              "MAJOR-branch", or "VER-branch" for preview releases
+  just _gitBranchExists                   Does named branch exist in this git repo ?  ∆ git
+  just _gitSwitchAutoCreate               Switch to named git branch, creating it if it doesn't exist  ∆ git
+  just describe                           Show precise git-describe version string
+  just authors                            Show all commit author names
+  just authorsv                           Show all commit author names and emails
+  just _on-release-branch                 Check that we're on release branch. (Hopefully latest.)
+  just _on-main-branch                    Check that we're on main branch
+  just NEWS                               ** News ------------------------------------------------------------
+  just _dateorsecondlatestfriday          If DATE is provided, return it, otherwise date two fridays ago
+  just _todayorlatestfriday               If DATE is provided, return today's date, otherwise most recent friday's (possibly today)
+  just _tomorroworlatestfriday            If DATE is provided, return tomorrow's date, otherwise last friday's
+  just twih                               Show draft This Week In Hledger post, with activity between last two fridays (by default)
+  just commitlog                          Show commits briefly in three hledger repos between last two fridays or since this date
+  just worklogdates                       Show dates logged in hledger work log
+  just worklog                            Show hledger work logged since this date or days ago or last release
+  just timelog                            Show hledger-related time logged between last two fridays or since this date
+  just _clip                              Copy some text to system clipboard if possible
+  just chatlog                            Show matrix chat since this date or days ago or last release
+  just maillog                            Show mail list discussion since this date or days ago or last release
+  just redditlog                          Show /r/plaintextaccounting posts since this date or days ago or last release
+  just tootlog                            Show #hledger-tagged mastodon toots since this date or days ago or last release
+  just bloglog                            Show recent PTA blog posts added on plaintextaccounting.org
+  just AI                                 ** AI ------------------------------------------------------------
+  just ai-help                            Print file
+  just ai-ccusage-today                   Show today's logged local-machine claude code usage. Accepts ccusage options, like -b
+  just ai-ccusage-watch                   Watch today's logged local-machine claude code usage. Accepts ccusage options, like -b
+  just ai-ccusage-csv                     Export ccusage's local-machine claude code usage data as CSV
+  just ai-ccusagej-regen                  Regenerate ccusage.journal from ccusage's data, and add lots of unit conversions
+  just ai-ccusagej                        Run hledger command on ccusage.journal. If you need it to be up to date, run just ai-ccusagej-r…
+  just ai-ccusagej-bal                    Show claude code usage balance report, vertically
+  just ai-ccusagej-monthly                Show claude code monthly usage
+  just ai-ccusagej-daily                  Show claude code daily usage this month
+  just ai-ccusagej-recent                 Regen ccusage.journal, then show recent daily usage
+  just ai-ccusagej-recent-watch           Run ai-ccusagej-recent repeatedly
+  just ai-commits-csv                     Extract "AI usage:" disclosure lines from commit messages to aicommits.csv
+  just ai-commits                         Run hledger command on aicommits.csv. If you need it to be up to date, run just ai-commits-csv …
+  just ai-aij-import                      Regen ccusage.journal, then import any new summarised month entries from there to ai.journal
+  just ai-aij                             Run hledger command on ai.journal
+  just ai-aij-bal                         Show project ai usage balance report
+  just ai-aij-monthly                     Show project monthly usage
+  just MISC                               ** Misc ------------------------------------------------------------
+  just Shake                              Ensure Shake script is compiled
+  just tools                              Ensure tools/*.hs scripts are compiled
+  just etags                              Generate emacs TAGS file for haskell source and other project files, and list tagged files in T…
+  just etags-ls                           List files tagged in TAGS
+  just etags-clean                        Remove TAGS files
+  just symlink-web-dirs                   Sym-link some directories required by hledger-web dev builds
+  just installcommithook                  Symlink tools/commitlint as .git/hooks/commit-msg
+  just push                               Run tests locally, push main to github ci, wait for tests to pass there, refreshing every INTER…
+  just ghworkflows-open                   Browse All workflows status page on github
+  just ghrun-open                         Browse latest run of named workflow  [external]
+  just _ghrun-id                          Get id of latest run of named workflow  [external]
+  just holdings-beancount                 Show beancount sample holdings report
+  just holdings-rledger                   Show rledger sample holdings report
+  just holdings-hledger                   Show hledger sample holdings report
+  just holdings-examples                  Show several holdings report examples
+  docker build -t simonmichael_hledger .  Build Docker image
+  ./tools/compile.sh                      Compile haskell tools in this directory
+
+doc/haskellerz
+  make default  Run build make target, then run open, then run ls, then run entr
+  make open
+  make build
+  make watch      ∞ long-running
+  make clean    Delete haskellerz.*.html
+
+examples/debconf
+  make all            Dc26
+  make recent         Dc26
+  make hledger-check  Check hledger readability of all repos' main journal
+  make ledger-check   Check Ledger readability of all repos' main journal
+  make clean          Delete dc* and 2*.ledger  [destructive]
+  make fixups         Make all years hledger-readable
+  make save-patches   Save patch files for each year
+
+examples/invoicing/pandoc-make-invoice
+  make help     Print message
+  make copy
+  make invoice  Print message
+
+examples/lots/export-lots-workflow
+  just export
+
+examples/lots/pta-lot-tracking-tests
+  make lotter-bal   Run hledger
+  make ledger-lots  Run ledger
+  make bals
+
+examples/reports
+  make reports
+  make preview
+  make csv
+  make html
+  make txt
+  make open
+  make clean
+
+hledger  [Haskell]
+  cabal run  Run executable with Cabal
+
+hledger/shell-completion
+  make all
+  make install
+  make uninstall
+  make clean           Delete commands*.txt, generic-options.txt, and options-*.txt
+  make clean-all       Delete hledger-completion.bash
+  ./parse-commands.sh  Parse hledger's commands list and print all builtin command names and aliases
+  ./parse-options.sh   Parse hledger's help and output long options. Do not propose single letter
+
+hledger/test/errors
+  make list           Print message
+  make test           Few tests (csvstdinrules.sh) may use "hledger" in $PATH instead of $HLEDGER
+  make update         Update readme based on latest test journals and error output of hledger in $PATH
+  make tests          Existing tests are hand-maintained and are not touched
+  make readme         Run sed, then move README.md.tmp to README.md
+  ./csvstdinrules.sh  Try to read CSV from stdin without specifying rules file
+
+hledger/test/ledger-compat/ledger-regress  [CMake]
+  cmake -S . -B build  Configure CMake project into build/
+  cmake --build build
+
+hledger-lib  [Haskell]
+  cabal run  Run executable with Cabal
+
+hledger-ui  [Haskell]
+  cabal run  Run executable with Cabal
+
+hledger-web  [Haskell]
+  cabal run  Run executable with Cabal
+
+hledger-web/test/browser  [Node.js, Playwright]
+  pnpm exec playwright test  Run Playwright end-to-end tests
+  pnpm run test              Run Playwright end-to-end tests
+  pnpm run test:headed       Run Playwright end-to-end tests

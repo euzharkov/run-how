@@ -1,0 +1,36 @@
+monicahq_monica  [Node.js, Docker, Laravel, PHP, Vite]
+
+  yarn dev                            Start Vite development server  ∞ long-running
+  yarn build                          Build app with Vite
+  yarn preview                        Preview production build with Vite  ∞ long-running
+  yarn lint                           Check source code with ESLint
+  yarn format                         Format source code with Prettier
+  yarn postinstall                    Install Git hooks with Husky  ∆ git
+  yarn test                           Drop all tables and re-run migrations (+4 more steps)  [destructive]
+  yarn docker:build                   Build Docker image, then delete unused Docker images
+  yarn docker:run                     Run monica container
+  php artisan serve                   Start Laravel development server  ∞ long-running
+  php artisan tinker                  Open Laravel REPL
+  php artisan migrate                 Apply Laravel migrations
+  php artisan db:seed                 Seed database
+  php artisan migrate:fresh --seed    Drop all tables, re-run migrations and seed  [destructive]
+  php artisan queue:work              Start Laravel queue worker
+  php artisan route:list              List Laravel routes
+  php artisan test                    Run Laravel tests
+  ./vendor/bin/pint                   Format PHP code with Pint
+  ./vendor/bin/phpstan analyse        Analyse PHP code with PHPStan
+  docker compose up -d                Start all Docker services
+  docker compose up -d laravel.test   Start laravel.test service (built from source)
+  docker compose up -d laravel.queue  Start laravel.queue service
+  docker compose up -d laravel.cron   Start laravel.cron service
+  docker compose up -d mariadb        Start MariaDB
+  docker compose up -d redis          Start Redis
+  docker compose up -d memcached      Start Memcached
+  docker compose up -d meilisearch    Start Meilisearch
+  docker compose up -d mailpit        Start Mailpit (test mail server)
+  docker compose logs -f              Follow Docker service logs  ∞ long-running
+  docker compose build                Build Docker service images
+  docker compose down                 Stop and remove Docker services
+  docker compose down -v              Stop Docker services and delete their volumes  [destructive]
+  ./sail-init.sh                      Run this script after first cloning repository to be ready to use sail command
+  ./scripts/realpath.sh

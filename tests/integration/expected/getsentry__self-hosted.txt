@@ -1,0 +1,74 @@
+getsentry_self-hosted  [Python, Docker, Memcached, Redis, PostgreSQL]
+
+  uv run pytest                             Run Python tests
+  uv run pre-commit run --all-files         Run pre-commit hooks on all files
+  docker compose up -d                      Start all Docker services
+  docker compose up -d smtp                 Start smtp service (smtp)
+  docker compose up -d memcached            Start Memcached
+  docker compose up -d redis                Start Valkey
+  docker compose up -d postgres             Start PostgreSQL
+  docker compose up -d pgbouncer            Start PgBouncer
+  docker compose up -d kafka                Start local Kafka broker
+  docker compose up -d clickhouse           Start ClickHouse
+  docker compose up -d seaweedfs            Start seaweedfs service (seaweedfs)
+  docker compose up -d snuba-api            Start snuba-api service
+  docker compose up -d … rrors-consumer     Start snuba-errors-consumer service
+  docker compose up -d … comes-consumer     Start snuba-outcomes-consumer service
+  docker compose up -d … epted-consumer     Start snuba-outcomes-accepted-consumer service
+  docker compose up -d … lling-consumer     Start snuba-outcomes-billing-consumer service
+  docker compose up -d … butes-consumer     Start snuba-group-attributes-consumer service
+  docker compose up -d snuba-replacer       Start snuba-replacer service
+  docker compose up -d … onsumer-events     Start snuba-subscription-consumer-events service
+  docker compose up -d … tions-consumer     Start snuba-transactions-consumer service
+  docker compose up -d … plays-consumer     Start snuba-replays-consumer service
+  docker compose up -d … rence-consumer     Start snuba-issue-occurrence-consumer service
+  docker compose up -d … trics-consumer     Start snuba-metrics-consumer service
+  docker compose up -d … r-transactions     Start snuba-subscription-consumer-transactions service
+  docker compose up -d … nsumer-metrics     Start snuba-subscription-consumer-metrics service
+  docker compose up -d … files-consumer     Start snuba-profiling-profiles-consumer service
+  docker compose up -d … tions-consumer     Start snuba-profiling-functions-consumer service
+  docker compose up -d … hunks-consumer     Start snuba-profiling-profile-chunks-consumer service
+  docker compose up -d … items-consumer     Start snuba-eap-items-consumer service
+  docker compose up -d … umer-eap-items     Start snuba-subscription-consumer-eap-items service
+  docker compose up -d symbolicator         Start symbolicator service ($symbolicator_image)
+  docker compose up -d … icator-cleanup     Start symbolicator-cleanup service ($symbolicator_image)
+  docker compose up -d web                  Start web service
+  docker compose up -d events-consumer      Start events-consumer service
+  docker compose up -d … ments-consumer     Start attachments-consumer service
+  docker compose up -d … rwarder-errors     Start post-process-forwarder-errors service
+  docker compose up -d … tions-consumer     Start transactions-consumer service
+  docker compose up -d metrics-consumer     Start metrics-consumer service
+  docker compose up -d ingest-occurrences   Start ingest-occurrences service
+  docker compose up -d ingest-monitors      Start ingest-monitors service
+  docker compose up -d … eedback-events     Start ingest-feedback-events service
+  docker compose up -d process-spans        Start process-spans service
+  docker compose up -d monitors-clock-tick  Start monitors-clock-tick service
+  docker compose up -d … rs-clock-tasks     Start monitors-clock-tasks service
+  docker compose up -d uptime-results       Start uptime-results service
+  docker compose up -d … r-transactions     Start post-process-forwarder-transactions service
+  docker compose up -d … issue-platform     Start post-process-forwarder-issue-platform service
+  docker compose up -d sentry-cleanup       Start sentry-cleanup service (built from source)
+  docker compose up -d nginx                Start nginx
+  docker compose up -d relay                Start relay service ($relay_image)
+  docker compose up -d taskbroker           Start taskbroker service ($taskbroker_image)
+  docker compose up -d taskscheduler        Start taskscheduler service
+  docker compose up -d taskworker           Start taskworker service
+  docker compose up -d … pad-taskworker     Start launchpad-taskworker service ($launchpad_image)
+  docker compose up -d vroom                Start vroom service ($vroom_image)
+  docker compose up -d uptime-checker       Start uptime-checker service ($uptime_checker_image)
+  docker compose --profile … up -d          Start Docker services in feature-complete profile
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose build                      Build Docker service images
+  docker compose down                       Stop and remove Docker services
+  docker compose down -v                    Stop Docker services and delete their volumes  [destructive]
+  ./install.sh
+  ./sentry-admin.sh                         Set script directory as working directory
+  ./unit-test.sh                            Test should not be run by regular users. This should only be run in CI or by developers
+  ./scripts/backup.sh
+  ./scripts/bump-version.sh
+  ./scripts/post-release.sh                   [external]
+  ./scripts/reset.sh
+  ./scripts/restore.sh
+
+_integration-test/nodejs  [Node.js]
+  npm run start  Run index.js

@@ -1,0 +1,90 @@
+excalidraw_excalidraw  [Node.js, Docker, Vitest]
+
+  yarn build-node                          Run scripts/build-node.js
+  yarn build:app:docker
+  yarn build:app
+  yarn build:common                        Run build:esm script
+  yarn build:element                       Run build:esm script
+  yarn build:excalidraw                    Run build:esm script
+  yarn build:math                          Run build:esm script
+  yarn build:fractional-indexing           Run build:esm script
+  yarn build:laser-pointer                 Run build:esm script
+  yarn build:packages                      Run build:esm script
+  yarn build:version
+  yarn build
+  yarn build:preview
+  yarn start                                 ∞ long-running
+  yarn start:production                      ∞ long-running
+  yarn start:example                       Run build:esm script, then run start script  ∞ long-running
+  yarn test:all                            Run Vitest tests in watch mode (+3 more steps)
+  yarn test:app                            Run Vitest tests
+  yarn test:code                           Check source code with ESLint
+  yarn test:other                          Check formatting with Prettier
+  yarn test:typecheck                      Compile TypeScript sources
+  yarn test:update                         Run Vitest tests in watch mode
+  yarn test                                Run Vitest tests
+  yarn test:coverage                       Run Vitest tests with coverage
+  yarn test:coverage:watch                 Run Vitest tests with coverage  ∞ long-running
+  yarn test:ui                             Run Vitest tests
+  yarn fix:code                            Fix lint issues with ESLint
+  yarn fix:other                           Format source code with Prettier
+  yarn fix                                 Run formatting and linting
+  yarn locales-coverage                    Run scripts/build-locales-coverage.js
+  yarn locales-coverage:description        Run scripts/locales-coverage-description.js
+  yarn prepare                             Install Git hooks with Husky  ∆ git
+  yarn prettier                            Format source code with Prettier
+  yarn release                             Run scripts/release.js
+  yarn release:test                        Run scripts/release.js
+  yarn release:next                        Run scripts/release.js
+  yarn release:latest                      Run scripts/release.js
+  yarn rm:build                            Delete excalidraw-app/build, excalidraw-app/dist, excalidraw-app/dev-dist, packages/*/dist, pac…  [destructive]
+  yarn rm:node_modules                     Delete node_modules, excalidraw-app/node_modules, and packages/*/node_modules
+  yarn clean-install                       Install dependencies with Yarn (+1 more step)  ↓ download
+  docker build -t excalidraw_excalidraw .  Build Docker image
+  docker compose up -d                     Start all Docker services
+  docker compose up -d excalidraw          Start excalidraw service (built from source)
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose build                     Build Docker service images
+  docker compose down                      Stop and remove Docker services
+  docker compose down -v                   Stop Docker services and delete their volumes  [destructive]
+  yarn workspaces run gen:types            Delete types, then compile TypeScript sources in every workspace package  [destructive]
+  yarn workspaces run build:esm            Delete types (+3 more steps) in every workspace package  [destructive]
+
+dev-docs  [Node.js]
+  yarn docusaurus
+  yarn start               Start Docusaurus site locally  ∞ long-running
+  yarn build               Build Docusaurus site
+  yarn swizzle             Run docusaurus swizzle
+  yarn deploy              Deploy Docusaurus site  [external]
+  yarn clear               Run docusaurus clear
+  yarn serve               Serve built Docusaurus site  ∞ long-running
+  yarn write-translations  Run docusaurus write-translations
+  yarn write-heading-ids   Run docusaurus write-heading-ids
+  yarn typecheck           Compile TypeScript sources
+
+examples/with-nextjs  [Node.js, Next.js]
+  yarn build:packages
+  yarn build:workspace  Copy ../../packages/excalidraw/dist/prod/fonts to public (+1 more step)
+  yarn copy:assets      Copy ../../packages/excalidraw/dist/prod/fonts to public
+  yarn dev              Start Next.js development server (+2 more steps)  ∞ long-running
+  yarn build            Build Next.js app (+2 more steps)
+  yarn start            Start Next.js production server  ∞ long-running
+  yarn lint             Lint Next.js app
+
+examples/with-script-in-browser  [Node.js, Vite]
+  yarn start           Start Vite development server  ∞ long-running
+  yarn build           Build app with Vite
+  yarn preview         Preview production build with Vite  ∞ long-running
+  yarn build:preview   Build app with Vite, then preview production build with Vite  ∞ long-running
+  yarn build:packages
+
+excalidraw-app  [Node.js, Vite]
+  yarn build-node        Run scripts/build-node.js
+  yarn build:app:docker  Build app with Vite
+  yarn build:app         Build app with Vite
+  yarn build:version     Run ../scripts/build-version.js
+  yarn build             Build app with Vite, then run ../scripts/build-version.js
+  yarn start             Install dependencies with Yarn, then start Vite development server  ∞ long-running  ↓ download
+  yarn start:production  Serve build over HTTP (+2 more steps)  ∞ long-running
+  yarn serve             Serve build over HTTP  ∞ long-running
+  yarn build:preview     Preview production build with Vite (+2 more steps)  ∞ long-running

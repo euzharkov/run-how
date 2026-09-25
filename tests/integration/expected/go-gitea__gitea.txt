@@ -1,0 +1,112 @@
+go-gitea_gitea  [Node.js, Go, Docker, Playwright, Python]
+
+  pnpm exec playwright test                Run Playwright end-to-end tests
+  go test ./...                            Run Go tests
+  go vet ./...                             Check Go source with go vet
+  go run .                                 Run Go gitea.dev program
+  uv run pytest                            Run Python tests
+  make all                                 Run frontend make target
+  make help                                Print Makefile help information
+  make clean-all                           Delete backend, frontend and integration files  [destructive]
+  make clean                               Delete backend and integration files  [destructive]
+  make fmt                                 Format Go and template code
+  make fmt-check
+  make generate-swagger                    Generate swagger spec from code comments
+  make swagger-check
+  make swagger-validate                    Check if swagger spec is valid
+  make generate-openapi3                   Generate OpenAPI 3.0 spec from Swagger 2.0 spec
+  make openapi3-check
+  make checks                              Run various consistency checks
+  make checks-frontend                     Check frontend files
+  make checks-backend                      Check backend files
+  make lint                                Lint everything
+  make lint-fix                            Lint everything and fix issues
+  make lint-frontend                       Lint frontend files
+  make lint-frontend-fix                   Lint frontend files and fix issues
+  make lint-backend                        Lint backend files
+  make lint-backend-fix                    Lint backend files and fix issues
+  make lint-js                             Lint js and ts files
+  make lint-js-fix                         Lint js and ts files and fix issues
+  make lint-css                            Lint css files
+  make lint-css-fix                        Lint css files and fix issues
+  make lint-swagger                        Lint swagger files
+  make lint-md                             Lint markdown files
+  make lint-md-fix                         Lint markdown files and fix issues
+  make lint-spell                          Lint spelling
+  make lint-spell-fix                      Lint spelling and fix issues
+  make lint-go                             Lint go files
+  make lint-go-fix                         Lint go files and fix issues
+  make lint-editorconfig                   Print message
+  make lint-actions                        Lint action workflow files
+  make lint-shell                          Lint shell scripts
+  make lint-templates                      Lint template files
+  make lint-yaml                           Lint yaml files
+  make lint-json                           Lint json files
+  make lint-json-fix                       Lint and fix json files
+  make watch                               Watch everything and continuously rebuild
+  make watch-frontend                      Start vite dev server for frontend
+  make watch-backend                       Watch backend files and continuously rebuild  ∞ long-running
+  make test-backend                        Test backend files
+  make test-frontend                       Test frontend files
+  make test-check                          Print message
+  make coverage
+  make unit-test-coverage                  Print message
+  make tidy                                Run go mod tidy
+  make vendor                              Create empty files
+  make tidy-check
+  make go-licenses                         Regenerate go licenses
+  make test-integration                    Run integration tests
+  make test-integration-compile
+  make test-migration                      Run migrations.individual.test make target (+1 more step)
+  make migrations.integration.test
+  make migrations.individual.test          Run migrations individual tests
+  make playwright
+  make test-e2e
+  make build                               Build everything
+  make frontend                            Build frontend files
+  make backend                             Build backend files
+  make generate                            Run "go generate"
+  make generate-backend                    Print message
+  make generate-go                         Print message
+  make security-check                      Run golang.org/x/vuln/cmd/govulncheck@v1.8.0
+  make release                             Use "build" target with proper TAGS/LDFLAGS/CGO_CFLAGS to make "$(EXECUTABLE)" target run "go b…
+  make release-binaries
+  make release-windows
+  make release-linux
+  make release-darwin
+  make release-freebsd
+  make release-copy
+  make release-check
+  make release-compress
+  make release-sources                     Delete VERSION
+  make deps                                Install dependencies
+  make deps-py                             Install python dependencies
+  make deps-frontend                       Install frontend dependencies
+  make deps-backend                        Install backend dependencies
+  make deps-tools                          Install tool dependencies
+  make node_modules                        Install dependencies with pnpm, then create empty files  ↓ download
+  make vite                                Build vite files
+  make svg                                 Build svg files  [destructive]
+  make svg-check                           Stage files  ∆ git
+  make lockfile-check                      Install dependencies with pnpm  ↓ download
+  make generate-gitignore                  Update gitignore files
+  make generate-emoji                      Update emoji data from Unicode
+  make generate-images                     Generate images
+  make generate-codemirror-languages       Generate codemirror languages
+  make generate-manpage                    Generate manpage
+  docker build -t go-gitea_gitea .         Build Docker image
+  docker build -f Dockerfile.rootless … .  Build Docker image from Dockerfile.rootless
+  ./tools/build-release.sh                   [external]
+  ./tools/lint-shell.sh
+  ./tools/test-e2e.sh
+  ./tools/test-integration.sh
+  ./tools/watch.sh
+
+contrib/grafana-monitoring-mixin
+  make all             Run jb, then create dashboards_out, then run jsonnet
+  make vendor
+  make build
+  make fmt
+  make lint            Run find, then run jsonnetfmt, then run diff, then run mixtool lint
+  make dashboards_out  Create dashboards_out, then run jsonnet
+  make clean           Delete dashboards_out  [destructive]

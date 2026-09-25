@@ -1,0 +1,106 @@
+kubernetes-sigs_kubespray  [Python, Terraform, Ansible, Kubernetes, Docker]
+
+  pytest                                  Run Python tests
+  pre-commit run --all-files              Run pre-commit hooks on all files  ∆ git
+  docker build -t … .                     Build Docker image
+  kubectl apply … r_roles/files/          Validate Kubernetes manifests
+  kubectl apply -f … r_roles/files/       Apply resources to cluster  [external]
+  kubectl delete -f … r_roles/files/      Delete resources from cluster  [destructive]
+  kubectl apply … /multus/files/          Validate Kubernetes manifests
+  kubectl apply -f … /multus/files/       Apply resources to cluster  [external]
+  kubectl delete -f … /multus/files/      Delete resources from cluster  [destructive]
+  ansible-playbook … le_version.yml       Dry-run ansible_version playbook  [external]
+  ansible-playbook … le_version.yml       Run ansible_version Ansible playbook  [external]
+  ansible-playbook … oilerplate.yml       Dry-run boilerplate playbook  [external]
+  ansible-playbook … oilerplate.yml       Run boilerplate Ansible playbook  [external]
+  ansible-playbook … ks/cluster.yml       Dry-run cluster playbook  [external]
+  ansible-playbook playbooks/cluster.yml  Run cluster Ansible playbook  [external]
+  ansible-playbook … ooks/facts.yml       Dry-run facts playbook  [external]
+  ansible-playbook playbooks/facts.yml    Run facts Ansible playbook  [external]
+  ansible-playbook … stall_etcd.yml       Dry-run install_etcd playbook  [external]
+  ansible-playbook … stall_etcd.yml       Run install_etcd Ansible playbook  [external]
+  ansible-playbook … rnal_facts.yml       Dry-run internal_facts playbook  [external]
+  ansible-playbook … rnal_facts.yml       Run internal_facts Ansible playbook  [external]
+  ansible-playbook … trol_plane.yml       Dry-run recover_control_plane playbook  [external]
+  ansible-playbook … trol_plane.yml       Run recover_control_plane Ansible playbook  [external]
+  ansible-playbook … emove_node.yml       Dry-run remove_node playbook  [external]
+  ansible-playbook … emove_node.yml       Run remove_node Ansible playbook  [external]
+  ansible-playbook … ooks/reset.yml       Dry-run reset playbook  [external]
+  ansible-playbook playbooks/reset.yml    Run reset Ansible playbook  [external]
+  ansible-playbook … ooks/scale.yml       Dry-run scale playbook  [external]
+  ansible-playbook playbooks/scale.yml    Run scale Ansible playbook  [external]
+  ansible-playbook … de_cluster.yml       Dry-run upgrade_cluster playbook  [external]
+  ansible-playbook … de_cluster.yml       Run upgrade_cluster Ansible playbook  [external]
+  ansible-lint                            Lint Ansible playbooks
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  terraform … init                        Initialise Terraform working directory
+  terraform … plan                        Plan Terraform changes  [external]
+  terraform … apply                       Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                     Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                    Validate Terraform configuration
+  terraform … fmt -recursive              Format Terraform files
+  ./scripts/gen_docs_sidebar.sh           Generate documentation
+  ./scripts/get_node_ids.sh
+  ./scripts/gitlab-runner.sh
+
+scripts/component_hash_update  [Python]
+  update-hashes  Run update-hashes command (component_hash_update.download)
+
+test-infra/image-builder  [Ansible]
+  make deploy
+  make push-docker
+  make push-single-docker
+  make push-single-staging
+  make validate                Run localhost, Ansible playbook  [external]
+  make validate-single
+  make validate-docker         Run localhost, Ansible playbook  [external]
+  make validate-single-docker
+
+tests  [Python]
+  make create-tf
+  make delete-tf
+  make create-packet
+  make delete-packet
+  make create-vagrant  Start Vagrant VM
+  make delete-vagrant  Destroy Vagrant VM  [destructive]

@@ -159,53 +159,138 @@ pub const CARGO_BUILTINS: &[&str] = &[
     "help",
 ];
 
-struct Args<'a>(&'a [String]);
+/// The arguments of one invocation, with the positional words (everything that is not a flag
+/// or the value of a known value-taking flag) computed once.
+struct Args<'a> {
+    all: &'a [String],
+    positionals: Vec<&'a str>,
+}
+
+/// Global flags that take a separate value (`kubectl -n dev delete`), per tool. Without
+/// them the value would be mistaken for the subcommand.
+fn value_flags_for(program: &str) -> &'static [&'static str] {
+    match program {
+        "kubectl" | "oc" => &[
+            "-n",
+            "--namespace",
+            "--context",
+            "--kubeconfig",
+            "--cluster",
+            "-s",
+            "--server",
+            "--user",
+        ],
+        "helm" => &["-n", "--namespace", "--kube-context", "--kubeconfig"],
+        "git" => &["-C", "-c", "--git-dir", "--work-tree"],
+        "docker" | "podman" | "nerdctl" => &[
+            "-H",
+            "--host",
+            "--context",
+            "-c",
+            "--config",
+            "-l",
+            "--log-level",
+        ],
+        "docker-compose" | "podman-compose" => COMPOSE_VALUE_FLAGS,
+        "gh" => &["-R", "--repo"],
+        "aws" => &["--profile", "--region", "--output", "--endpoint-url"],
+        _ => &[],
+    }
+}
+
+const COMPOSE_VALUE_FLAGS: &[&str] = &[
+    "-f",
+    "--file",
+    "-p",
+    "--project-name",
+    "--profile",
+    "--env-file",
+    "--project-directory",
+    "--parallel",
+    "--progress",
+    "--ansi",
+];
 
 impl<'a> Args<'a> {
+    /// `value_flags` are flags whose next word is a value, not a positional (`-n dev`);
+    /// the `--flag=value` form needs no listing.
+    fn with_value_flags(args: &'a [String], value_flags: &[&str]) -> Self {
+        let mut positionals = Vec::new();
+        let mut skip = false;
+        for a in args {
+            if skip {
+                skip = false;
+                continue;
+            }
+            if value_flags.contains(&a.as_str()) {
+                skip = true;
+                continue;
+            }
+            if !a.starts_with('-') {
+                positionals.push(a.as_str());
+            }
+        }
+        Args {
+            all: args,
+            positionals,
+        }
+    }
+
+    /// True when `flag` is present as `--flag`, `--flag=value`, or, for a single-letter
+    /// short flag, inside a combined cluster (`-v` in `-fsv`).
     fn has(&self, flag: &str) -> bool {
-        self.0
-            .iter()
-            .any(|a| a == flag || a.starts_with(&format!("{flag}=")))
+        let short = flag.len() == 2 && flag.starts_with('-') && !flag.starts_with("--");
+        self.all.iter().any(|a| {
+            a == flag
+                || a.strip_prefix(flag)
+                    .map(|r| r.starts_with('='))
+                    .unwrap_or(false)
+                || (short && is_flag_cluster(a) && a[1..].contains(&flag[1..]))
+        })
     }
     fn has_any(&self, flags: &[&str]) -> bool {
         flags.iter().any(|f| self.has(f))
     }
     /// First argument matching one of `subs`.
     fn find(&self, subs: &[&str]) -> Option<&'a str> {
-        self.0.iter().map(String::as_str).find(|a| subs.contains(a))
-    }
-    fn positionals(&self) -> Vec<&'a str> {
-        self.0
+        self.all
             .iter()
             .map(String::as_str)
-            .filter(|a| !a.starts_with('-'))
-            .collect()
+            .find(|a| subs.contains(a))
+    }
+    fn positionals(&self) -> Vec<&'a str> {
+        self.positionals.clone()
     }
     fn sub(&self) -> Option<&'a str> {
-        self.positionals().first().copied()
+        self.positionals.first().copied()
     }
+    /// Positionals after the first occurrence of `word`.
     fn after(&self, word: &str) -> Vec<&'a str> {
-        match self.0.iter().position(|a| a == word) {
-            Some(i) => self.0[i + 1..]
-                .iter()
-                .map(String::as_str)
-                .filter(|a| !a.starts_with('-'))
-                .collect(),
+        match self.positionals.iter().position(|a| *a == word) {
+            Some(i) => self.positionals[i + 1..].to_vec(),
             None => vec![],
         }
     }
     fn value(&self, flag: &str) -> Option<&'a str> {
-        let mut it = self.0.iter();
+        let mut it = self.all.iter();
         while let Some(a) = it.next() {
             if a == flag {
                 return it.next().map(String::as_str);
             }
-            if let Some(v) = a.strip_prefix(&format!("{flag}=")) {
+            if let Some(v) = a.strip_prefix(flag).and_then(|r| r.strip_prefix('=')) {
                 return Some(v);
             }
         }
         None
     }
+}
+
+/// `-fsv`: a single dash followed by two or more letters.
+fn is_flag_cluster(a: &str) -> bool {
+    a.len() > 2
+        && a.starts_with('-')
+        && !a.starts_with("--")
+        && a[1..].chars().all(|c| c.is_ascii_alphabetic())
 }
 
 fn s(tool: &str, text: impl Into<String>, kind: Kind, risk: Risk) -> Option<Summary> {
@@ -249,7 +334,6 @@ pub fn is_build_output(path: &str) -> bool {
         "storybook-static",
         ".eslintcache",
         "out-tsc",
-        "bin",
         "obj",
         ".angular",
         ".astro",
@@ -263,22 +347,16 @@ pub fn is_build_output(path: &str) -> bool {
         ".tox",
         ".nox",
         "htmlcov",
-        "site",
         ".docusaurus",
         "public/build",
-        "lib",
         "esm",
         "cjs",
-        "types",
         ".tsbuildinfo",
         "generated",
         "__generated__",
         ".gen",
-        "gen",
         "artifacts",
         ".artifacts",
-        "release",
-        "packages",
         ".wrangler",
         ".serverless",
         ".terraform",
@@ -342,7 +420,7 @@ fn list(items: &[&str]) -> String {
 
 /// Describe an invocation of a known tool. Returns `None` for unknown programs.
 pub fn summarize(program: &str, args: &[String]) -> Option<Summary> {
-    let a = Args(args);
+    let a = Args::with_value_flags(args, value_flags_for(program));
     let sub = a.sub();
     js_frameworks::summarize(program, args, &a, sub)
         .or_else(|| bundlers::summarize(program, args, &a, sub))
@@ -360,7 +438,7 @@ pub fn summarize(program: &str, args: &[String]) -> Option<Summary> {
 }
 
 fn compose(args: &[String]) -> Option<Summary> {
-    let a = Args(args);
+    let a = Args::with_value_flags(args, COMPOSE_VALUE_FLAGS);
     use Kind::*;
     use Risk::*;
     let subs = [
@@ -545,13 +623,75 @@ fn compose(args: &[String]) -> Option<Summary> {
     }
 }
 
+/// Test helper shared by the per-family test modules: summarise the first invocation of `cmd`.
+#[cfg(test)]
+pub(super) fn test_sum(cmd: &str) -> Summary {
+    let inv = crate::analyze::parse(cmd).remove(0);
+    summarize(&inv.program, &inv.args).unwrap_or_else(|| panic!("known tool: {cmd}"))
+}
+
 #[cfg(test)]
 mod tests {
+    use super::test_sum as sum;
     use super::*;
 
-    fn sum(cmd: &str) -> Summary {
-        let inv = crate::analyze::parse(cmd).remove(0);
-        summarize(&inv.program, &inv.args).expect("known tool")
+    #[test]
+    fn global_value_flags_do_not_shift_the_subcommand() {
+        let k = sum("kubectl -n dev delete -f k8s/");
+        assert_eq!(k.text, "Delete Kubernetes resources in namespace dev");
+        assert_eq!(k.risk, Risk::Destructive);
+        assert_eq!(sum("kubectl --context prod version").risk, Risk::Safe);
+        assert_eq!(
+            sum("kubectl --context prod get pods").text,
+            "Query pods from the cluster"
+        );
+        assert_eq!(sum("helm -n prod uninstall app").risk, Risk::Destructive);
+        assert_eq!(
+            sum("helm --kube-context prod lint ./chart").risk,
+            Risk::Safe
+        );
+        assert_eq!(
+            sum("git -C packages/api push origin main").risk,
+            Risk::External
+        );
+        assert_eq!(sum("git -c core.autocrlf=false status").risk, Risk::Safe);
+        assert_eq!(
+            sum("docker compose -f x.yml down -v").risk,
+            Risk::Destructive
+        );
+        assert_eq!(sum("gh -R o/r release create v1").risk, Risk::External);
+        assert_eq!(
+            sum("aws --profile prod --region eu-west-1 s3 ls").text,
+            "Query AWS s3"
+        );
+    }
+
+    #[test]
+    fn args_flags_and_values() {
+        let raw: Vec<String> = [
+            "-n",
+            "dev",
+            "--kubeconfig=k",
+            "-fsv",
+            "apply",
+            "--wait=true",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
+        let a = Args::with_value_flags(&raw, &["-n", "--kubeconfig"]);
+        assert_eq!(a.sub(), Some("apply"));
+        assert_eq!(a.positionals(), ["apply"]);
+        assert_eq!(a.value("-n"), Some("dev"));
+        assert_eq!(a.value("--kubeconfig"), Some("k"));
+        assert!(a.has("--wait"));
+        assert!(!a.has("--wai"));
+        assert!(a.has("-v") && a.has("-s") && a.has("-f"));
+        assert!(!a.has("-x"));
+        assert!(!a.has("--fsv"));
+        let plain = Args::with_value_flags(&raw, &[]);
+        assert_eq!(plain.sub(), Some("dev"));
+        assert!(!is_flag_cluster("-j4") && !is_flag_cluster("--all") && !is_flag_cluster("-v"));
     }
 
     #[test]
@@ -600,6 +740,41 @@ mod tests {
         assert_eq!(sum("rm -rf ./src").risk, Risk::Destructive);
         assert_eq!(sum("rm -rf ~/data").risk, Risk::Destructive);
         assert_eq!(sum("rm -rf packages/*/dist").risk, Risk::Safe);
+    }
+
+    #[test]
+    fn source_directories_are_not_build_outputs() {
+        for p in [
+            "lib", "packages", "bin", "types", "gen", "site", "release", "src/lib",
+        ] {
+            assert!(!is_build_output(p), "{p}");
+            assert_eq!(sum(&format!("rm -rf {p}")).risk, Risk::Destructive, "{p}");
+        }
+        assert_eq!(sum("rm -rf dist lib").risk, Risk::Destructive);
+        assert_eq!(sum("rm -rf dist lib").text, "Delete dist and lib");
+        assert_eq!(sum("rm -rf dist").risk, Risk::Safe);
+        assert_eq!(sum("rm -rf out-tsc dist/types").risk, Risk::Safe);
+        assert_eq!(sum("rm -f lib/x.js").risk, Risk::Safe);
+    }
+
+    #[test]
+    fn rm_of_variables_and_the_current_directory() {
+        let v = sum("rm -rf $DIR");
+        assert_eq!(v.risk, Risk::Destructive);
+        assert_eq!(v.text, "Delete the files at $DIR");
+        let sub = sum(r#"rm -rf "$(pwd)/dist""#);
+        assert_eq!(sub.risk, Risk::Destructive);
+        assert_eq!(sub.text, "Delete the files at $(pwd)/dist");
+        assert_eq!(
+            sum("rm -rf ${OUT} dist").text,
+            "Delete the files at ${OUT} and dist"
+        );
+        let cwd = sum("rm -rf ./");
+        assert_eq!(cwd.risk, Risk::Destructive);
+        assert_eq!(cwd.text, "Delete the current directory");
+        assert_eq!(sum("rm -rf .").text, "Delete the current directory");
+        assert_eq!(sum("rm -r build").risk, Risk::Safe);
+        assert_eq!(sum("rm -Rf src").risk, Risk::Destructive);
     }
 
     #[test]

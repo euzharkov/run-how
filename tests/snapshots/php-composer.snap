@@ -1,8 +1,9 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
-## . [php-composer] Php tools=php
+## . [php-composer] Php tools=php techs=PHP
 test                     Testing        inferred high   safe        .          ./vendor/bin/phpunit :: Run PHP tests
 analyse                  Quality        inferred high   safe        .          ./vendor/bin/psalm :: Analyse PHP code with Psalm
 format                   Quality        inferred high   safe        .          ./vendor/bin/php-cs-fixer fix :: Format PHP code with PHP CS Fixer

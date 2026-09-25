@@ -31,6 +31,17 @@ fn terraform_required_version(dir: &DirInfo) -> Option<(String, String)> {
     }
     None
 }
+/// A Terragrunt unit: `terragrunt.hcl` with no Terraform files of its own (the module is
+/// pulled in through `terraform { source = … }`).
+fn is_terragrunt_unit(dir: &DirInfo) -> bool {
+    dir.has("terragrunt.hcl") && !has_tf(dir)
+}
+
+/// Terraform modules under `modules/` are libraries, not deployable roots.
+fn is_module_path(rel: &str) -> bool {
+    rel.split('/').any(|s| s == "modules" || s == "module")
+}
+
 fn has_ansible(dir: &DirInfo) -> bool {
     dir.has("ansible.cfg")
         || dir.has_any(&[
@@ -51,7 +62,10 @@ impl Discoverer for Iac {
         ProjectKind::Infrastructure
     }
     fn detect(&self, dir: &DirInfo) -> bool {
-        has_tf(dir) || dir.has_any(&["Pulumi.yaml", "Pulumi.yml"]) || has_ansible(dir)
+        has_tf(dir)
+            || dir.has("terragrunt.hcl")
+            || dir.has_any(&["Pulumi.yaml", "Pulumi.yml"])
+            || has_ansible(dir)
     }
     fn attachable(&self) -> bool {
         true
@@ -61,8 +75,16 @@ impl Discoverer for Iac {
     }
     fn discover(&self, ctx: &Context, base: &DirInfo, dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
-        let multi = dirs.len() > 1;
-        for dir in dirs {
+        // Roots are what is left once module libraries are set aside; the prefix and the
+        // "too many roots" rule below both count only those.
+        let roots: Vec<&DirInfo> = dirs
+            .iter()
+            .copied()
+            .filter(|d| d.rel == base.rel || !is_module_path(&ctx.rel_from(base, d)))
+            .collect();
+        let multi = roots.len() > 1;
+        for dir in &roots {
+            let dir = *dir;
             let at_base = dir.rel == base.rel;
             let rel = if at_base {
                 ".".to_string()
@@ -74,13 +96,9 @@ impl Discoverer for Iac {
             } else {
                 format!(" -chdir={}", super::q(&rel))
             };
-            // Terraform modules under `modules/` are libraries, not deployable roots.
-            if !at_base && rel.split('/').any(|s| s == "modules" || s == "module") {
-                continue;
-            }
             let pre = |tool: &str| {
                 if multi && !at_base {
-                    format!("{tool}:{}", dir.name())
+                    format!("{tool}:{}", super::attach_prefix(ctx, base, dir, &roots))
                 } else {
                     tool.to_string()
                 }
@@ -90,15 +108,28 @@ impl Discoverer for Iac {
                 let tofu = !dir.with_ext("tofu").is_empty()
                     || dir.has(".opentofu-version")
                     || ctx.ancestors(dir).iter().any(|a| {
-                        a.read(".tool-versions")
-                            .map(|t| t.contains("opentofu"))
-                            .unwrap_or(false)
+                        ctx.text(a, ".tool-versions")
+                            .is_some_and(|t| t.contains("opentofu"))
                     });
                 let bin = if tofu { "tofu" } else { "terraform" };
                 let name = if tofu { "OpenTofu" } else { "Terraform" };
+                let at = |f: &str| {
+                    if at_base {
+                        f.to_string()
+                    } else {
+                        format!("{rel}/{f}")
+                    }
+                };
                 if let Some((v, f)) = terraform_required_version(dir) {
-                    let source = if at_base { f } else { format!("{rel}/{f}") };
-                    out.version(bin, v, source);
+                    out.version(bin, v, at(&f));
+                } else if let Some(v) = ctx.text(dir, ".terraform-version") {
+                    // tfenv pin: one line, sometimes `latest`, which is not a version.
+                    let v = v.trim();
+                    if v.chars().next().is_some_and(|c| c.is_ascii_digit()) {
+                        out.version(bin, v, at(".terraform-version"));
+                    }
+                } else if let Some((v, src)) = super::tool_version(ctx, dir, bin) {
+                    out.version(bin, v, src);
                 }
                 let p = pre("tf");
                 let t = |sub: &str| format!("{bin}{chdir} {sub}");
@@ -166,6 +197,54 @@ impl Discoverer for Iac {
                         .inferred_desc("Plan all Terragrunt modules")
                         .risk(Risk::External)
                         .confidence(Confidence::Medium),
+                    );
+                }
+            }
+            if is_terragrunt_unit(dir) {
+                let p = pre("tg");
+                let wd = if at_base {
+                    String::new()
+                } else {
+                    format!(" --terragrunt-working-dir {}", super::q(&rel))
+                };
+                let infra = Category::Infrastructure;
+                let a = |id: String, cmd: String| {
+                    Action::new(id, cmd)
+                        .tool("terragrunt")
+                        .inferred(Confidence::High)
+                        .cat(infra)
+                };
+                // A `terragrunt.hcl` above other units is the shared configuration root:
+                // it is run with `run-all` across them, not on its own.
+                let below = |d: &DirInfo| {
+                    d.rel != dir.rel
+                        && (dir.rel == "." || d.rel.starts_with(&format!("{}/", dir.rel)))
+                };
+                let config_root = roots.iter().any(|d| below(d) && is_terragrunt_unit(d));
+                if config_root {
+                    out.actions.push(
+                        a(format!("{p}:plan"), format!("terragrunt run-all plan{wd}"))
+                            .inferred_desc("Plan all Terragrunt units")
+                            .risk(Risk::External)
+                            .confidence(Confidence::Medium),
+                    );
+                } else {
+                    out.actions.push(
+                        a(format!("{p}:plan"), format!("terragrunt plan{wd}"))
+                            .inferred_desc("Plan Terragrunt changes")
+                            .risk(Risk::External),
+                    );
+                    out.actions.push(
+                        a(format!("{p}:apply"), format!("terragrunt apply{wd}"))
+                            .inferred_desc("Apply Terragrunt changes to infrastructure")
+                            .risk(Risk::External)
+                            .cat(Category::Release),
+                    );
+                    out.actions.push(
+                        a(format!("{p}:destroy"), format!("terragrunt destroy{wd}"))
+                            .inferred_desc("Destroy Terragrunt-managed infrastructure")
+                            .risk(Risk::Destructive)
+                            .confidence(Confidence::Low),
                     );
                 }
             }
@@ -274,12 +353,31 @@ impl Discoverer for Iac {
             }
         }
         // Five or more Terraform/Pulumi roots under one project is a module library or a test
-        // corpus, not five deployments: keep them, but out of the default view.
-        if dirs.len() >= 5 {
+        // corpus, not five deployments: keep them, but out of the default view. Directories
+        // under `modules/` were never roots, so they do not count.
+        if roots.len() >= 5 {
             for a in &mut out.actions {
                 a.confidence = Confidence::Low;
             }
         }
         out
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn terraform_version_file_is_a_declaration() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let tf = ctx.dir_at("tf").unwrap();
+        let d = Iac.discover(&ctx, tf, &[tf]);
+        let v = d.versions.iter().find(|v| v.tool == "terraform").unwrap();
+        assert_eq!(
+            (v.value.as_str(), v.source.as_str()),
+            ("1.8.2", ".terraform-version")
+        );
     }
 }

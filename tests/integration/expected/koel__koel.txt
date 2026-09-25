@@ -1,0 +1,27 @@
+koel_koel  [Node.js, PHP, Laravel]
+
+  pnpm run check                    Run vp check
+  pnpm run check:fix                Run vp check
+  pnpm run typecheck                Check Vue and TypeScript types
+  pnpm run test                     Run vp test
+  pnpm run test:unit                Run vp test
+  pnpm run build:sw                 Run vp build
+  pnpm run build                    Run vp build
+  pnpm run dev                      Run inline Node.js code
+  pnpm run docs:dev                 Start VitePress docs site locally  ∞ long-running
+  pnpm run docs:build               Build VitePress docs site
+  pnpm run docs:preview             Preview built VitePress site  ∞ long-running
+  pnpm run prepare
+  composer koel:init                Run scripts/koel-init.php
+  composer test                     Run Laravel tests
+  composer cs                       Run mago format
+  composer cs:fix                   Run mago format
+  composer lint                     Run mago lint
+  composer analyze                  Analyse PHP code with PHPStan
+  composer dev                      Start development server
+  php artisan tinker                Open Laravel REPL
+  php artisan migrate               Apply Laravel migrations
+  php artisan db:seed               Seed database
+  php artisan migrate:fresh --seed  Drop all tables, re-run migrations and seed  [destructive]
+  php artisan queue:work            Start Laravel queue worker
+  php artisan route:list            List Laravel routes

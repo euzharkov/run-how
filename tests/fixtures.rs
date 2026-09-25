@@ -54,6 +54,7 @@ fixture_tests!(
     kubernetes,
     helm,
     polyglot,
+    storefront,
     tricky,
     empty,
     ruby_rails,
@@ -82,6 +83,11 @@ fixture_tests!(
     noise,
     many,
     ci,
+    ruby_gem,
+    terraform_modules,
+    terragrunt,
+    go_nested,
+    version_sources,
 );
 
 #[test]
@@ -106,6 +112,7 @@ fn ids_are_unique_and_json_roundtrips() {
         assert_eq!(n, ids.len(), "duplicate ids in {name}");
         let json = rhow::ui::json::render(&repo);
         let v: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v["schema"], 2);
         assert!(v["projects"].is_array());
     }
 }
@@ -119,39 +126,106 @@ fn windows_host_prefers_windows_scripts() {
             host_os: "windows",
         },
     );
+    // `build.cmd` and `build.ps1` are twins: on Windows PowerShell is the native one and
+    // the batch file sits behind `--all`.
     let build_cmd = repo.projects[0]
         .actions
         .iter()
-        .find(|a| a.id == "cmd:build")
+        .find(|a| a.tool == "cmd" && a.name == "build")
         .expect("build.cmd");
-    assert_eq!(build_cmd.confidence, rhow::Confidence::Medium);
+    assert_eq!(build_cmd.confidence, rhow::Confidence::Low);
     let ps = repo.projects[0]
         .actions
         .iter()
         .find(|a| a.tool == "pwsh" && a.name == "build")
         .unwrap();
     assert!(ps.command.starts_with("powershell"));
+    assert_eq!(ps.confidence, rhow::Confidence::Medium);
 }
 
 #[test]
 fn discovery_is_read_only() {
-    // Walk the fixture tree before and after discovery and compare modification times.
-    fn stamp(dir: &std::path::Path, out: &mut Vec<(PathBuf, std::time::SystemTime)>) {
+    // Walk the fixture tree before and after discovery: the same entries, with the same
+    // sizes and modification times. A file created, removed, rewritten or touched by
+    // discovery would show up in one of the three.
+    #[derive(Debug, PartialEq)]
+    struct Entry {
+        path: PathBuf,
+        is_dir: bool,
+        len: u64,
+        modified: std::time::SystemTime,
+    }
+    fn stamp(dir: &std::path::Path, out: &mut Vec<Entry>) {
         for e in std::fs::read_dir(dir).unwrap().flatten() {
             let p = e.path();
-            out.push((p.clone(), e.metadata().unwrap().modified().unwrap()));
-            if p.is_dir() {
+            let m = e.metadata().unwrap();
+            out.push(Entry {
+                path: p.clone(),
+                is_dir: m.is_dir(),
+                len: m.len(),
+                modified: m.modified().unwrap(),
+            });
+            if m.is_dir() {
                 stamp(&p, out);
             }
         }
+        out.sort_by(|a, b| a.path.cmp(&b.path));
     }
-    let root = fixture("polyglot");
+    // Every fixture, with runtime probing on: all adapters and the runtime checks run.
+    let root = fixture("");
     let mut before = Vec::new();
     stamp(&root, &mut before);
-    let _ = discover(&root, &Options::default());
+    let mut discovered = 0;
+    for e in std::fs::read_dir(&root).unwrap().flatten() {
+        if e.path().is_dir() {
+            let _ = discover(&e.path(), &Options::default());
+            discovered += 1;
+        }
+    }
+    assert!(discovered > 40, "only {discovered} fixtures found");
     let mut after = Vec::new();
     stamp(&root, &mut after);
-    assert_eq!(before, after);
+    let files = |v: &[Entry]| v.iter().map(|e| e.path.clone()).collect::<Vec<_>>();
+    assert_eq!(files(&before), files(&after), "fixture entries changed");
+    assert_eq!(before, after, "fixture sizes or mtimes changed");
+}
+
+#[test]
+fn nothing_spawns_a_process_or_opens_a_socket() {
+    // The other half of "read-only": no project tool is run and nothing touches the network.
+    // A timestamp walk cannot see either, so the source itself must not contain the means.
+    const FORBIDDEN: &[&str] = &[
+        "process::Command",
+        "Command::new",
+        "std::net",
+        "TcpStream",
+        "UdpSocket",
+    ];
+    fn scan(dir: &std::path::Path, hits: &mut Vec<String>) {
+        for e in std::fs::read_dir(dir).unwrap().flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                scan(&p, hits);
+            } else if p.extension().is_some_and(|x| x == "rs") {
+                let text = std::fs::read_to_string(&p).unwrap();
+                for (i, line) in text.lines().enumerate() {
+                    if FORBIDDEN.iter().any(|f| line.contains(f)) {
+                        hits.push(format!("{}:{}: {}", p.display(), i + 1, line.trim()));
+                    }
+                }
+            }
+        }
+    }
+    let mut hits = Vec::new();
+    scan(
+        &PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src"),
+        &mut hits,
+    );
+    assert!(
+        hits.is_empty(),
+        "rhow must not spawn or connect:\n{}",
+        hits.join("\n")
+    );
 }
 
 #[test]

@@ -1,0 +1,84 @@
+BlueWallet_BlueWallet  [Node.js, React Native, Fastlane, Detox, Gradle]
+
+  pod install --project-directory=ios       Install iOS CocoaPods dependencies
+  npx detox test                            Run Detox end-to-end tests  ⊙ device
+  npm run clean                             Delete /tmp/metro-cache (+5 more steps)  [destructive]
+  npm run cleanstart                        Delete /tmp/metro-cache (+6 more steps)  [destructive]  ∞ long-running
+  npm run clean:ios                         Start Metro bundler (+4 more steps)  ∞ long-running  ↓ download
+  npm run releasenotes2json                 Run scripts/release-notes.sh, then run inline Node.js code
+  npm run branch2json
+  npm run start                             Start Metro bundler  ∞ long-running
+  npm run android                           Build and run app on Android  ∞ long-running  ⊙ device
+  npm run android:relaunch                  Run command on Android device  ⊙ device
+  npm run android:uninstall                 Uninstall app from device  ⊙ device
+  npm run adb                               Forward device port to host  ∞ long-running  ⊙ device
+  npm run android:clean                     Delete android/app/.cxx (+2 more steps)  [destructive]  ∞ long-running
+  npm run android:restart                   Run command on Android device  ⊙ device
+  npm run ios                               Build and run app on iOS  ∞ long-running  ⊙ device
+  npm run postinstall                       Run inline Node.js code (+3 more steps)
+  npm run patches                           Apply local dependency patches
+  npm run test                              Run Jest tests (+5 more steps)
+  npm run integration                       Run Jest tests
+  npm run e2e:debug-build                   Run Detox end-to-end tests  ⊙ device
+  npm run e2e:debug-test                    Run Detox end-to-end tests  ⊙ device
+  npm run e2e:debug-test-device             Run Detox end-to-end tests  ⊙ device
+  npm run e2e:debug                         Check environment, then run Detox end-to-end tests  ⊙ device
+  npm run e2e:release-build                 Run Detox end-to-end tests  ⊙ device
+  npm run e2e:release-build-device          Run Detox end-to-end tests  ⊙ device
+  npm run e2e:release-test                  Run Detox end-to-end tests  ⊙ device
+  npm run e2e:release-test-device           Run Detox end-to-end tests  ⊙ device
+  npm run e2e:build:ios-release             Run Detox end-to-end tests  ⊙ device
+  npm run e2e:test:ios-release              Run Detox end-to-end tests  ⊙ device
+  npm run tslint                            Compile TypeScript sources
+  npm run lint                              Compile TypeScript sources (+4 more steps)
+  npm run lint:fix                          Compile TypeScript sources (+4 more steps)
+  npm run lint:quickfix                     Inspect Git repository, then run grep, then run awk, then run xargs
+  npm run unit                              Run Jest tests
+  bundle exec fastlane … epare_keystore     Prepare keystore file
+  bundle exec fastlane … d_and_sign_apk     Update version, build number, and sign APK
+  bundle exec fastlane … ld_release_apk     Build and sign release APK  [external]
+  bundle exec fastlane … ck_and_comment     Upload APK to BrowserStack and post result as PR comment  [external]
+  bundle exec fastlane … vices_from_txt     Register new devices from file
+  bundle exec fastlane … _temp_keychain     Create temporary keychain
+  bundle exec fastlane … oning_profiles     Synchronize certificates and provisioning profiles
+  bundle exec fastlane … signing_assets     Update all Apple certificates and provisioning profiles
+  bundle exec fastlane … files_catalyst     Fetch development certificates and provisioning profiles for Mac Catalyst
+  bundle exec fastlane … files_catalyst     Fetch App Store certificates and provisioning profiles for Mac Catalyst
+  bundle exec fastlane … oning_profiles     Create provisioning profiles for Mac Catalyst (first-time setup)
+  bundle exec fastlane … ived_data_lane     Clear derived data
+  bundle exec fastlane … ld_number_lane     Increment build number
+  bundle exec fastlane ios install_pods     Install CocoaPods dependencies
+  bundle exec fastlane … alyst_app_lane     Build Mac Catalyst app, handle code signing, create DMG with multilingual README, and set GitHu…
+  bundle exec fastlane … _to_testflight     Upload Mac Catalyst app to TestFlight  [external]
+  bundle exec fastlane … estflight_lane     Upload IPA to TestFlight  [external]
+  bundle exec fastlane … nag_sourcemaps     Upload iOS source maps to Bugsnag  [external]
+  bundle exec fastlane build_app_lane       Build iOS app
+  bundle exec fastlane … _temp_keychain     Delete temporary keychain
+  bundle exec fastlane deploy               Deploy to TestFlight  [external]
+  bundle exec fastlane release_notes        Update release notes for App Store versions (iOS or Mac Catalyst)  [external]
+  ./scripts/build-release-apk.sh            Assumes 2 env variables: KEYSTORE_FILE_HEX & KEYSTORE_PASSWORD  [external]
+  ./scripts/deeplink-to-emusim.sh
+  ./scripts/edit-version-number.sh
+  ./scripts/normalize-cat … t-framework.sh
+  ./scripts/release-notes.sh                Accept parameter to determine filter type  [external]
+  ./scripts/remove-loc-key.sh               Check if nested key path is provided
+  ./scripts/run-ln-acceptance-tests.sh
+
+blue_modules/bc-bech32  [Node.js]
+  npm run build  Delete dist, then compile TypeScript sources
+  npm run clean  Delete dist
+
+blue_modules/bc-ur  [Node.js]
+  npm run build  Delete dist, then compile TypeScript sources
+  npm run clean  Delete dist
+  npm run test   Print message
+
+blue_modules/react-native-bw-file-access  [Node.js]
+  npm run test  Print message
+
+blue_modules/react-native-bw-file-access/ios  [Xcode]
+  xcodebuild -workspace … build     Build BwFileAccess scheme for iOS Simulator  ⊙ device
+  xcodebuild -workspace … 16' test  Run BwFileAccess tests in iOS Simulator  ⊙ device
+
+reproducible-builds/apkdiff  [Python]
+  uv run pytest  Run Python tests

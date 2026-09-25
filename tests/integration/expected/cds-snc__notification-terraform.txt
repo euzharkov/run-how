@@ -1,0 +1,497 @@
+cds-snc_notification-terraform  [Terragrunt, Terraform, Kubernetes]
+
+  make aws-staging-common                   Apply Terragrunt changes to infrastructure  [external]
+  make aws-staging-eks                      Apply Terragrunt changes to infrastructure  [external]
+  make aws-staging-common-dev               Validate Terragrunt configuration
+  make aws-staging-eks-dev                  Validate Terragrunt configuration
+  make fmt                                  Format Terraform files, then run terragrunt hclfmt
+  make get-tg-arns                          Query AWS elbv2  [external]
+  kubectl apply --dry-run=client -f ./      Validate Kubernetes manifests
+  kubectl apply -f ./                       Apply resources to cluster  [external]
+  kubectl delete -f ./                      Delete resources from cluster  [destructive]
+  terraform -chdir=aws/aws-auth init        Initialise Terraform working directory
+  terraform -chdir=aws/aws-auth plan        Plan Terraform changes  [external]
+  terraform -chdir=aws/aws-auth apply       Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/aws-auth destroy     Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/aws-auth validate    Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/cloudfront init      Initialise Terraform working directory
+  terraform -chdir=aws/cloudfront plan      Plan Terraform changes  [external]
+  terraform -chdir=aws/cloudfront apply     Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/cloudfront destroy   Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/cloudfront validate  Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/common init          Initialise Terraform working directory
+  terraform -chdir=aws/common plan          Plan Terraform changes  [external]
+  terraform -chdir=aws/common apply         Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/common destroy       Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/common validate      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/database-tools init  Initialise Terraform working directory
+  terraform -chdir=aws/database-tools plan  Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/dns init             Initialise Terraform working directory
+  terraform -chdir=aws/dns plan             Plan Terraform changes  [external]
+  terraform -chdir=aws/dns apply            Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/dns destroy          Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/dns validate         Validate Terraform configuration
+  terraform -chdir=aws/dns fmt -recursive   Format Terraform files
+  terraform -chdir=aws/ec2 init             Initialise Terraform working directory
+  terraform -chdir=aws/ec2 plan             Plan Terraform changes  [external]
+  terraform -chdir=aws/ec2 apply            Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/ec2 destroy          Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/ec2 validate         Validate Terraform configuration
+  terraform -chdir=aws/ec2 fmt -recursive   Format Terraform files
+  terraform -chdir=aws/ecr init             Initialise Terraform working directory
+  terraform -chdir=aws/ecr plan             Plan Terraform changes  [external]
+  terraform -chdir=aws/ecr apply            Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/ecr destroy          Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/ecr validate         Validate Terraform configuration
+  terraform -chdir=aws/ecr fmt -recursive   Format Terraform files
+  terraform -chdir=aws/ecr-us-east init     Initialise Terraform working directory
+  terraform -chdir=aws/ecr-us-east plan     Plan Terraform changes  [external]
+  terraform -chdir=aws/ecr-us-east apply    Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/ecr-us-east destroy  Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/ecr-us-west-2 init   Initialise Terraform working directory
+  terraform -chdir=aws/ecr-us-west-2 plan   Plan Terraform changes  [external]
+  terraform -chdir=aws/ecr-us-west-2 apply  Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/eks init             Initialise Terraform working directory
+  terraform -chdir=aws/eks plan             Plan Terraform changes  [external]
+  terraform -chdir=aws/eks apply            Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/eks destroy          Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/eks validate         Validate Terraform configuration
+  terraform -chdir=aws/eks fmt -recursive   Format Terraform files
+  terraform -chdir=aws/elasticache init     Initialise Terraform working directory
+  terraform -chdir=aws/elasticache plan     Plan Terraform changes  [external]
+  terraform -chdir=aws/elasticache apply    Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/elasticache destroy  Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/github init          Initialise Terraform working directory
+  terraform -chdir=aws/github plan          Plan Terraform changes  [external]
+  terraform -chdir=aws/github apply         Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/github destroy       Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/github validate      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/heartbeat init       Initialise Terraform working directory
+  terraform -chdir=aws/heartbeat plan       Plan Terraform changes  [external]
+  terraform -chdir=aws/heartbeat apply      Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/heartbeat destroy    Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/heartbeat validate   Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/quicksight init      Initialise Terraform working directory
+  terraform -chdir=aws/quicksight plan      Plan Terraform changes  [external]
+  terraform -chdir=aws/quicksight apply     Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/quicksight destroy   Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/quicksight validate  Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/rds init             Initialise Terraform working directory
+  terraform -chdir=aws/rds plan             Plan Terraform changes  [external]
+  terraform -chdir=aws/rds apply            Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=aws/rds destroy          Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=aws/rds validate         Validate Terraform configuration
+  terraform -chdir=aws/rds fmt -recursive   Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=aws/system_status init   Initialise Terraform working directory
+  terraform -chdir=aws/system_status plan   Plan Terraform changes  [external]
+  terraform -chdir=aws/system_status apply  Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform … init                          Initialise Terraform working directory
+  terraform … plan                          Plan Terraform changes  [external]
+  terraform … apply                         Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                       Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                      Validate Terraform configuration
+  terraform … fmt -recursive                Format Terraform files
+  terraform -chdir=env init                 Initialise Terraform working directory
+  terraform -chdir=env plan                 Plan Terraform changes  [external]
+  terraform -chdir=env apply                Apply Terraform changes to infrastructure  [external]
+  terraform -chdir=env destroy              Destroy Terraform-managed infrastructure  [destructive]
+  terraform -chdir=env validate             Validate Terraform configuration
+  terraform -chdir=env fmt -recursive       Format Terraform files
+  terragrunt run-all plan … env             Plan all Terragrunt modules  [external]
+  terragrunt plan … v/dev/aws-auth          Plan Terragrunt changes  [external]
+  terragrunt apply … v/dev/aws-auth         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … v/dev/aws-auth       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … dev/cloudfront          Plan Terragrunt changes  [external]
+  terragrunt apply … dev/cloudfront         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … dev/cloudfront       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/common          Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/common         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/common       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … database-tools          Plan Terragrunt changes  [external]
+  terragrunt apply … database-tools         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … database-tools       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/dns             Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/dns            Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/dns          Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/ecr             Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/ecr            Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/ecr          Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ev/ecr-us-east          Plan Terragrunt changes  [external]
+  terragrunt apply … ev/ecr-us-east         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ev/ecr-us-east       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /ecr-us-west-2          Plan Terragrunt changes  [external]
+  terragrunt apply … /ecr-us-west-2         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /ecr-us-west-2       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/eks             Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/eks            Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/eks          Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ev/elasticache          Plan Terragrunt changes  [external]
+  terragrunt apply … ev/elasticache         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ev/elasticache       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/github          Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/github         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/github       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /dev/heartbeat          Plan Terragrunt changes  [external]
+  terragrunt apply … /dev/heartbeat         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /dev/heartbeat       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ambda-admin-pr          Plan Terragrunt changes  [external]
+  terragrunt apply … ambda-admin-pr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ambda-admin-pr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … da-google-cidr          Plan Terragrunt changes  [external]
+  terragrunt apply … da-google-cidr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … da-google-cidr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nifest_secrets          Plan Terragrunt changes  [external]
+  terragrunt apply … nifest_secrets         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nifest_secrets       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … rformance-test          Plan Terragrunt changes  [external]
+  terragrunt apply … rformance-test         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … rformance-test       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … dev/quicksight          Plan Terragrunt changes  [external]
+  terragrunt apply … dev/quicksight         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … dev/quicksight       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … env/dev/rds             Plan Terragrunt changes  [external]
+  terragrunt apply … env/dev/rds            Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … env/dev/rds          Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ceiving_emails          Plan Terragrunt changes  [external]
+  terragrunt apply … ceiving_emails         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ceiving_emails       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … mail_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … mail_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … mail_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on_dns_entries          Plan Terragrunt changes  [external]
+  terragrunt apply … on_dns_entries         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on_dns_entries       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /system_status          Plan Terragrunt changes  [external]
+  terragrunt apply … /system_status         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /system_status       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … us_static_site          Plan Terragrunt changes  [external]
+  terragrunt apply … us_static_site         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … us_static_site       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ction/aws-auth          Plan Terragrunt changes  [external]
+  terragrunt apply … ction/aws-auth         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ction/aws-auth       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ion/cloudfront          Plan Terragrunt changes  [external]
+  terragrunt apply … ion/cloudfront         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ion/cloudfront       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … duction/common          Plan Terragrunt changes  [external]
+  terragrunt apply … duction/common         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … duction/common       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … database-tools          Plan Terragrunt changes  [external]
+  terragrunt apply … database-tools         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … database-tools       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … production/dns          Plan Terragrunt changes  [external]
+  terragrunt apply … production/dns         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … production/dns       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … production/ecr          Plan Terragrunt changes  [external]
+  terragrunt apply … production/ecr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … production/ecr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on/ecr-us-east          Plan Terragrunt changes  [external]
+  terragrunt apply … on/ecr-us-east         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on/ecr-us-east       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /ecr-us-west-2          Plan Terragrunt changes  [external]
+  terragrunt apply … /ecr-us-west-2         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /ecr-us-west-2       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … production/eks          Plan Terragrunt changes  [external]
+  terragrunt apply … production/eks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … production/eks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on/elasticache          Plan Terragrunt changes  [external]
+  terragrunt apply … on/elasticache         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on/elasticache       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … duction/github          Plan Terragrunt changes  [external]
+  terragrunt apply … duction/github         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … duction/github       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … tion/heartbeat          Plan Terragrunt changes  [external]
+  terragrunt apply … tion/heartbeat         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … tion/heartbeat       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ambda-admin-pr          Plan Terragrunt changes  [external]
+  terragrunt apply … ambda-admin-pr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ambda-admin-pr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … da-google-cidr          Plan Terragrunt changes  [external]
+  terragrunt apply … da-google-cidr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … da-google-cidr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nifest_secrets          Plan Terragrunt changes  [external]
+  terragrunt apply … nifest_secrets         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nifest_secrets       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … rformance-test          Plan Terragrunt changes  [external]
+  terragrunt apply … rformance-test         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … rformance-test       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ion/quicksight          Plan Terragrunt changes  [external]
+  terragrunt apply … ion/quicksight         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ion/quicksight       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … production/rds          Plan Terragrunt changes  [external]
+  terragrunt apply … production/rds         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … production/rds       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ceiving_emails          Plan Terragrunt changes  [external]
+  terragrunt apply … ceiving_emails         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ceiving_emails       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … mail_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … mail_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … mail_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on_dns_entries          Plan Terragrunt changes  [external]
+  terragrunt apply … on_dns_entries         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on_dns_entries       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /system_status          Plan Terragrunt changes  [external]
+  terragrunt apply … /system_status         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /system_status       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … us_static_site          Plan Terragrunt changes  [external]
+  terragrunt apply … us_static_site         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … us_static_site       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ndbox/aws-auth          Plan Terragrunt changes  [external]
+  terragrunt apply … ndbox/aws-auth         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ndbox/aws-auth       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … box/cloudfront          Plan Terragrunt changes  [external]
+  terragrunt apply … box/cloudfront         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … box/cloudfront       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … sandbox/common          Plan Terragrunt changes  [external]
+  terragrunt apply … sandbox/common         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … sandbox/common       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … database-tools          Plan Terragrunt changes  [external]
+  terragrunt apply … database-tools         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … database-tools       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/sandbox/dns          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/sandbox/dns         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/sandbox/dns       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/sandbox/ecr          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/sandbox/ecr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/sandbox/ecr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ox/ecr-us-east          Plan Terragrunt changes  [external]
+  terragrunt apply … ox/ecr-us-east         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ox/ecr-us-east       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /ecr-us-west-2          Plan Terragrunt changes  [external]
+  terragrunt apply … /ecr-us-west-2         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /ecr-us-west-2       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/sandbox/eks          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/sandbox/eks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/sandbox/eks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ox/elasticache          Plan Terragrunt changes  [external]
+  terragrunt apply … ox/elasticache         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ox/elasticache       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … sandbox/github          Plan Terragrunt changes  [external]
+  terragrunt apply … sandbox/github         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … sandbox/github       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … dbox/heartbeat          Plan Terragrunt changes  [external]
+  terragrunt apply … dbox/heartbeat         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … dbox/heartbeat       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ambda-admin-pr          Plan Terragrunt changes  [external]
+  terragrunt apply … ambda-admin-pr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ambda-admin-pr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … da-google-cidr          Plan Terragrunt changes  [external]
+  terragrunt apply … da-google-cidr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … da-google-cidr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nifest_secrets          Plan Terragrunt changes  [external]
+  terragrunt apply … nifest_secrets         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nifest_secrets       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … rformance-test          Plan Terragrunt changes  [external]
+  terragrunt apply … rformance-test         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … rformance-test       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … box/quicksight          Plan Terragrunt changes  [external]
+  terragrunt apply … box/quicksight         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … box/quicksight       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/sandbox/rds          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/sandbox/rds         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/sandbox/rds       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ceiving_emails          Plan Terragrunt changes  [external]
+  terragrunt apply … ceiving_emails         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ceiving_emails       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … mail_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … mail_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … mail_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on_dns_entries          Plan Terragrunt changes  [external]
+  terragrunt apply … on_dns_entries         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on_dns_entries       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /system_status          Plan Terragrunt changes  [external]
+  terragrunt apply … /system_status         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /system_status       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … us_static_site          Plan Terragrunt changes  [external]
+  terragrunt apply … us_static_site         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … us_static_site       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … aging/aws-auth          Plan Terragrunt changes  [external]
+  terragrunt apply … aging/aws-auth         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … aging/aws-auth       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ing/cloudfront          Plan Terragrunt changes  [external]
+  terragrunt apply … ing/cloudfront         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ing/cloudfront       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … staging/common          Plan Terragrunt changes  [external]
+  terragrunt apply … staging/common         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … staging/common       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … database-tools          Plan Terragrunt changes  [external]
+  terragrunt apply … database-tools         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … database-tools       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/staging/dns          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/staging/dns         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/staging/dns       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/staging/ecr          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/staging/ecr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/staging/ecr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ng/ecr-us-east          Plan Terragrunt changes  [external]
+  terragrunt apply … ng/ecr-us-east         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ng/ecr-us-east       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /ecr-us-west-2          Plan Terragrunt changes  [external]
+  terragrunt apply … /ecr-us-west-2         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /ecr-us-west-2       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/staging/eks          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/staging/eks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/staging/eks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ng/elasticache          Plan Terragrunt changes  [external]
+  terragrunt apply … ng/elasticache         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ng/elasticache       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … staging/github          Plan Terragrunt changes  [external]
+  terragrunt apply … staging/github         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … staging/github       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ging/heartbeat          Plan Terragrunt changes  [external]
+  terragrunt apply … ging/heartbeat         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ging/heartbeat       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ambda-admin-pr          Plan Terragrunt changes  [external]
+  terragrunt apply … ambda-admin-pr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ambda-admin-pr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … da-google-cidr          Plan Terragrunt changes  [external]
+  terragrunt apply … da-google-cidr         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … da-google-cidr       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nifest_secrets          Plan Terragrunt changes  [external]
+  terragrunt apply … nifest_secrets         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nifest_secrets       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … rformance-test          Plan Terragrunt changes  [external]
+  terragrunt apply … rformance-test         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … rformance-test       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ing/quicksight          Plan Terragrunt changes  [external]
+  terragrunt apply … ing/quicksight         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ing/quicksight       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … nv/staging/rds          Plan Terragrunt changes  [external]
+  terragrunt apply … nv/staging/rds         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … nv/staging/rds       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … ceiving_emails          Plan Terragrunt changes  [external]
+  terragrunt apply … ceiving_emails         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … ceiving_emails       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … mail_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … mail_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … mail_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … on_dns_entries          Plan Terragrunt changes  [external]
+  terragrunt apply … on_dns_entries         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … on_dns_entries       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … _sms_callbacks          Plan Terragrunt changes  [external]
+  terragrunt apply … _sms_callbacks         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … _sms_callbacks       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … /system_status          Plan Terragrunt changes  [external]
+  terragrunt apply … /system_status         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … /system_status       Destroy Terragrunt-managed infrastructure  [destructive]
+  terragrunt plan … us_static_site          Plan Terragrunt changes  [external]
+  terragrunt apply … us_static_site         Apply Terragrunt changes to infrastructure  [external]
+  terragrunt destroy … us_static_site       Destroy Terragrunt-managed infrastructure  [destructive]
+  ./scripts/assumeDnsRole.sh
+  ./scripts/callManifestsRollout.sh
+  ./scripts/checkEnvFile.sh
+  ./scripts/cleanTerragruntCache.sh
+  ./scripts/cleanupEKSNetwork.sh
+  ./scripts/cleanupELB.sh
+  ./scripts/cleanupSecurityGroups.sh
+  ./scripts/cordonAndDrain_node.sh
+  ./scripts/cordonAndDrain_nodeGroup.sh
+  ./scripts/deleteEnvironment.sh
+  ./scripts/find_unregistered_ec2s.sh
+  ./scripts/getVPNConfig.sh                 AWS VPN Client 5.x Configuration Script (Legacy)
+  ./scripts/getVPNConfig_new.sh             AWS VPN Client 6.x Setup Script
+  ./scripts/get_dns_recor … es_identity.sh  Script to display DNS records needed for AWS SES custom sending domain
+  ./scripts/get_rds_cluster_updates.sh
+  ./scripts/health-check-pods.sh
+  ./scripts/newEnvironmentApply.sh          WARNING: THIS IS POTENTIALLY DANGEROUS SCRIPT
+  ./scripts/patchK8sAmi.sh
+  ./scripts/propagateTerragruntHcl.sh       Script to recursively copy terragrunt.hcl files from one folder structure to another
+  ./scripts/revokeDnsRole.sh
+  ./scripts/setupPreCommitHook.sh           This is script is simply shortcut to pre-commit hook command that I always forget when I clone …
+  ./scripts/switchToValkey.sh
+  ./scripts/terragruntInitRecursive.sh      WARNING: THIS IS POTENTIALLY DANGEROUS SCRIPT

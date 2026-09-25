@@ -3,33 +3,30 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [nx] JavaScript tools=npm,nx
+## . [nx] JavaScript tools=npm,nx techs=Node.js,Nx
 test                     Testing        declared exact  safe        .          npm run test :: Run test across Nx projects
+ng                       Other          declared exact  safe        .          npm run ng :: Run Nx
+start:api                Development    declared exact  safe        .          npm run start:api :: Serve api with Nx [long-running]
 build                    Build          inferred medium safe        .          nx run-many -t build :: Run build across Nx projects
 lint                     Quality        inferred medium safe        .          nx run-many -t lint :: Check source code with ESLint
 e2e                      Testing        inferred medium safe        .          nx run-many -t e2e :: Run e2e across Nx projects
 format                   Quality        inferred medium safe        .          nx run-many -t format :: Format source code with Prettier
-release-check            Release        inferred low    safe        .          nx run-many -t release-check :: Print a message
-maybe-deploy             Release        inferred low    safe        hidden .          nx run-many -t maybe-deploy :: Run maybe-deploy across Nx projects
+release-check            Release        inferred low    safe        .          nx run-many -t release-check :: Print message
 affected                 Quality        inferred medium safe        .          nx affected -t build test lint :: Build, test and lint affected Nx projects
-graph                    Other          inferred low    safe        .          nx graph :: Open the Nx project graph
-## apps/api [api] Workspace tools=nx
-api                      Development    declared exact  safe        .          nx run api:serve :: Serve the app [long-running]
+graph                    Other          inferred low    safe        .          nx graph :: Open Nx project graph
+## apps/api [api] Workspace tools=nx techs=Nx,Docker,Vitest
+api                      Development    declared exact  safe        .          nx run api:serve :: Serve app [long-running]
 api:build                Build          declared exact  safe        .          nx run api:build :: Build with esbuild
 api:test                 Testing        declared exact  safe        .          nx run api:test :: Run Jest tests
-api:docker               Infrastructure declared exact  safe        .          nx run api:docker :: Build the Docker image
+api:docker               Infrastructure declared exact  safe        .          nx run api:docker :: Build Docker image
 api:ci                   Quality        declared exact  safe        .          nx run api:ci :: Run linting, type checks, and tests
-api:release              Release        declared exact  safe        .          nx run api:release :: Run the release task
-## apps/web [web] JavaScript tools=npm,nx
+api:release              Release        declared exact  safe        .          nx run api:release :: Run release task
+## apps/web [web] JavaScript tools=npm,nx techs=Node.js,Nx,Vitest,Cloudflare Workers
 web:test                 Testing        declared exact  safe        apps/web   npm run test :: Run Vitest tests
 web:typecheck            Quality        declared exact  safe        apps/web   npm run typecheck :: Check TypeScript types
-web                      Development    declared exact  safe        .          nx run web:serve :: Serve the app with Vite [long-running]
+web                      Development    declared exact  safe        .          nx run web:serve :: Serve app with Vite [long-running]
 web:build                Build          declared exact  safe        .          nx run web:build :: Build with Vite
-web:nx:test              Testing        declared exact  safe        hidden .          nx run web:test :: Run Vitest tests
 web:lint                 Quality        declared exact  safe        .          nx run web:lint :: Check source code with ESLint
 web:format               Quality        declared exact  safe        .          nx run web:format :: Format source code with Prettier
-web:release-check        Release        declared exact  safe        hidden .          nx run web:release-check :: Print a message
-web:maybe-deploy         Release        declared exact  safe        hidden .          nx run web:maybe-deploy :: Run the maybe-deploy dependencies
-web:unknown-thing        Other          declared low    safe        hidden .          nx run web:unknown-thing :: Run the unknown-thing target
 web:e2e                  Testing        declared exact  safe        .          nx run web:e2e :: Run end-to-end tests
-web:deploy               Release        declared exact  external    .          nx run web:deploy :: Deploy the Cloudflare Worker
+web:deploy               Release        declared exact  external    .          nx run web:deploy :: Deploy Cloudflare Worker

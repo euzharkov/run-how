@@ -1,0 +1,121 @@
+passportxyz_passport  [Node.js, Lerna, Docker]
+
+  yarn clean                           Run clean in all packages with Lerna  ∆ git
+  yarn nuke                            Run clean in all packages with Lerna, then delete node_modules
+  yarn prepare                         Install Git hooks with Husky  ∆ git
+  yarn lint                            Run lint in all packages with Lerna  ∆ git
+  yarn lint:iam                        Run lint in @gitcoin/passport-iam
+  yarn lint:identity                   Run lint in @gitcoin/passport-identity
+  yarn test                            Run test in all packages with Lerna  ∆ git
+  yarn test:iam                        Run test in @gitcoin/passport-iam
+  yarn test:app                        Run test in @gitcoin/passport-app
+  yarn test:identity                   Run test in @gitcoin/passport-identity
+  yarn test:platforms                  Run test in @gitcoin/passport-platforms
+  yarn prettier                        Run prettier in all packages with Lerna  ∆ git
+  yarn build                           Run build in verifier_sweep (+7 more steps)
+  yarn build:database-client           Run build in @gitcoin/passport-database-client
+  yarn build:identity                  Run build in @gitcoin/passport-identity
+  yarn build:iam                       Run build in @gitcoin/passport-iam
+  yarn build:app                       Run build in @gitcoin/passport-app
+  yarn build:platforms                 Run build in @gitcoin/passport-platforms
+  yarn build:embed                     Run build in @gitcoin/passport-embed
+  yarn build:embed-popup               Run build in @gitcoin/passport-embed-popup
+  yarn debug                           Run start in @gitcoin/passport-app (+3 more steps)  ∞ long-running
+  yarn build:infra-scripts             Run build in verifier_sweep
+  yarn debug:iam
+  yarn debug:db-client
+  yarn start                           Run start in @gitcoin/passport-app (+2 more steps)  ∞ long-running
+  yarn start:iam                       Run start in @gitcoin/passport-iam  ∞ long-running
+  yarn start:app                       Run start in @gitcoin/passport-app  ∞ long-running
+  yarn start:ceramic
+  yarn prod:start:iam                  Run prod:start in @gitcoin/passport-iam  ∞ long-running
+  yarn app
+  yarn iam
+  yarn identity
+  yarn types
+  yarn prestart                        Run build in @gitcoin/passport-app (+5 more steps)
+  yarn pretest                         Run build in @gitcoin/passport-database-client (+1 more step)
+  yarn postinstall                     Run build in @gitcoin/passport-app (+5 more steps)
+  ./debian-install-playwright-deps.sh  Minimal Debian/Ubuntu Playwright Dependencies Installer
+  ./fedora-install-playwright-deps.sh  Minimal Fedora/RHEL Playwright Dependencies Installer
+  ./install.sh                         Passport SDK Installation Script
+
+app  [Node.js, Next.js, Vitest, Storybook]
+  yarn start            Start Next.js development server  ∞ long-running
+  yarn export           Export Next.js app as static HTML (+2 more steps)
+  yarn build            Run scripts/preBuild.tsx, then build Next.js app
+  yarn prod-start       Start Next.js production server  ∞ long-running
+  yarn clean            Delete node_modules, then delete .next
+  yarn lint             Run linting and formatting
+  yarn test             Run Vitest tests
+  yarn test:watch       Run Vitest tests in watch mode  ∞ long-running
+  yarn storybook        Start Storybook  ∞ long-running
+  yarn build-storybook  Build static Storybook
+  yarn optimize-images  Run scripts/optimize-images.js
+
+database-client  [Node.js]
+  yarn v      Compile TypeScript sources
+  yarn debug  Compile TypeScript in watch mode  ∞ long-running
+
+embed  [Node.js, Docker]
+  yarn prebuild            Run type checks, linting, and formatting
+  yarn prestart            Compile TypeScript sources
+  yarn start               Run .
+  yarn debug               Compile TypeScript in watch mode, then run . with auto-reload  ∞ long-running
+  yarn prod:start          Compile TypeScript sources, then run .
+  yarn lint                Run type checks, linting, and formatting
+  docker build -t embed .  Build Docker image
+
+embed-popup  [Node.js, Vite]
+  yarn dev      Run vite 3010
+  yarn build    Compile TypeScript sources, then build app with Vite
+  yarn lint     Check source code with ESLint
+  yarn preview  Preview production build with Vite  ∞ long-running
+
+iam  [Node.js, Docker]
+  yarn prebuild                   Run type checks and linting
+  yarn prestart                   Compile TypeScript sources
+  yarn start                      Run .
+  yarn debug                      Compile TypeScript in watch mode, then run . with auto-reload  ∞ long-running
+  yarn prod:start                 Compile TypeScript sources, then run .
+  yarn prettier                   Format source code with Prettier and check formatting with Prettier
+  yarn lint                       Run type checks and linting
+  yarn checkProviders:op-sepolia  Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:op          Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:arb         Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:zksync      Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:scroll      Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:linea       Run src/scripts/checkOnChainProvidersAreInSync.ts
+  yarn checkProviders:shape       Run src/scripts/checkOnChainProvidersAreInSync.ts
+  docker build -t iam .           Build Docker image
+
+identity  [Node.js]
+  yarn lint  Run type checks, linting, and formatting
+
+infra  [Node.js, Pulumi]
+  pulumi -C aws preview  Preview Pulumi changes  [external]
+  pulumi -C aws up       Deploy Pulumi stack  [external]
+  pulumi -C aws destroy  Destroy Pulumi stack  [destructive]
+
+infra/scripts/auto_credits  [Node.js, Jest]
+  npm run build      Bundle with esbuild
+  npm run clean      Delete dist
+  npm run test       Run Jest tests
+  npm run run:local  Run run.ts
+
+infra/scripts/verifier_sweep  [Node.js]
+  yarn prebuild  Install dependencies with Yarn  ↓ download
+  yarn dev       Run run.ts
+  yarn dev:env   Run run.ts
+
+platforms  [Node.js]
+  yarn build:esm    Compile TypeScript sources
+  yarn build:types  Compile TypeScript sources
+  yarn lint         Run type checks, linting, and formatting
+
+types  [Node.js]
+  yarn build      Build TypeScript project references
+  yarn clean      Delete dist and *.tsbuildinfo
+  yarn lint       Run type checks, linting, and formatting
+  yarn precommit  Run linters on staged files  ∆ git
+  yarn ethers

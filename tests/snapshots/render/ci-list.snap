@@ -1,0 +1,12 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+ci  [Node.js, Vite, Vitest, Cloudflare Workers]
+
+  npm run dev      Start Vite development server  ∞ long-running
+  npm run test     Run Vitest tests
+  npm run build    Build app with Vite
+  npm run deploy   Deploy Cloudflare Worker  [external]
+  npm run release  Bump versions from pending changesets, then push commits to remote  [external]  ∆ git

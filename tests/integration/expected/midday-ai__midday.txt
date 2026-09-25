@@ -1,0 +1,130 @@
+midday-ai_midday  [Node.js, Turborepo, Bun]
+
+  bun run build                   Run build across packages with Turborepo
+  bun run clean                   Delete untracked files  [destructive]  ∆ git
+  bun run clean:workspaces        Run clean across packages with Turborepo
+  bun run dev                     Run dev across packages with Turborepo  ∞ long-running
+  bun run test                    Run test across packages with Turborepo
+  bun run start:dashboard         Run start across packages with Turborepo  ∞ long-running
+  bun run start:website           Run start across packages with Turborepo  ∞ long-running
+  bun run dev:api                 Run dev across packages with Turborepo  ∞ long-running
+  bun run dev:dashboard           Run dev across packages with Turborepo  ∞ long-running
+  bun run build:dashboard         Run build across packages with Turborepo
+  bun run dev:website             Run dev across packages with Turborepo  ∞ long-running
+  bun run dev:desktop             Run dev across packages with Turborepo  ∞ long-running
+  bun run cli                     Run packages/cli/bin/midday.ts with Bun
+  bun run jobs:dashboard          Run jobs across packages with Turborepo
+  bun run format                  Format source code with Biome
+  bun run lint                    Run lint across packages with Turborepo
+  bun run lint:fix                Run lint:fix across packages with Turborepo
+  bun run typecheck               Run typecheck across packages with Turborepo
+  turbo run topo                  Run topo across packages with Turborepo
+  turbo run start                 Run start across packages with Turborepo  ∞ long-running
+  ./scripts/docker-entrypoint.sh  Shared Docker entrypoint for all Railway services
+
+apps/api  [Node.js, Bun]
+  bun run dev       Run src/index.ts with Bun and auto-reload  ∞ long-running
+  bun run test      Run tests (4 steps)
+  bun run test:e2e  Run tests with Bun
+  bun run eval      Run evalite watch  ∞ long-running
+  bun run eval:run
+
+apps/dashboard  [Node.js, Next.js, Bun]
+  bun run build  Build Next.js app
+  bun run clean  Delete untracked files  [destructive]  ∆ git
+  bun run dev    Start Next.js development server  ∞ long-running
+  bun run start  Start Next.js production server  ∞ long-running
+  bun run test   Run find, then run grep, then run tests with Bun
+
+apps/desktop  [Node.js, Tauri, Vite]
+  bun run dev                  Start Vite development server  ∞ long-running
+  bun run build                Compile TypeScript sources, then build app with Vite
+  bun run preview              Preview production build with Vite  ∞ long-running
+  bun run tauri
+  bun run tauri:dev            Start Tauri app in development mode  ∞ long-running
+  bun run tauri:staging        Start Tauri app in development mode  ∞ long-running
+  bun run tauri:prod           Start Tauri app in development mode  ∞ long-running
+  bun run tauri:build:dev      Build Tauri app
+  bun run tauri:build:staging  Build Tauri app
+  bun run tauri:build:prod     Build Tauri app
+
+apps/desktop/src-tauri  [Rust]
+  cargo run            Run Rust program
+  cargo build          Build crate
+  cargo test           Run Rust tests
+  cargo check          Type-check Rust project
+  cargo clippy         Lint Rust source with Clippy
+  cargo fmt            Format Rust source
+  cargo bench          Run Rust benchmarks
+  cargo doc --no-deps  Build Rust docs
+
+apps/website  [Node.js, Next.js]
+  bun run build  Build Next.js app
+  bun run clean  Delete untracked files  [destructive]  ∆ git
+  bun run dev    Start Next.js development server  ∞ long-running
+  bun run start  Start Next.js production server  ∞ long-running
+
+apps/worker  [Node.js, Bun]
+  bun run dev    Run src/index.ts with Bun and auto-reload  ∞ long-running
+  bun run start  Run src/index.ts with Bun
+
+packages/categories  [Node.js]
+  bun run migrate          Run scripts/migrate.ts
+  bun run migrate:preview  Run scripts/migrate.ts
+  bun run migrate:run      Run scripts/migrate.ts
+
+packages/cli  [Node.js, Bun]
+  bun run dev    Run bin/midday.ts with Bun
+  bun run build  Build package with tsup
+
+packages/db  [Node.js, Bun, Drizzle]
+  bun run eval:matching:db   Run src/scripts/matching-eval-db.ts with Bun
+  bun run eval:progress      Run src/scripts/matching-progress.ts with Bun
+  bun run eval:similar       Run src/scripts/eval-similar-transactions.ts with Bun
+  bun run test:matching      Run tests with Bun
+  bun run test:performance   Run tests with Bun
+  bun run test:integration   Run tests with Bun
+  bun run test:golden        Run tests with Bun
+  bun run test:all-matching  Run tests with Bun
+  bun run test:reports       Run tests with Bun
+  bun run test:e2e           Run tests with Bun
+  bun run test:e2e:setup     Open psql session, then push Drizzle schema to database
+  bun run test:watch         Run tests with Bun  ∞ long-running
+  bun run validate-golden    Run src/test/validate-golden-dataset.ts with Bun
+
+packages/email  [Node.js]
+  bun run dev    Run email dev  ∞ long-running
+  bun run build  Run email build
+  bun run start  Run email start  ∞ long-running
+
+packages/insights  [Node.js]
+  bun run eval      Run evalite watch  ∞ long-running
+  bun run eval:run
+
+packages/jobs  [Node.js]
+  bun run dev     Run trigger dev  ∞ long-running
+  bun run deploy  Run trigger deploy
+
+packages/mcp-apps  [Node.js, Vite]
+  bun run dev    Start Vite development server  ∞ long-running
+  bun run build  Delete dist, then build app with Vite
+  bun run clean  Delete .turbo, node_modules, and dist
+
+packages/notifications  [Node.js]
+  bun run lint:fix  Check lint and formatting with Biome
+
+packages/supabase  [Node.js, Supabase]
+  bun run lint:fix     Format source code with Biome
+  bun run db:generate  Generate Supabase types
+
+packages/trpc  [Node.js]
+  bun run typecheck  Print message
+
+packages/utils  [Node.js]
+  bun run lint:fix  Format source code with Biome
+
+packages/workbench  [Node.js, Vite]
+  bun run build      Build app with Vite, then compile TypeScript sources
+  bun run build:lib  Compile TypeScript sources
+  bun run build:ui   Build app with Vite
+  bun run dev        Build app with Vite  ∞ long-running

@@ -1,0 +1,117 @@
+bitwarden_server  [.NET, Docker, PostgreSQL, MySQL, MariaDB]
+
+  dotnet build                        Build bitwarden-server solution
+  dotnet test                         Run all bitwarden-server solution tests
+  dotnet restore                      Restore NuGet packages  ↓ download
+  dotnet clean                        Delete .NET build outputs
+  dotnet format                       Format .NET source code
+  docker compose -f … up -d           Start all Docker services
+  docker compose -f … up -d mssql     Start SQL Server
+  docker compose -f … up -d storage   Start Azurite (local Azure Storage)
+  docker compose -f … up -d mail      Start mail service (mailcatcher)
+  docker compose -f … up -d postgres  Start PostgreSQL
+  docker compose -f … up -d mysql     Start MySQL
+  docker compose -f … up -d mariadb   Start MariaDB
+  docker compose -f … up -d idp       Start idp service (simplesamlphp)
+  docker compose -f … up -d rabbitmq  Start RabbitMQ
+  docker compose -f … reverse-proxy   Start nginx
+  docker compose -f … -d service-bus  Start service-bus service (servicebus-emulator)
+  docker compose -f … up -d redis     Start Redis
+  docker compose -f … cloud up -d     Start Docker services in cloud profile
+  docker compose -f … mssql up -d     Start Docker services in mssql profile
+  docker compose -f … storage up -d   Start Docker services in storage profile
+  docker compose -f … mail up -d      Start Docker services in mail profile
+  docker compose -f … postgres up -d  Start Docker services in postgres profile
+  docker compose -f … ef up -d        Start Docker services in ef profile
+  docker compose -f … mysql up -d     Start Docker services in mysql profile
+  docker compose -f … mariadb up -d   Start Docker services in mariadb profile
+  docker compose -f … idp up -d       Start Docker services in idp profile
+  docker compose -f … rabbitmq up -d  Start Docker services in rabbitmq profile
+  docker compose -f … proxy up -d     Start Docker services in proxy profile
+  docker compose -f … up -d           Start Docker services in servicebus profile
+  docker compose -f … redis up -d     Start Docker services in redis profile
+  docker compose -f … logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f … down            Stop and remove Docker services
+  docker compose -f … down -v         Stop Docker services and delete their volumes  [destructive]
+
+AppHost  [.NET]
+  dotnet run  Run .NET AppHost app
+
+bitwarden_license/src/Scim  [.NET]
+  dotnet run        Start .NET Scim web app
+  dotnet watch run  Start Scim with hot reload  ∞ long-running
+
+bitwarden_license/src/Sso  [.NET, webpack]
+  dotnet run        Start .NET Sso web app
+  dotnet watch run  Start Sso with hot reload  ∞ long-running
+  npm run build     Bundle with webpack
+
+perf/MicroBenchmarks  [.NET]
+  dotnet run  Run .NET MicroBenchmarks app
+
+src/Admin  [.NET, webpack]
+  dotnet run        Start .NET Admin web app
+  dotnet watch run  Start Admin with hot reload  ∞ long-running
+  npm run build     Bundle with webpack
+
+src/Api  [.NET]
+  dotnet run        Start .NET Api web app
+  dotnet watch run  Start Api with hot reload  ∞ long-running
+
+src/Billing  [.NET]
+  dotnet run        Start .NET Billing web app
+  dotnet watch run  Start Billing with hot reload  ∞ long-running
+
+src/Core/MailTemplates/Mjml  [Node.js]
+  npm run build         Run build.js
+  npm run build:hbs     Run build.js
+  npm run build:minify  Run build.js
+  npm run build:watch   Run build.js with auto-restart  ∞ long-running
+  npm run prettier      Format source code with Prettier
+
+src/Events  [.NET]
+  dotnet run        Start .NET Events web app
+  dotnet watch run  Start Events with hot reload  ∞ long-running
+
+src/EventsProcessor  [.NET]
+  dotnet run        Start .NET EventsProcessor web app
+  dotnet watch run  Start EventsProcessor with hot reload  ∞ long-running
+
+src/Icons  [.NET]
+  dotnet run        Start .NET Icons web app
+  dotnet watch run  Start Icons with hot reload  ∞ long-running
+
+src/Identity  [.NET]
+  dotnet run        Start .NET Identity web app
+  dotnet watch run  Start Identity with hot reload  ∞ long-running
+
+src/Notifications  [.NET]
+  dotnet run        Start .NET Notifications web app
+  dotnet watch run  Start Notifications with hot reload  ∞ long-running
+
+util/MsSqlMigratorUtility  [.NET]
+  dotnet run  Run .NET MsSqlMigratorUtility app
+
+util/RustSdk/rust  [Rust]
+  cargo build          Build crate
+  cargo test           Run Rust tests
+  cargo check          Type-check Rust project
+  cargo clippy         Lint Rust source with Clippy
+  cargo fmt            Format Rust source
+  cargo bench          Run Rust benchmarks
+  cargo doc --no-deps  Build Rust docs
+
+util/SeederApi  [.NET]
+  dotnet run        Start .NET SeederApi web app
+  dotnet watch run  Start SeederApi with hot reload  ∞ long-running
+
+util/SeederUtility  [.NET]
+  dotnet run                       Run .NET SeederUtility app
+  ./scripts/build-seeded-image.sh  Builds seeded database Docker image for given preset and database type, plus
+
+util/Server  [.NET]
+  dotnet run        Start .NET Server web app
+  dotnet watch run  Start Server with hot reload  ∞ long-running
+
+util/Setup  [.NET]
+  dotnet run  Run .NET Setup app

@@ -291,14 +291,15 @@ impl Discoverer for Make {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(FILES)
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let Some(file) = base.first_of(FILES) else {
             return out;
         };
-        let Some(text) = base.read(file) else {
+        let Some(text) = ctx.text(base, file) else {
             return out;
         };
+        let text = with_includes(ctx, base, &text);
         let targets = parse(&text);
         let vars = variables(&text);
         let has_phony = targets.iter().any(|t| t.phony);
@@ -307,7 +308,16 @@ impl Discoverer for Make {
             .flat_map(|t| t.deps.iter().map(String::as_str))
             .collect();
         for t in &targets {
-            let expanded: Vec<String> = t.recipe.iter().map(|r| expand(r, &vars)).collect();
+            // `ECHO = @echo` puts the silence prefix back after expansion; strip it again.
+            let expanded: Vec<String> = t
+                .recipe
+                .iter()
+                .map(|r| {
+                    expand(r, &vars)
+                        .trim_start_matches(['@', '-', '+'])
+                        .to_string()
+                })
+                .collect();
             // Lines that still hold `$(shell …)`, `$(foreach …)` or automatic variables would
             // only produce nonsense like "Run $(foreach"; leave them out of the analysis.
             let opaque = !expanded.is_empty() && expanded.iter().all(|r| unexpanded(r));
@@ -317,7 +327,13 @@ impl Discoverer for Make {
                 .cloned()
                 .collect();
             if raw.is_empty() && !opaque {
-                raw = t.deps.iter().map(|d| format!("make {d}")).collect();
+                // `ci: $(CI_TARGETS)`: a dependency list rhow cannot expand says nothing.
+                raw = t
+                    .deps
+                    .iter()
+                    .filter(|d| !unexpanded(d))
+                    .map(|d| format!("make {d}"))
+                    .collect();
             }
             let raw = raw.iter().take(8).cloned().collect::<Vec<_>>().join(" && ");
             out.script("make", &t.name, &raw);
@@ -330,10 +346,12 @@ impl Discoverer for Make {
             } else if opaque {
                 a = a.inferred_desc(format!("Run the {} make target", t.name));
             }
-            let internal = t.name.starts_with('_') || t.name.starts_with('.');
+            // `.PHONY`, `.DEFAULT` and file targets (`build/app.o`) are make's bookkeeping,
+            // not commands; an `_internal` target is still one a developer can type.
+            let special = t.name.starts_with('.');
             let filey = looks_like_file(&t.name) && !t.phony;
-            if internal || filey {
-                a = a.hidden();
+            if special || filey {
+                a = a.redundant();
             } else if has_phony && !t.phony && t.comment.is_none() {
                 // Undeclared, undocumented target while the file does use .PHONY: probably internal.
                 a = a.confidence(Confidence::Low);
@@ -348,6 +366,58 @@ impl Discoverer for Make {
         }
         out
     }
+}
+
+/// The makefile text followed by the files it `include`s (`include x.mk`, `-include`,
+/// `sinclude`): plain relative paths only, no variables or globs, three levels deep, each
+/// file once. Targets and `##` comments in an included file are the project's too.
+fn with_includes(ctx: &Context, base: &DirInfo, text: &str) -> String {
+    const MAX_DEPTH: usize = 3;
+    fn walk(
+        ctx: &Context,
+        base: &DirInfo,
+        text: &str,
+        depth: usize,
+        seen: &mut Vec<String>,
+        out: &mut String,
+    ) {
+        for line in text.lines() {
+            let t = line.trim();
+            let Some(rest) = ["-include", "sinclude", "include"]
+                .iter()
+                .find_map(|k| t.strip_prefix(k).filter(|r| r.starts_with([' ', '\t'])))
+            else {
+                continue;
+            };
+            for path in rest.split_whitespace() {
+                if path.contains(['$', '*', '?', '['])
+                    || path.starts_with('/')
+                    || path.contains("..")
+                {
+                    continue;
+                }
+                let path = path.trim_start_matches("./");
+                if seen.iter().any(|s| s == path) || depth >= MAX_DEPTH {
+                    continue;
+                }
+                let (dir, file) = match path.rsplit_once('/') {
+                    Some((sub, f)) => (ctx.child(base, sub), f),
+                    None => (Some(base), path),
+                };
+                let Some(inc) = dir.and_then(|d| ctx.text(d, file)) else {
+                    continue;
+                };
+                seen.push(path.to_string());
+                out.push('\n');
+                out.push_str(&inc);
+                walk(ctx, base, &inc, depth + 1, seen, out);
+            }
+        }
+    }
+    let mut out = text.to_string();
+    let mut seen = Vec::new();
+    walk(ctx, base, text, 0, &mut seen, &mut out);
+    out
 }
 
 #[cfg(test)]

@@ -52,10 +52,8 @@ pub fn gradle_tasks(text: &str) -> Vec<(String, Option<String>)> {
                     .or_else(|| t.strip_prefix("description ="))
                     .or_else(|| t.strip_prefix("description("))
                 {
-                    let d = d
-                        .trim_start_matches(['=', '(', ' '])
-                        .trim()
-                        .trim_matches(|c| c == '"' || c == '\'' || c == ')');
+                    let d =
+                        super::unquote(d.trim_start_matches(['=', '(', ' ']).trim_end_matches(')'));
                     if !d.is_empty() {
                         desc = Some(d.to_string());
                     }
@@ -90,6 +88,9 @@ fn gradle_wrapper_version(props: &str) -> Option<String> {
     }
 }
 
+/// Subproject paths from `settings.gradle(.kts)`: `include(":app", ":lib")`,
+/// `include("app")`, `include ':app', ':lib:core'`, `include 'app'`. Project paths use `:`
+/// as the separator, with or without the leading one; `includeBuild` is not an include.
 fn settings_projects(text: &str) -> Vec<String> {
     let mut out = Vec::new();
     for l in text.lines() {
@@ -97,11 +98,13 @@ fn settings_projects(text: &str) -> Vec<String> {
         let Some(rest) = l.strip_prefix("include") else {
             continue;
         };
+        if !(rest.starts_with('(') || rest.starts_with(' ')) {
+            continue;
+        }
         for part in rest.trim_start_matches('(').split(',') {
-            let p = part
-                .trim()
-                .trim_matches(|c| c == '"' || c == '\'' || c == ')' || c == ' ');
-            if let Some(p) = p.strip_prefix(':') {
+            let p = super::unquote(part.trim().trim_end_matches(')'));
+            let p = p.trim_start_matches(':');
+            if !p.is_empty() && !p.contains(['"', '\'', ' ']) {
                 out.push(p.replace(':', "/"));
             }
         }
@@ -114,7 +117,7 @@ fn gradle_root<'a>(ctx: &Context<'a>, dir: &DirInfo) -> Option<(&'a DirInfo, Str
         let Some(sf) = a.first_of(GRADLE_SETTINGS) else {
             continue;
         };
-        let text = a.read(sf).unwrap_or_default();
+        let text = ctx.text(a, sf).unwrap_or_else(|| "".into());
         let rel = dir.rel_to(a, "");
         if settings_projects(&text).contains(&rel) {
             return Some((a, format!(":{}", rel.replace('/', ":"))));
@@ -125,7 +128,7 @@ fn gradle_root<'a>(ctx: &Context<'a>, dir: &DirInfo) -> Option<(&'a DirInfo, Str
 
 fn maven_root<'a>(ctx: &Context<'a>, dir: &DirInfo) -> Option<(&'a DirInfo, String)> {
     for a in ctx.ancestors(dir).into_iter().skip(1) {
-        let Some(text) = a.read("pom.xml") else {
+        let Some(text) = ctx.text(a, "pom.xml") else {
             continue;
         };
         let rel = dir.rel_to(a, "");
@@ -160,11 +163,8 @@ impl Discoverer for Jvm {
             .first_of(GRADLE_BUILD)
             .or_else(|| base.first_of(GRADLE_SETTINGS))
         {
-            let build = base.read(bf).unwrap_or_default()
-                + &base
-                    .first_of(GRADLE_BUILD)
-                    .and_then(|f| base.read(f))
-                    .unwrap_or_default();
+            // `bf` is the build file when there is one, else the settings file.
+            let build = base.read(bf).unwrap_or_default();
             let member = gradle_root(ctx, base);
             let (root, path) = match &member {
                 Some((r, p)) => (*r, p.clone()),
@@ -182,24 +182,22 @@ impl Discoverer for Jvm {
             // Only the wrapper-owning root carries `gradle/wrapper/gradle-wrapper.properties`;
             // sub-projects share it, so record it once from there.
             if member.is_none() {
-                if let Some(props) = crate::repo::read_text(
-                    &root.path.join("gradle/wrapper/gradle-wrapper.properties"),
-                ) {
+                if let Some(props) = ctx
+                    .child(root, "gradle/wrapper")
+                    .and_then(|d| ctx.text(d, "gradle-wrapper.properties"))
+                {
                     if let Some(v) = gradle_wrapper_version(&props) {
                         out.version("gradle", v, "gradle/wrapper/gradle-wrapper.properties");
                     }
                 }
             }
-            let g = |task: &str| {
-                format!("{wrapper} {path}:{task}")
-                    .replace(" :", " ")
-                    .replace("::", ":")
-            };
+            // A subproject's task is addressed by its absolute project path (`:app:build`),
+            // run from the root where the wrapper lives.
             let g = |task: &str| {
                 if path.is_empty() {
                     format!("{wrapper} {task}")
                 } else {
-                    g(task)
+                    format!("{wrapper} {path}:{task}")
                 }
             };
             let mk = |a: Action| {
@@ -460,9 +458,9 @@ task integrationTest(type: Test) {
         );
         assert_eq!(
             settings_projects(
-                "rootProject.name = 'x'\ninclude ':app', ':lib:core'\ninclude(\":tools\")"
+                "rootProject.name = 'x'\ninclude ':app', ':lib:core'\ninclude(\":tools\")\ninclude(\"web\", \"cli\")\ninclude 'api'\nincludeBuild(\"build-logic\")"
             ),
-            ["app", "lib/core", "tools"]
+            ["app", "lib/core", "tools", "web", "cli", "api"]
         );
     }
 }

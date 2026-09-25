@@ -45,9 +45,13 @@ pub(super) fn summarize(
                 }
                 Some("delete") => s(
                     "kubectl",
-                    format!("Delete Kubernetes resources{ns}"),
+                    if dry {
+                        "Preview deleting Kubernetes resources (dry run)".to_string()
+                    } else {
+                        format!("Delete Kubernetes resources{ns}")
+                    },
                     Infra,
-                    Destructive,
+                    if dry { Safe } else { Destructive },
                 ),
                 Some("create") => s(
                     "kubectl",
@@ -467,6 +471,33 @@ pub(super) fn summarize(
             Some(x) => s(program, format!("Run {program} {x}"), Infra, Safe),
             None => s(program, "Run CDK", Infra, Safe),
         },
+        "sst" => match sub {
+            Some("deploy") => s("sst", "Deploy the SST app", Deploy, External),
+            Some("dev") => s("sst", "Start SST live development", Dev, External),
+            Some("remove") => s("sst", "Remove the deployed SST app", Infra, Destructive),
+            Some("diff") => s("sst", "Preview SST changes", Infra, External),
+            Some(x) => s("sst", format!("Run sst {x}"), Infra, Safe),
+            None => s("sst", "Run SST", Infra, Safe),
+        },
+        "amplify" => match sub {
+            Some("push") => s(
+                "amplify",
+                "Push Amplify backend resources",
+                Deploy,
+                External,
+            ),
+            Some("publish") => s(
+                "amplify",
+                "Publish the Amplify app and its backend",
+                Deploy,
+                External,
+            ),
+            Some("pull") => s("amplify", "Pull the Amplify backend", Infra, External),
+            Some("delete") => s("amplify", "Delete the Amplify project", Infra, Destructive),
+            Some("status") => s("amplify", "Show Amplify status", Infra, Safe),
+            Some(x) => s("amplify", format!("Run amplify {x}"), Infra, Safe),
+            None => s("amplify", "Run Amplify", Infra, Safe),
+        },
         "sam" => match sub {
             Some("build") => s("sam", "Build the SAM application", Build, Safe),
             Some("deploy") => s("sam", "Deploy the SAM application", Deploy, External),
@@ -844,23 +875,23 @@ pub(super) fn summarize(
                     s("git", "Fetch changes from the remote", Other, External)
                 }
                 Some("clone") => s("git", "Clone a repository", Other, External),
-                Some("clean") => s(
-                    "git",
-                    "Delete untracked files",
-                    Clean,
-                    if a.has("-x")
-                        || a.has("-fdx")
-                        || a.has("-xdf")
-                        || a.has("-fxd")
-                        || a.has("-dfx")
-                        || a.has("-xfd")
-                        || a.has("-dxf")
-                    {
-                        Destructive
-                    } else {
-                        Safe
-                    },
-                ),
+                Some("clean") => {
+                    let dry = a.has("-n") || a.has("--dry-run");
+                    s(
+                        "git",
+                        if dry {
+                            "List untracked files that would be deleted"
+                        } else {
+                            "Delete untracked files"
+                        },
+                        Clean,
+                        if a.has("-x") && !dry {
+                            Destructive
+                        } else {
+                            Safe
+                        },
+                    )
+                }
                 Some("reset") => s(
                     "git",
                     if a.has("--hard") {
@@ -871,8 +902,26 @@ pub(super) fn summarize(
                     Other,
                     if a.has("--hard") { Destructive } else { Safe },
                 ),
+                Some("checkout") if a.has("--") || p.get(1) == Some(&".") => {
+                    s("git", "Discard working-tree changes", Other, Destructive)
+                }
+                // `git restore <paths>` overwrites the working tree; `--staged` alone only unstages.
+                Some("restore")
+                    if p.len() > 1
+                        && (!a.has("--staged") && !a.has("-S")
+                            || a.has("--worktree")
+                            || a.has("-W")) =>
+                {
+                    s("git", "Discard working-tree changes", Other, Destructive)
+                }
                 Some("checkout") | Some("restore") | Some("switch") => {
                     s("git", "Check out files or a branch", Other, Safe)
+                }
+                Some("branch") if a.has("-D") || a.has("--delete") && a.has("--force") => {
+                    s("git", "Force-delete the Git branch", Other, Destructive)
+                }
+                Some("branch") if a.has("-d") || a.has("--delete") => {
+                    s("git", "Delete the merged Git branch", Other, Safe)
                 }
                 Some("tag") => s("git", "Create a Git tag", Other, Safe),
                 Some("commit") => s("git", "Create a commit", Other, Safe),
@@ -1297,5 +1346,74 @@ pub(super) fn summarize(
             s("python", "Serve the current directory over HTTP", Dev, Safe)
         }
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn kubernetes_and_helm() {
+        assert_eq!(sum("kubectl apply -f k8s/").kind, Deploy);
+        assert_eq!(sum("kubectl apply -f k8s/").risk, External);
+        assert_eq!(sum("kubectl delete -f k8s/").risk, Destructive);
+        let dry = sum("kubectl delete -f k8s/ --dry-run=client");
+        assert_eq!(dry.risk, Safe);
+        assert_eq!(dry.text, "Preview deleting Kubernetes resources (dry run)");
+        assert_eq!(
+            sum("kubectl --namespace=dev get pods").text,
+            "Query pods from the cluster"
+        );
+        assert_eq!(sum("helm upgrade --install app ./chart").risk, External);
+        assert_eq!(sum("helm uninstall app").risk, Destructive);
+        assert_eq!(sum("helm lint ./chart").risk, Safe);
+    }
+
+    #[test]
+    fn terraform_and_serverless_platforms() {
+        assert_eq!(sum("terraform -chdir=infra destroy").risk, Destructive);
+        assert_eq!(
+            sum("terraform plan -destroy").text,
+            "Plan a Terraform destroy"
+        );
+        assert_eq!(sum("terraform plan -destroy").risk, External);
+        assert_eq!(sum("terraform fmt -check").risk, Safe);
+        let deploy = sum("sst deploy --stage prod");
+        assert_eq!((deploy.kind, deploy.risk), (Deploy, External));
+        let dev = sum("sst dev");
+        assert_eq!((dev.kind, dev.risk), (Dev, External));
+        let remove = sum("sst remove --stage prod");
+        assert_eq!((remove.kind, remove.risk), (Infra, Destructive));
+        assert_eq!(sum("amplify push").risk, External);
+        assert_eq!(sum("amplify publish").kind, Deploy);
+        assert_eq!(sum("amplify status").risk, Safe);
+    }
+
+    #[test]
+    fn git_working_tree_and_branches() {
+        let d = sum("git branch -D feature");
+        assert_eq!(d.risk, Destructive);
+        assert_eq!(d.text, "Force-delete the Git branch");
+        assert_eq!(sum("git branch -d feature").risk, Safe);
+        assert_eq!(sum("git branch --list").risk, Safe);
+        assert_eq!(sum("git checkout -- .").risk, Destructive);
+        assert_eq!(sum("git checkout .").text, "Discard working-tree changes");
+        assert_eq!(sum("git checkout main").risk, Safe);
+        assert_eq!(sum("git checkout -b feature").risk, Safe);
+        assert_eq!(sum("git restore .").risk, Destructive);
+        assert_eq!(sum("git restore --staged .").risk, Safe);
+        assert_eq!(sum("git restore --staged --worktree .").risk, Destructive);
+        assert_eq!(sum("git reset --hard").risk, Destructive);
+        assert_eq!(sum("git reset HEAD~1").risk, Safe);
+        assert_eq!(sum("git clean -fdx").risk, Destructive);
+        assert_eq!(sum("git clean -fdxn").risk, Safe);
+        assert_eq!(sum("git clean -fdx --dry-run").risk, Safe);
+        assert_eq!(sum("git clean -fd").risk, Safe);
+        assert_eq!(sum("git push --force-with-lease").risk, External);
+        assert_eq!(sum("git push -f origin main").risk, Destructive);
+        assert_eq!(sum("gh release create v1.0").risk, External);
+        assert_eq!(sum("gh pr list").risk, External);
     }
 }

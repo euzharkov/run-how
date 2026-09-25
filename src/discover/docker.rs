@@ -187,7 +187,7 @@ impl Discoverer for Docker {
             let pre = if at_base || !multi_dirs {
                 String::new()
             } else {
-                format!("{}:", dir.name())
+                format!("{}:", super::attach_prefix(ctx, base, dir, dirs))
             };
 
             // ---- Dockerfile ---------------------------------------------------------------
@@ -263,13 +263,15 @@ impl Discoverer for Docker {
                     let image = v.get("image").and_then(|i| i.as_str());
                     let build = v.get("build").is_some();
                     let desc = service_description(name, image, build);
-                    out.actions.push(
-                        Action::new(format!("{pre}{name}"), dc(&format!("up -d {name}")))
-                            .tool("compose")
-                            .inferred(conf)
-                            .inferred_desc(desc)
-                            .cat(Category::Infrastructure),
-                    );
+                    let mut a = Action::new(format!("{pre}{name}"), dc(&format!("up -d {name}")))
+                        .tool("compose")
+                        .inferred(conf)
+                        .inferred_desc(desc)
+                        .cat(Category::Infrastructure);
+                    if let Some(t) = crate::techs::from_image(name, image) {
+                        a = a.tech(t);
+                    }
+                    out.actions.push(a);
                 }
             }
             let mut profiles: Vec<String> = Vec::new();

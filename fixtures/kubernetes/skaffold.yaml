@@ -1,2 +1,20 @@
 apiVersion: skaffold/v4beta6
 kind: Config
+build:
+  artifacts:
+  - image: acme/api
+profiles:
+- name: dev
+  deploy:
+    helm:
+      releases:
+      - name: api-release
+        chartPath: charts/api
+- name: prod
+  activation:
+  - env: ENV=prod
+verify:
+- name: smoke
+  container:
+    name: smoke
+    image: curlimages/curl

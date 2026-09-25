@@ -3,22 +3,22 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [npm-workspaces] JavaScript tools=npm
+## . [npm-workspaces] JavaScript tools=npm techs=Node.js
 dev                      Development    declared exact  safe        .          npm run dev :: Run dev in all workspace packages [long-running]
 build                    Build          declared exact  safe        .          npm run build :: Run build in all workspace packages
 test                     Testing        declared exact  safe        .          npm run test :: Run test in all workspace packages
 lint                     Quality        declared exact  safe        .          npm run lint :: Check source code with ESLint
-## apps/api [api] JavaScript tools=npm
+## apps/api [api] JavaScript tools=npm techs=Node.js,Vitest,Drizzle
 api                      Development    declared exact  safe        apps/api   npm run dev :: Run src/index.ts with auto-restart [long-running]
-api:build                Build          declared exact  safe        apps/api   npm run build :: Build the package with tsup
+api:build                Build          declared exact  safe        apps/api   npm run build :: Build package with tsup
 api:test                 Testing        declared exact  safe        apps/api   npm run test :: Run Vitest tests
 api:db:migrate           Database       declared exact  safe        apps/api   npm run db:migrate :: Apply Drizzle migrations
-## apps/web [web] JavaScript tools=npm
-web                      Development    declared exact  safe        apps/web   npm run dev :: Start the Next.js development server [long-running]
-web:build                Build          declared exact  safe        apps/web   npm run build :: Build the Next.js app
-web:start                Development    declared exact  safe        apps/web   npm run start :: Start the Next.js production server [long-running]
+## apps/web [web] JavaScript tools=npm techs=Node.js,Next.js,Jest
+web                      Development    declared exact  safe        apps/web   npm run dev :: Start Next.js development server [long-running]
+web:build                Build          declared exact  safe        apps/web   npm run build :: Build Next.js app
+web:start                Development    declared exact  safe        apps/web   npm run start :: Start Next.js production server [long-running]
 web:test                 Testing        declared exact  safe        apps/web   npm run test :: Run Jest tests
-## packages/ui [ui] JavaScript tools=npm
-ui:build                 Build          declared exact  safe        packages/ui npm run build :: Build the package with tsup
+## packages/ui [ui] JavaScript tools=npm techs=Node.js,Storybook,Vitest
+ui:build                 Build          declared exact  safe        packages/ui npm run build :: Build package with tsup
 ui:storybook             Development    declared exact  safe        packages/ui npm run storybook :: Start Storybook [long-running]
 ui:test                  Testing        declared exact  safe        packages/ui npm run test :: Run Vitest tests

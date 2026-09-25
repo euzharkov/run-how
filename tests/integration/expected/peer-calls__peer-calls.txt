@@ -1,0 +1,44 @@
+peer-calls_peer-calls  [Node.js, Go, Docker, webpack, Kubernetes]
+
+  npm run start                            Run sass, then bundle with webpack, then run main.go
+  npm run start:server                     Run main.go
+  npm run start:sfu                        Run main.go
+  npm run start:watch
+  npm run prepublishOnly                   Run sass, then bundle with webpack
+  npm run build                            Run sass, then bundle with webpack
+  npm run build:go:linux                   Run build-linux make target
+  npm run build:go
+  npm run test                             Run Jest tests
+  npm run test:go                          Run Go tests
+  npm run test:coverage                    Run Jest tests with coverage
+  npm run test:watch                       Run Jest tests in watch mode  ∞ long-running
+  npm run js                               Bundle with webpack
+  npm run js:watch                         Start webpack dev server  ∞ long-running
+  npm run css
+  npm run css:watch                          ∞ long-running
+  npm run lint                             Check source code with ESLint
+  npm run lint:fix                         Fix lint issues with ESLint
+  npm run ci                               Run Jest tests with coverage (+4 more steps)
+  npm run ts:watch                         Compile TypeScript in watch mode  ∞ long-running
+  npm run ts                               Build TypeScript project references
+  npm run clean                            Delete lib, tsconfig.tsbuildinfo, and build/*  [destructive]
+  go build ./...
+  go vet ./...                             Check Go source with go vet
+  go fmt ./...                             Format Go source
+  go mod tidy                              Tidy Go module dependencies  ↓ download
+  go run .                                 Run Go v4 program
+  make build-assets                        Run sass, then bundle with webpack
+  make build-linux-docker
+  make coverage                            Run Go tests with coverage
+  make report                              Run Go tool cover
+  make lint
+  make lint-env-variables
+  docker build -t peer-calls_peer-calls .  Build Docker image
+  docker compose up -d                     Start all Docker services
+  docker compose up -d redis               Start Redis
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose down                      Stop and remove Docker services
+  kubectl kustomize .                      Render Kubernetes manifests
+  kubectl apply -k .                       Apply resources to cluster  [external]
+  kubectl delete -k .                      Delete resources from cluster  [destructive]
+  ./scripts/lint-env-variables.sh

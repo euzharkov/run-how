@@ -2,3 +2,5 @@ target
 .git
 node_modules
 *.snap.new
+tests/integration/logs
+site

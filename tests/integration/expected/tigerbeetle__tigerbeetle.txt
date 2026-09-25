@@ -1,0 +1,66 @@
+tigerbeetle_tigerbeetle  [Zig]
+
+  zig build
+  zig build run   Build and run Zig program
+  zig build test  Run Zig tests
+  zig fmt .       Format Zig source
+
+src/clients/dotnet  [.NET]
+  dotnet test     Run all TigerBeetle solution tests
+  dotnet restore  Restore NuGet packages  ↓ download
+  dotnet clean    Delete .NET build outputs
+  dotnet format   Format .NET source code
+
+src/clients/dotnet/samples/basic  [.NET]
+  dotnet run  Run .NET Basic app
+
+src/clients/dotnet/samples/two-phase  [.NET]
+  dotnet run  Run .NET TwoPhase app
+
+src/clients/dotnet/samples/two-phase-many  [.NET]
+  dotnet run  Run .NET TwoPhaseMany app
+
+src/clients/dotnet/samples/walkthrough  [.NET]
+  dotnet run  Run .NET Walkthrough app
+
+src/clients/go/samples/basic  [Go]
+  go run .  Run Go basic program
+
+src/clients/go/samples/two-phase  [Go]
+  go run .  Run Go two-phase program
+
+src/clients/go/samples/two-phase-many  [Go]
+  go run .  Run Go two-phase-many program
+
+src/clients/go/samples/walkthrough  [Go]
+  go run .  Run Go walkthrough program
+
+src/clients/java  [JVM, Maven]
+  mvn deploy  Deploy artifacts to Maven repository  [external]
+
+src/clients/node  [Node.js]
+  npm run prepare  Compile TypeScript sources
+
+src/clients/python  [Python]
+  pytest         Run Python tests
+  ruff check .   Check Python source code with Ruff
+  ruff format .  Format Python code with Ruff
+  mypy .         Run static type checking with mypy
+
+src/clients/rust/samples/basic  [Rust]
+  cargo run  Run Rust program
+
+src/clients/rust/samples/two-phase  [Rust]
+  cargo run  Run Rust program
+
+src/clients/rust/samples/two-phase-many  [Rust]
+  cargo run  Run Rust program
+
+src/clients/rust/samples/walkthrough  [Rust]
+  cargo run  Run Rust program
+
+src/docs_website  [Zig]
+  zig build run  Build and run Zig program
+
+src/testing/vortex/rust_driver  [Rust]
+  cargo run  Run Rust program

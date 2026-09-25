@@ -1,0 +1,20 @@
+exelban_stats  [Xcode]
+
+  xcodebuild -project … 16' test  Run Stats tests in iOS Simulator  ⊙ device
+  make build                      Clone repository (+6 more steps)  [external]
+  make archive                    Run osascript
+  make notarize                   Run osascript
+  make sign                       Run osascript
+  make verify                     Print message
+  make prepare-dmg                Clone repository  [external]
+  make prepare-dSYM               Create zip archive
+  make clean                      Delete build, then delete dSYMs.zip, then delete Stats.dmg
+  make next-version
+  make check                      Upload or notarize with Apple  [external]
+  make history                    Upload or notarize with Apple  [external]
+  make open                       Run osascript, then run open
+  make smc
+  make leveldb                    Delete leveldb-source (+5 more steps)  [destructive]
+
+SMC
+  make build  Delete build

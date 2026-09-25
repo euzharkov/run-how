@@ -24,16 +24,40 @@ fn gem_listed(gemfile: &str, name: &str) -> bool {
     })
 }
 
-/// `desc "..."` followed by `task :name` / `task name:` / namespaced blocks.
+/// Does this line open a Ruby block that a later `end` closes: a trailing `do` (with or
+/// without `|args|`) or a leading `def`/`class`/`module`/`if`/`case`/… keyword.
+fn opens_block(l: &str) -> bool {
+    let l = l.split('#').next().unwrap_or("").trim_end();
+    let before_args = match l.rfind(" do |") {
+        Some(i) if l.ends_with('|') => &l[..i + 3],
+        _ => l,
+    };
+    if before_args == "do" || before_args.ends_with(" do") {
+        return true;
+    }
+    let first = l.split_whitespace().next().unwrap_or("");
+    matches!(
+        first,
+        "def" | "class" | "module" | "if" | "unless" | "case" | "while" | "until" | "begin"
+    )
+}
+
+/// `desc "..."` followed by `task :name` / `task name:` / namespaced blocks. Namespaces are
+/// tracked with the `do`/`end` nesting, so a task after a closed inner namespace belongs to
+/// the outer one.
 pub fn rake_tasks(text: &str) -> Vec<(String, Option<String>)> {
     let mut out = Vec::new();
     let mut pending: Option<String> = None;
-    let mut namespaces: Vec<String> = Vec::new();
+    // One entry per open block: `Some(name)` for a namespace, `None` for any other block.
+    let mut blocks: Vec<Option<String>> = Vec::new();
     for raw in text.lines() {
         let l = raw.trim();
         if let Some(rest) = l.strip_prefix("desc ") {
-            let d = rest.trim().trim_matches(|c| c == '"' || c == '\'');
-            pending = Some(d.to_string());
+            pending = Some(super::unquote(rest).to_string());
+            continue;
+        }
+        if l == "end" || l.starts_with("end ") || l.starts_with("end#") {
+            blocks.pop();
             continue;
         }
         if let Some(rest) = l.strip_prefix("namespace ") {
@@ -45,11 +69,7 @@ pub fn rake_tasks(text: &str) -> Vec<(String, Option<String>)> {
                 .next()
                 .unwrap_or("")
                 .to_string();
-            namespaces.push(ns);
-            continue;
-        }
-        if l == "end" && !namespaces.is_empty() && raw.starts_with(|c: char| !c.is_whitespace()) {
-            namespaces.pop();
+            blocks.push(Some(ns));
             continue;
         }
         if let Some(rest) = l.strip_prefix("task ") {
@@ -62,15 +82,18 @@ pub fn rake_tasks(text: &str) -> Vec<(String, Option<String>)> {
                 .take_while(|c| c.is_ascii_alphanumeric() || *c == '_' || *c == ':')
                 .collect();
             let name = name.trim_end_matches(':').to_string();
-            if name.is_empty() {
-                continue;
+            if !name.is_empty() {
+                let namespaces: Vec<&str> = blocks.iter().flatten().map(String::as_str).collect();
+                let full = if namespaces.is_empty() {
+                    name
+                } else {
+                    format!("{}:{}", namespaces.join(":"), name)
+                };
+                out.push((full, pending.take()));
             }
-            let full = if namespaces.is_empty() {
-                name
-            } else {
-                format!("{}:{}", namespaces.join(":"), name)
-            };
-            out.push((full, pending.take()));
+        }
+        if opens_block(l) {
+            blocks.push(None);
         }
     }
     out
@@ -86,12 +109,14 @@ impl Discoverer for Ruby {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(MARKERS)
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let gemfile = base.read("Gemfile").unwrap_or_default();
         let bundler = base.has("Gemfile");
         if let Some(v) = base.read(".ruby-version") {
             out.version("ruby", v.trim(), ".ruby-version");
+        } else if let Some((v, src)) = super::tool_version(ctx, base, "ruby") {
+            out.version("ruby", v, src);
         }
         let be = |cmd: &str| {
             if bundler {
@@ -100,17 +125,36 @@ impl Discoverer for Ruby {
                 cmd.to_string()
             }
         };
-        let rails = base.path.join("bin/rails").is_file() || gem_listed(&gemfile, "rails");
+        let bin_rails = ctx.has_file(base, "bin/rails");
+        let rails = bin_rails || gem_listed(&gemfile, "rails");
         let rspec = base.has_dir("spec")
             || gem_listed(&gemfile, "rspec")
             || gem_listed(&gemfile, "rspec-rails");
         let rubocop = base.has(".rubocop.yml") || gem_listed(&gemfile, "rubocop");
 
-        // Declared Rake tasks (with descriptions).
+        // Declared Rake tasks (with descriptions): the Rakefile, then Rails-style
+        // `lib/tasks/*.rake` files that `load_tasks` pulls in.
         let mut declared: Vec<String> = Vec::new();
-        for f in ["Rakefile", "rakefile", "Rakefile.rb"] {
-            let Some(text) = base.read(f) else { continue };
+        let mut rake_files: Vec<(&DirInfo, String)> = Vec::new();
+        if let Some(f) = base.first_of(&["Rakefile", "rakefile", "Rakefile.rb"]) {
+            rake_files.push((base, f.to_string()));
+        }
+        if let Some(tasks_dir) = ctx
+            .child(base, "lib")
+            .and_then(|lib| ctx.child(lib, "tasks"))
+        {
+            for f in tasks_dir.with_ext("rake") {
+                rake_files.push((tasks_dir, f.to_string()));
+            }
+        }
+        for (dir, f) in rake_files {
+            let Some(text) = ctx.text(dir, &f) else {
+                continue;
+            };
             for (name, desc) in rake_tasks(&text) {
+                if declared.contains(&name) {
+                    continue;
+                }
                 // A task built in a Ruby loop (`task "#{framework}:test"`) has no single name
                 // to type; keep it out of the default view.
                 let templated =
@@ -126,19 +170,18 @@ impl Discoverer for Ruby {
                 }
                 out.actions.push(a);
             }
-            break;
         }
         let free = |n: &str| !declared.iter().any(|d| d == n);
 
         if rails {
             let r = |c: &str| {
-                if base.path.join("bin/rails").is_file() {
+                if bin_rails {
                     format!("bin/rails {c}")
                 } else {
                     be(&format!("rails {c}"))
                 }
             };
-            if base.path.join("bin/dev").is_file() && free("dev") {
+            if ctx.has_file(base, "bin/dev") && free("dev") {
                 out.actions.push(
                     Action::new("dev", "bin/dev")
                         .tool("rails")
@@ -173,7 +216,7 @@ impl Discoverer for Ruby {
                         .inferred(Confidence::High),
                 );
             }
-            if base.path.join("db/seeds.rb").is_file() && free("db:seed") {
+            if ctx.has_file(base, "db/seeds.rb") && free("db:seed") {
                 out.actions.push(
                     Action::new("db:seed", r("db:seed"))
                         .tool("rails")
@@ -199,7 +242,7 @@ impl Discoverer for Ruby {
                     .inferred_desc("List Rails routes")
                     .cat(Category::Other),
             );
-            if base.path.join("bin/setup").is_file() && free("setup") {
+            if ctx.has_file(base, "bin/setup") && free("setup") {
                 out.actions.push(
                     Action::new("setup", "bin/setup")
                         .tool("rails")
@@ -222,7 +265,7 @@ impl Discoverer for Ruby {
                         .tool("rails")
                         .inferred(Confidence::High),
                 );
-                if base.has_dir("test") && base.path.join("test/system").is_dir() {
+                if ctx.has_dir(base, "test/system") {
                     out.actions.push(
                         Action::new("test:system", "bin/rails test:system".to_string())
                             .tool("rails")
@@ -257,7 +300,7 @@ impl Discoverer for Ruby {
                     .cat(Category::Quality),
             );
         }
-        if base.has("Gemfile") && base.has("*.gemspec") {
+        if base.has("Gemfile") && !base.with_ext("gemspec").is_empty() {
             out.actions.push(
                 Action::new("build:gem", "gem build".to_string())
                     .tool("ruby")
@@ -281,5 +324,30 @@ mod tests {
         assert_eq!(tasks[0], ("import".into(), Some("Import data".into())));
         assert_eq!(tasks[1], ("db:nuke".into(), Some("Nuke it".into())));
         assert_eq!(tasks[2].0, "default");
+    }
+
+    #[test]
+    fn closed_inner_namespace_does_not_leak() {
+        let t = "namespace :db do\n  namespace :seed do\n    task :all do\n      if x\n        y\n      end\n    end\n  end\n  desc 'Migrate'\n  task :migrate => :environment do |t, args|\n  end\nend\ntask :top\n";
+        let names: Vec<String> = rake_tasks(t).into_iter().map(|(n, _)| n).collect();
+        assert_eq!(names, ["db:seed:all", "db:migrate", "top"]);
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+
+    #[test]
+    fn ruby_from_a_parent_tool_versions() {
+        let (root, dirs) = super::super::fixture_dirs("version-sources");
+        let ctx = Context::new(&root, &dirs, "linux");
+        let rb = ctx.dir_at("rb").unwrap();
+        let d = Ruby.discover(&ctx, rb, &[rb]);
+        let v = d.versions.iter().find(|v| v.tool == "ruby").unwrap();
+        assert_eq!(
+            (v.value.as_str(), v.source.as_str()),
+            ("3.3.0", ".tool-versions")
+        );
     }
 }

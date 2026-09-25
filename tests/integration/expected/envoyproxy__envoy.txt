@@ -1,0 +1,89 @@
+envoyproxy_envoy  [Rust, Bazel, Go]
+
+  cargo check --workspace            Type-check Rust project for whole workspace
+  cargo clippy --workspace           Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace              Format Rust source
+  cargo bench --workspace            Run Rust benchmarks
+  cargo doc --no-deps --workspace    Build Rust docs
+  go vet ./...                       Check Go source with go vet
+  go fmt ./...                       Format Go source
+  go mod tidy                        Tidy Go module dependencies  ↓ download
+  flake8                             Check Python source code with Flake8
+  bazelisk build //...               Build all Bazel targets
+  bazelisk test //...                Run all Bazel tests
+  bazelisk query //...               List all Bazel targets
+  bazelisk clean                     Delete Bazel outputs
+  buildifier -r .                    Format BUILD and .bzl files
+  ./ci/build_setup.sh                Configure environment variables for Bazel build and test
+  ./ci/check_and_fix_format.sh
+  ./ci/do_ci.sh                      Run CI build/test target, e.g. docs, asan
+  ./ci/docker-entrypoint-extra.sh
+  .\ci\docker-entrypoint.bat         If first argument look like parameter (i.e. start with '-'), run Envoy
+  ./ci/docker_rebuild_google-vrp.sh  Script to rebuild Dockerfile-envoy google-vrp target locally (i.e. not in CI) for development p…
+  ./ci/envoy_build_sha.sh
+  ./ci/format_pre.sh
+  ./ci/mac_ci_setup.sh               Installs dependencies required for macOS build via homebrew
+  ./ci/mac_ci_steps.sh
+  ./ci/reopen_branch.sh
+  ./ci/run_envoy_docker.sh
+  ./ci/windows_ci_steps.sh
+  ./tools/bazel-test-docker.sh       Run single Bazel test target under privileged docker. Usage:
+  ./tools/docker_wrapper.sh          Wraps test invocation in docker
+  ./tools/local_fix_format.sh        Runs Envoy format fixers on current changes. By default, this runs on
+  ./tools/path_fix.sh
+
+bazel/rbe/toolchains/configs/linux/gcc/cc  [Bazel]
+  ./cc_wrapper.sh  Ship environment to C++ action
+
+bazel/tests/external  [Bazel]
+  ./engflow-bazel-credential-helper.sh  Bazel expects helper to read stdin
+
+contrib/golang/common/dso/test/test_data  [Go]
+  go run .  Run Go test_data program
+
+contrib/golang/filters/http/test/test_data  [Go]
+  go run .  Run Go test-data program
+
+contrib/golang/filters/http/test/test_data/dummy  [Go]
+  go run .  Run Go dummy program
+
+contrib/golang/filters/network/test/test_data  [Go]
+  go run .  Run Go test_data program
+
+contrib/golang/router/cluster_specifier/test/test_data/simple  [Go]
+  go run .  Run Go routeconfig program
+
+contrib/golang/upstreams/http/tcp/test/test_data  [Go]
+  go run .  Run Go test-data program
+
+docs/tools/python  [Python]
+  flake8  Check Python source code with Flake8
+
+mobile  [Python]
+  black .                         Format Python code with Black
+  pre-commit run --all-files      Run pre-commit hooks on all files  ∆ git
+  ./ci/linux_ci_setup.sh
+  ./ci/start_android_emulator.sh
+  ./ci/test_size_regression.sh
+  ./tools/check_format.sh
+  ./tools/docc.sh
+  ./tools/ktfmt.sh
+  ./tools/post_to_slack.sh
+  ./tools/vscode_compdb.sh        Generates compile_commands.json file for use with VS Code clangd plugin
+
+mobile/examples/swift/swiftpm  [Xcode]
+  xcodebuild -project … build     Build EnvoySwiftPMExample scheme for iOS Simulator  ⊙ device
+  xcodebuild -project … 16' test  Run EnvoySwiftPMExample tests in iOS Simulator  ⊙ device
+
+mobile/examples/swift/swiftpm/Packages  [Swift]
+  swift build
+  swift test   Run Swift tests
+
+mobile/tools/python  [Python]
+  mypy .  Run static type checking with mypy
+
+source/extensions/dynamic_modules  [Go]
+  go generate ./...  Run go:generate directives
+
+test/extensions/common/wasm/test_data
+  make all

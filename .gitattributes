@@ -1,0 +1,4 @@
+# include_str! tests compare README.md and the integration lists byte for byte, so
+# every checkout, including Windows with autocrlf, must see LF line endings.
+* text=auto eol=lf
+*.png binary

@@ -1,0 +1,20 @@
+---
+source: tests/render.rs
+assertion_line: 33
+expression: out
+---
+CI  .github/workflows/ci.yml  on push main, pull_request
+  Test  ubuntu-latest
+    npm ci                       Install dependencies with npm  ↓ download
+    npm test                     Run Vitest tests
+    npm run build …              Build app with Vite, then run Playwright end-to-end tests
+    import shutil, subprocess …  Run python script
+  deploy  ubuntu-latest
+    npx wrangler deploy  Deploy Cloudflare Worker  [external]
+
+GitLab CI  .gitlab-ci.yml
+  unit  test
+    npm ci    Install dependencies with npm  ↓ download
+    npm test  Run Vitest tests
+  pages  deploy
+    npx wrangler deploy  Deploy Cloudflare Worker  [external]

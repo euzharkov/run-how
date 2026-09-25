@@ -1,0 +1,188 @@
+khuedoan_homelab  [Kubernetes, Helm, Docker]
+
+  make default                              Stop and remove Docker services (+2 more steps)
+  make configure                            Run scripts/configure, then inspect Git repository
+  make metal
+  make system
+  make external
+  make smoke-test
+  make post-install
+  make backup                               TODO maybe there's better way to manage backup with GitOps?
+  make restore
+  make test
+  make clean                                Stop and remove Docker services
+  make docs                                 Serve MkDocs site locally  ∞ long-running
+  make git-hooks                            Install pre-commit Git hooks  ↓ download  ∆ git
+  docker build -t khuedoan_homelab .        Build Docker image
+  helm template … s/actualbudget            Render actualbudget Helm chart
+  helm lint apps/actualbudget               Validate actualbudget Helm chart
+  helm upgrade --install … s/actualbudget   Install or upgrade actualbudget Helm release  [external]
+  helm uninstall actualbudget               Uninstall actualbudget Helm release  [destructive]
+  helm template blog apps/blog              Render blog Helm chart
+  helm lint apps/blog                       Validate blog Helm chart
+  helm upgrade --install blog apps/blog     Install or upgrade blog Helm release  [external]
+  helm uninstall blog                       Uninstall blog Helm release  [destructive]
+  helm template excalidraw apps/excalidraw  Render excalidraw Helm chart
+  helm lint apps/excalidraw                 Validate excalidraw Helm chart
+  helm upgrade --install … pps/excalidraw   Install or upgrade excalidraw Helm release  [external]
+  helm uninstall excalidraw                 Uninstall excalidraw Helm release  [destructive]
+  helm template homepage apps/homepage      Render homepage Helm chart
+  helm lint apps/homepage                   Validate homepage Helm chart
+  helm upgrade --install … apps/homepage    Install or upgrade homepage Helm release  [external]
+  helm uninstall homepage                   Uninstall homepage Helm release  [destructive]
+  helm template jellyfin apps/jellyfin      Render jellyfin Helm chart
+  helm lint apps/jellyfin                   Validate jellyfin Helm chart
+  helm upgrade --install … apps/jellyfin    Install or upgrade jellyfin Helm release  [external]
+  helm uninstall jellyfin                   Uninstall jellyfin Helm release  [destructive]
+  helm template elementweb apps/matrix      Render elementweb Helm chart
+  helm lint apps/matrix                     Validate elementweb Helm chart
+  helm upgrade --install … apps/matrix      Install or upgrade elementweb Helm release  [external]
+  helm uninstall elementweb                 Uninstall elementweb Helm release  [destructive]
+  helm template ollama apps/ollama          Render ollama Helm chart
+  helm lint apps/ollama                     Validate ollama Helm chart
+  helm upgrade --install … apps/ollama      Install or upgrade ollama Helm release  [external]
+  helm uninstall ollama                     Uninstall ollama Helm release  [destructive]
+  helm template pairdrop apps/pairdrop      Render pairdrop Helm chart
+  helm lint apps/pairdrop                   Validate pairdrop Helm chart
+  helm upgrade --install … apps/pairdrop    Install or upgrade pairdrop Helm release  [external]
+  helm uninstall pairdrop                   Uninstall pairdrop Helm release  [destructive]
+  helm template paperless apps/paperless    Render paperless Helm chart
+  helm lint apps/paperless                  Validate paperless Helm chart
+  helm upgrade --install … apps/paperless   Install or upgrade paperless Helm release  [external]
+  helm uninstall paperless                  Uninstall paperless Helm release  [destructive]
+  helm template speedtest apps/speedtest    Render speedtest Helm chart
+  helm lint apps/speedtest                  Validate speedtest Helm chart
+  helm upgrade --install … apps/speedtest   Install or upgrade speedtest Helm release  [external]
+  helm uninstall speedtest                  Uninstall speedtest Helm release  [destructive]
+  helm template tailscale apps/tailscale    Render tailscale Helm chart
+  helm lint apps/tailscale                  Validate tailscale Helm chart
+  helm upgrade --install … apps/tailscale   Install or upgrade tailscale Helm release  [external]
+  helm uninstall tailscale                  Uninstall tailscale Helm release  [destructive]
+  helm template wireguard apps/wireguard    Render wireguard Helm chart
+  helm lint apps/wireguard                  Validate wireguard Helm chart
+  helm upgrade --install … apps/wireguard   Install or upgrade wireguard Helm release  [external]
+  helm uninstall wireguard                  Uninstall wireguard Helm release  [destructive]
+  helm template dex platform/dex            Render dex Helm chart
+  helm lint platform/dex                    Validate dex Helm chart
+  helm upgrade --install dex platform/dex   Install or upgrade dex Helm release  [external]
+  helm uninstall dex                        Uninstall dex Helm release  [destructive]
+  helm template … ternal-secrets            Render external-secrets Helm chart
+  helm lint platform/external-secrets       Validate external-secrets Helm chart
+  helm upgrade --install … ternal-secrets   Install or upgrade external-secrets Helm release  [external]
+  helm uninstall external-secrets           Uninstall external-secrets Helm release  [destructive]
+  helm template gitea platform/gitea        Render gitea Helm chart
+  helm lint platform/gitea                  Validate gitea Helm chart
+  helm upgrade --install … platform/gitea   Install or upgrade gitea Helm release  [external]
+  helm uninstall gitea                      Uninstall gitea Helm release  [destructive]
+  helm template … global-secrets            Render global-secrets Helm chart
+  helm lint platform/global-secrets         Validate global-secrets Helm chart
+  helm upgrade --install … global-secrets   Install or upgrade global-secrets Helm release  [external]
+  helm uninstall global-secrets             Uninstall global-secrets Helm release  [destructive]
+  helm template grafana platform/grafana    Render grafana Helm chart
+  helm lint platform/grafana                Validate grafana Helm chart
+  helm upgrade --install … atform/grafana   Install or upgrade grafana Helm release  [external]
+  helm uninstall grafana                    Uninstall grafana Helm release  [destructive]
+  helm template kanidm platform/kanidm      Render kanidm Helm chart
+  helm lint platform/kanidm                 Validate kanidm Helm chart
+  helm upgrade --install … latform/kanidm   Install or upgrade kanidm Helm release  [external]
+  helm uninstall kanidm                     Uninstall kanidm Helm release  [destructive]
+  helm template renovate platform/renovate  Render renovate Helm chart
+  helm lint platform/renovate               Validate renovate Helm chart
+  helm upgrade --install … tform/renovate   Install or upgrade renovate Helm release  [external]
+  helm uninstall renovate                   Uninstall renovate Helm release  [destructive]
+  helm template … orm/woodpecker            Render woodpecker Helm chart
+  helm lint platform/woodpecker             Validate woodpecker Helm chart
+  helm upgrade --install … orm/woodpecker   Install or upgrade woodpecker Helm release  [external]
+  helm uninstall woodpecker                 Uninstall woodpecker Helm release  [destructive]
+  helm template zot platform/zot            Render zot Helm chart
+  helm lint platform/zot                    Validate zot Helm chart
+  helm upgrade --install zot platform/zot   Install or upgrade zot Helm release  [external]
+  helm uninstall zot                        Uninstall zot Helm release  [destructive]
+
+external  [Terraform, OpenTofu, Ansible]
+  make default              Apply OpenTofu changes to infrastructure  [external]
+  make namespaces           Run namespaces.yml Ansible playbook  [external]
+  make plan                 Plan OpenTofu changes  [external]
+  make apply                Apply OpenTofu changes to infrastructure  [external]
+  terraform init            Initialise Terraform working directory  ↓ download
+  terraform plan            Plan Terraform changes  [external]
+  terraform apply           Apply Terraform changes to infrastructure  [external]
+  terraform destroy         Destroy Terraform-managed infrastructure  [destructive]
+  terraform validate        Validate Terraform configuration
+  terraform fmt -recursive  Format Terraform files
+
+metal  [Kubernetes, Ansible]
+  make default                          Run inventories/prod.yml Ansible playbook  [external]
+  make boot                             Run inventories/prod.yml Ansible playbook  [external]
+  make cluster                          Run inventories/prod.yml Ansible playbook  [external]
+  make console
+  kubectl apply --dry-run=client -f ./  Validate Kubernetes manifests
+  kubectl apply -f ./                   Apply resources to cluster  [external]
+  kubectl delete -f ./                  Delete resources from cluster  [destructive]
+
+platform/gitea/files/config  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  go run .        Run Go config program
+
+platform/global-secrets/files/secret-generator  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  go run .        Run Go secret-generator program
+
+system  [Kubernetes, Helm, Ansible]
+  make bootstrap                           Run bootstrap.yml Ansible playbook  [external]
+  helm template argocd argocd              Render argocd Helm chart
+  helm lint argocd                         Validate argocd Helm chart
+  helm upgrade --install argocd argocd     Install or upgrade argocd Helm release  [external]
+  helm uninstall argocd                    Uninstall argocd Helm release  [destructive]
+  helm template cert-manager cert-manager  Render cert-manager Helm chart
+  helm lint cert-manager                   Validate cert-manager Helm chart
+  helm upgrade --install … cert-manager    Install or upgrade cert-manager Helm release  [external]
+  helm uninstall cert-manager              Uninstall cert-manager Helm release  [destructive]
+  helm template cloudflared cloudflared    Render cloudflared Helm chart
+  helm lint cloudflared                    Validate cloudflared Helm chart
+  helm upgrade --install … cloudflared     Install or upgrade cloudflared Helm release  [external]
+  helm uninstall cloudflared               Uninstall cloudflared Helm release  [destructive]
+  helm template external-dns external-dns  Render external-dns Helm chart
+  helm lint external-dns                   Validate external-dns Helm chart
+  helm upgrade --install … external-dns    Install or upgrade external-dns Helm release  [external]
+  helm uninstall external-dns              Uninstall external-dns Helm release  [destructive]
+  helm template … ingress-nginx            Render ingress-nginx Helm chart
+  helm lint ingress-nginx                  Validate ingress-nginx Helm chart
+  helm upgrade --install … ingress-nginx   Install or upgrade ingress-nginx Helm release  [external]
+  helm uninstall ingress-nginx             Uninstall ingress-nginx Helm release  [destructive]
+  helm template kured kured                Render kured Helm chart
+  helm lint kured                          Validate kured Helm chart
+  helm upgrade --install kured kured       Install or upgrade kured Helm release  [external]
+  helm uninstall kured                     Uninstall kured Helm release  [destructive]
+  helm template loki loki                  Render loki Helm chart
+  helm lint loki                           Validate loki Helm chart
+  helm upgrade --install loki loki         Install or upgrade loki Helm release  [external]
+  helm uninstall loki                      Uninstall loki Helm release  [destructive]
+  helm template … itoring-system           Render kube-prometheus-stack Helm chart
+  helm lint monitoring-system              Validate kube-prometheus-stack Helm chart
+  helm upgrade --install … itoring-system  Install or upgrade kube-prometheus-stack Helm release  [external]
+  helm uninstall kube-prometheus-stack     Uninstall kube-prometheus-stack Helm release  [destructive]
+  helm template rook-ceph rook-ceph        Render rook-ceph Helm chart
+  helm lint rook-ceph                      Validate rook-ceph Helm chart
+  helm upgrade --install … rook-ceph       Install or upgrade rook-ceph Helm release  [external]
+  helm uninstall rook-ceph                 Uninstall rook-ceph Helm release  [destructive]
+  helm template volsync volsync-system     Render volsync Helm chart
+  helm lint volsync-system                 Validate volsync Helm chart
+  helm upgrade --install … volsync-system  Install or upgrade volsync Helm release  [external]
+  helm uninstall volsync                   Uninstall volsync Helm release  [destructive]
+
+test  [Go]
+  go build ./...
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  make default    Run Go tests with gotestsum
+  make test       Run Go tests with gotestsum

@@ -1,0 +1,154 @@
+mattermost_mattermost-mobile  [Node.js, Expo, React Native, Fastlane, Jest]
+
+  npx expo prebuild                         Generate native iOS and Android projects
+  npx expo-doctor                           Check Expo project for common issues
+  npm run android                           Build and run app on Android  ∞ long-running  ⊙ device
+  npm run build:android
+  npm run build:android-unsigned
+  npm run build:ios
+  npm run build:ios-sim
+  npm run build:ios-unsigned
+  npm run check                             Run linting and type checks
+  npm run check-test                        Run linting, type checks, and tests
+  npm run clean
+  npm run e2e:android                       Run e2e:android-build in detox and run e2e:android-test in detox
+  npm run e2e:ios                           Run e2e:ios-test in detox
+  npm run fix                               Fix lint issues with ESLint
+  npm run i18n-clean-empty
+  npm run i18n-extract
+  npm run ios                               Build and run app on iOS  ∞ long-running  ⊙ device
+  npm run ios-gems                          Install Ruby gems  ↓ download
+  npm run intune:disable
+  npm run intune:enable                     Install dependencies with npm, then install CocoaPods dependencies
+  npm run intune:init
+  npm run intune:link                       Install dependencies with npm  ↓ download
+  npm run intune:status
+  npm run lint                              Check source code with ESLint
+  npm run mmjstool
+  npm run pod-install                       Install CocoaPods dependencies
+  npm run postinstall                       Apply local dependency patches, then run scripts/postinstall.sh
+  npm run prepare                           Install Git hooks with Husky  ∆ git
+  npm run preinstall
+  npm run start                             Start Metro bundler  ∞ long-running
+  npm run test                              Run Jest tests
+  npm run test:ci                           Run Jest tests
+  npm run test:ci:coverage                  Run Jest tests with coverage
+  npm run test:coverage                     Run Jest tests
+  npm run test:watch                        Run Jest tests  ∞ long-running
+  npm run tsc                               Check TypeScript types
+  npm run updatesnapshot                    Run Jest tests
+  bundle exec fastlane set_app_version      Increment version number for both Android and iOS
+  bundle exec fastlane … p_build_number     Increments build number for both Android and iOS
+  bundle exec fastlane … _version_build     Increments version and build number for both Android and iOS
+  bundle exec fastlane configure            Configure app before building
+  bundle exec fastlane link_sentry          Set Sentry upload properties
+  bundle exec fastlane upload_file_to_s3    Upload file to s3  [external]
+  bundle exec fastlane github               Create GitHub release
+  bundle exec fastlane ios certs            Get iOS match profiles
+  bundle exec fastlane ios build            Build iOS app
+  bundle exec fastlane ios unsigned         Build unsigned ipa
+  bundle exec fastlane ios simulator        Run simulator Fastlane lane
+  bundle exec fastlane … rtifacts_to_s3     Upload artifacts to S3  [external]
+  bundle exec fastlane ios update_settings  Run update_settings Fastlane lane
+  bundle exec fastlane ios replace_assets   Run replace_assets Fastlane lane
+  bundle exec fastlane ios deploy           Run deploy Fastlane lane  [external]
+  bundle exec fastlane android build        Build Android app
+  bundle exec fastlane android unsigned     Build unsigned apk
+  bundle exec fastlane … rtifacts_to_s3     Upload artifacts to S3  [external]
+  bundle exec fastlane … te_identifiers     Run update_identifiers Fastlane lane
+  bundle exec fastlane … replace_assets     Run replace_assets Fastlane lane
+  bundle exec fastlane … d_certificates     Run pinned_certificates Fastlane lane
+  bundle exec fastlane android deploy       Run deploy Fastlane lane  [external]
+  ./scripts/build.sh
+  ./scripts/bump.sh
+  ./scripts/compare-coverage.sh
+  ./scripts/get_latest_build_number.sh
+  ./scripts/postinstall.sh
+  ./scripts/pre-commit.sh                   Intune protection: prevent committing Podfile.lock with Intune dependencies
+  ./scripts/preinstall.sh
+  ./scripts/read-coverage.sh
+  ./scripts/regen-i18n.sh
+
+detox  [Node.js, Maestro, Detox]
+  maestro test maestro                   Run Maestro mobile end-to-end flows  ⊙ device
+  npm run e2e:android-create-emulator
+  npm run e2e:android-build              Run scripts/run_detox.sh build
+  npm run e2e:android-test               Run generate_detox_config_ci.js, then run scripts/run_detox.sh test
+  npm run e2e:android-build-release      Run scripts/run_detox.sh build
+  npm run e2e:android-test-release       Run generate_detox_config_ci.js, then run scripts/run_detox.sh test
+  npm run e2e:ios-build                  Run scripts/run_detox.sh build
+  npm run e2e:ios-test                   Run scripts/run_detox.sh test
+  npm run e2e:ios-ipad-test              Run scripts/run_detox.sh test
+  npm run e2e:ios-build-release          Run scripts/run_detox.sh build
+  npm run e2e:ios-test-release           Run scripts/run_detox.sh test
+  npm run e2e:ios-disable-autofill       Run disable_ios_autofill.js
+  npm run detox:config-gen               Run generate_detox_config_ci.js
+  npm run check                          Run Node.js tests (+7 more steps)
+  npm run validate:flow-headers          Run maestro/scripts/validate-flow-headers.sh
+  npm run test:unit                      Run Node.js tests (+4 more steps)
+  npm run clean-detox                    Run Detox end-to-end tests  ⊙ device
+  npm run lint                           Check source code with ESLint
+  npm run e2e:save-report                Run save_report.js
+  npm run e2e:save-maestro-zephyr        Run save_maestro_zephyr.js
+  npm run start:webhook                  Run webhook_server.js
+  npm run provision                      Run provision/index.ts
+  npm run tsc                            Check TypeScript types
+  npm run postinstall                    Run scripts/postinstall.js
+  ./scripts/preboot_ios_simulator.sh     Pre-boot iOS simulator for Detox/Maestro CI
+  ./scripts/run_android_ci_shard.sh      Run one Android Detox shard. On failure, retry only failed/unrun files
+  ./scripts/run_android_gradle_build.sh
+  ./scripts/run_detox.sh
+  ./scripts/start_webhook_sidecar.sh     Start Detox mm_blocks webhook sidecar with *public* base URL
+
+detox/maestro  [Node.js, Maestro]
+  npm run check                             Check TypeScript types
+  npm run test:ios                          Run Maestro mobile end-to-end flows in ios  ⊙ device
+  npm run test:android                      Run Maestro mobile end-to-end flows in android  ⊙ device
+  npm run dry-run                           Run Maestro mobile end-to-end flows in flows  ⊙ device
+  npm run validate-headers                  Run scripts/validate-flow-headers.sh
+  ./scripts/apply_client_config_value.sh    Apply config patch and do not return until *client* config actually serves value
+  ./scripts/run_calls_two_device.sh         Two-device orchestration for Calls E2E tests (MM-T4830 / MM-T4831)
+  ./scripts/run_channel_sync_two_device.sh  Two-device orchestration for MM-T837 channel-creation-sync test
+  ./scripts/run_ci_batches.sh               Run Maestro flows in isolated batches for CI
+  ./scripts/run_timezone_test.sh            Wrapper: set device timezone, run clock_display.yml, then reset timezone
+  ./scripts/run_two_device.sh               Two-device orchestration for MM-T3055/MM-T3056 multi-device sync tests
+  ./scripts/setup_local.sh                  Local Maestro setup — runs same provisioning + seeding CI workflow
+  ./scripts/validate-flow-headers.sh        Validates detox/maestro/flows/**/*.yml against header contract in GUIDELINES.md,
+  ./scripts/write_maestro_failure_stub.sh   Write one-testcase JUnit failure for Maestro flow that could not be started
+  ./scripts/write_maestro_skip_stub.sh      Write one-testcase JUnit *skip* for flow whose server-side pre-condition this
+
+libraries/@mattermost/calls-native/android  [JVM, Gradle]
+  gradle test   Run Gradle tests
+  gradle check  Run Gradle checks (tests and linters)
+  gradle clean  Delete Gradle build outputs
+
+libraries/@mattermost/hardware-keyboard/android  [JVM, Gradle]
+  gradle build
+  gradle test   Run Gradle tests
+  gradle check  Run Gradle checks (tests and linters)
+  gradle clean  Delete Gradle build outputs
+
+libraries/@mattermost/rnshare/android  [JVM, Gradle]
+  gradle build
+  gradle test   Run Gradle tests
+  gradle check  Run Gradle checks (tests and linters)
+  gradle clean  Delete Gradle build outputs
+
+libraries/@mattermost/rnutils/android  [JVM, Gradle]
+  gradle build
+  gradle test   Run Gradle tests
+  gradle check  Run Gradle checks (tests and linters)
+  gradle clean  Delete Gradle build outputs
+
+libraries/@mattermost/secure-pdf-viewer/android  [JVM, Gradle]
+  gradle build
+  gradle test   Run Gradle tests
+  gradle check  Run Gradle checks (tests and linters)
+  gradle clean  Delete Gradle build outputs
+
+test-runner  [JVM, Gradle]
+  ./gradlew build
+  ./gradlew test   Run Gradle tests
+  ./gradlew check  Run Gradle checks (tests and linters)
+  ./gradlew clean  Delete Gradle build outputs
+  ./gradlew tasks  List all Gradle tasks

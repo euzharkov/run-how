@@ -1,0 +1,48 @@
+rubygems_rubygems.org  [Ruby, Rails, Docker, OpenSearch, PostgreSQL]
+
+  bundle exec rake api_keys:migrate        Migrate user api keys to ApiKey model
+  bundle exec rake … subject_digest        Audit attestation subject digests against version SHA256 hashes
+  bundle exec rake … fill_yanked_at        Fill yanked_at with current time
+  bundle exec rake … _info_checksum        Correct Versions' info_checksum attributes for compact index format
+  bundle exec rake … _info_checksum        Fill Versions' yanked_info_checksum_v2 attributes for compact index format
+  bundle exec rake … _versions_file        Generate/update versions_v2.list file
+  bundle exec rake … i_req_checksum        Update info checksum for multiple ruby or rubygems requirements
+  bundle exec rake … bygem_id_purge        Update dependencies to reset rubygem_id where rubygem_id is dangling
+  bundle exec rake format                  Format code with RuboCop and Prettier
+  bundle exec rake format:ruby             Format Ruby code with RuboCop
+  bundle exec rake format:js               Format JavaScript code with Prettier
+  bundle exec rake gemcutter:index:update
+  bundle exec rake … import:process        Bring gems through gemcutter process\nUsage: rake gemcutter:import:process[<gems_cache_path>,<u…
+  bundle exec rake … typo:exception        Add names to gem typo exception list\nUsage: rake gemcutter:typo:exception[<gem_name>,<info>]
+  bundle exec rake … ubygems_record        Add GemDownloads record for tracking total rubygems downloads
+  bundle exec rake … nonical_number        Backfill canonical_number field of versions table
+  bundle exec rake gen_erd                 Generate ERD for app
+  bundle exec rake importmap:verify        Verify downloaded packages in vendor/javascript
+  bundle exec rake importmap:pristine      Re-download all packages in importmap with same versions
+  bundle exec rake linkset:clean           Remove invalid URLs in linkset
+  bundle exec rake memcached:flush         Flushes memcached cache
+  bundle exec rake … igrate_ui_only        Migrate user mfa level from ui_only to ui_and_gem_signin
+  bundle exec rake verify                  Block users who have expired domain in their email
+  bin/dev                                  Start Rails app and its dev processes  ∞ long-running
+  bin/rails server                         Start Rails server  ∞ long-running
+  bin/rails console                        Open Rails console  ∞ long-running
+  bin/rails db:migrate                     Apply Rails migrations
+  bin/rails db:seed                        Seed database
+  bin/rails db:prepare                     Create database and apply migrations
+  bin/rails db:reset                       Drop and recreate database  [destructive]
+  bin/rails routes                         List Rails routes
+  bin/setup                                Set up app (bin/setup)
+  bin/rails test                           Run Rails tests
+  bin/rails test:system                    Run Rails system (browser) tests
+  bundle exec rubocop                      Check Ruby source with RuboCop
+  bundle exec brakeman -q                  Scan Rails app with Brakeman
+  docker build -t rubygems_rubygems.org .  Build Docker image
+  docker compose up -d                     Start all Docker services
+  docker compose up -d db                  Start db service (postgres@sha256)
+  docker compose up -d cache               Start cache service (memcached@sha256)
+  docker compose up -d search              Start search service (opensearch@sha256)
+  docker compose up -d search-console      Start search-console service (opensearch-dashboards@sha256)
+  docker compose up -d toxiproxy           Start toxiproxy service (toxiproxy@sha256)
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose down                      Stop and remove Docker services
+  ./script/build_docker.sh

@@ -1,0 +1,28 @@
+jellyfin_jellyfin  [.NET]
+
+  dotnet build    Build Jellyfin solution
+  dotnet test     Run all Jellyfin solution tests
+  dotnet restore  Restore NuGet packages  ↓ download
+  dotnet clean    Delete .NET build outputs
+  dotnet format   Format .NET source code
+
+Jellyfin.Server  [.NET]
+  dotnet run        Start .NET Jellyfin.Server web app
+  dotnet watch run  Start Jellyfin.Server with hot reload  ∞ long-running
+
+fuzz/Emby.Server.Implementations.Fuzz  [.NET]
+  dotnet run  Run .NET Emby.Server.Implementations.Fuzz app
+  ./fuzz.sh
+
+fuzz/Jellyfin.Api.Fuzz  [.NET]
+  dotnet run        Start .NET Jellyfin.Api.Fuzz web app
+  dotnet watch run  Start Jellyfin.Api.Fuzz with hot reload  ∞ long-running
+  ./fuzz.sh
+
+src/Jellyfin.Database/Jellyfin.Database.Implementations  [.NET, EF Core]
+  dotnet ef database update  Apply EF Core migrations to database
+  dotnet ef database drop    Drop database with EF Core  [destructive]
+
+src/Jellyfin.Database/Jellyfin.Database.Providers.Sqlite  [.NET, EF Core]
+  dotnet ef database update  Apply EF Core migrations to database
+  dotnet ef database drop    Drop database with EF Core  [destructive]

@@ -33,9 +33,6 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
 use std::rc::Rc;
 
-/// Built-in `rhow` subcommands. An action can never take one of these names as its id.
-pub const RESERVED_IDS: &[&str] = &["why", "support"];
-
 #[derive(Debug, Clone)]
 pub struct Options {
     /// Look at the local machine (PATH, installed apps) to suggest runtime commands.
@@ -62,6 +59,11 @@ pub struct Context<'a> {
     /// Parsed JSON manifests, keyed by relative path, so workspace lookups that revisit the
     /// same `package.json` for every member parse it once.
     json: RefCell<HashMap<String, Option<Rc<serde_json::Value>>>>,
+    /// Raw file text, keyed the same way: every Cargo workspace member reads the root
+    /// `Cargo.toml`, every Gradle subproject the root `settings.gradle`.
+    text: RefCell<HashMap<String, Option<Rc<str>>>>,
+    toml: RefCell<HashMap<String, Option<Rc<toml::Value>>>>,
+    yaml: RefCell<HashMap<String, Option<Rc<serde_yaml::Value>>>>,
 }
 
 impl<'a> Context<'a> {
@@ -72,7 +74,93 @@ impl<'a> Context<'a> {
             host_os,
             index: repo::index(dirs),
             json: RefCell::new(HashMap::new()),
+            text: RefCell::new(HashMap::new()),
+            toml: RefCell::new(HashMap::new()),
+            yaml: RefCell::new(HashMap::new()),
         }
+    }
+
+    /// The scanned directory at `rel` (`.`-relative, `/`-separated), if any. Ignored
+    /// directories (`bin/`, `.config/`) are listed shallowly, so they resolve too.
+    pub fn dir_at(&self, rel: &str) -> Option<&'a DirInfo> {
+        self.index.get(rel).map(|&i| &self.dirs[i])
+    }
+
+    /// The child directory `name` of `dir`, when it was scanned or listed.
+    pub fn child(&self, dir: &DirInfo, name: &str) -> Option<&'a DirInfo> {
+        let rel = if dir.rel == "." {
+            name.to_string()
+        } else {
+            format!("{}/{name}", dir.rel)
+        };
+        self.dir_at(&rel)
+    }
+
+    /// Does `path` (relative to `dir`, `/`-separated, e.g. `bin/rails` or
+    /// `.config/dotnet-tools.json`) exist as a file? Answered from the scan, never by
+    /// touching the filesystem.
+    pub fn has_file(&self, dir: &DirInfo, path: &str) -> bool {
+        match path.rsplit_once('/') {
+            None => dir.has(path),
+            Some((sub, file)) => self
+                .child_path(dir, sub)
+                .map(|d| d.has(file))
+                .unwrap_or(false),
+        }
+    }
+
+    /// Does `path` (relative to `dir`) exist as a directory?
+    pub fn has_dir(&self, dir: &DirInfo, path: &str) -> bool {
+        self.child_path(dir, path).is_some()
+    }
+
+    fn child_path(&self, dir: &DirInfo, sub: &str) -> Option<&'a DirInfo> {
+        let sub = sub.trim_matches('/');
+        let rel = if dir.rel == "." {
+            sub.to_string()
+        } else {
+            format!("{}/{sub}", dir.rel)
+        };
+        self.dir_at(&rel)
+    }
+
+    /// `file` inside `dir` as text. Cached for the lifetime of the scan.
+    pub fn text(&self, dir: &DirInfo, file: &str) -> Option<Rc<str>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.text.borrow().get(&key) {
+            return v.clone();
+        }
+        let t = dir.read(file).map(Rc::from);
+        self.text.borrow_mut().insert(key, t.clone());
+        t
+    }
+
+    /// `file` inside `dir`, parsed as TOML. Cached.
+    pub fn toml(&self, dir: &DirInfo, file: &str) -> Option<Rc<toml::Value>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.toml.borrow().get(&key) {
+            return v.clone();
+        }
+        let parsed = self
+            .text(dir, file)
+            .and_then(|t| toml::from_str(&t).ok())
+            .map(Rc::new);
+        self.toml.borrow_mut().insert(key, parsed.clone());
+        parsed
+    }
+
+    /// `file` inside `dir`, parsed as YAML. Cached.
+    pub fn yaml(&self, dir: &DirInfo, file: &str) -> Option<Rc<serde_yaml::Value>> {
+        let key = format!("{}/{file}", dir.rel);
+        if let Some(v) = self.yaml.borrow().get(&key) {
+            return v.clone();
+        }
+        let parsed = self
+            .text(dir, file)
+            .and_then(|t| serde_yaml::from_str(&t).ok())
+            .map(Rc::new);
+        self.yaml.borrow_mut().insert(key, parsed.clone());
+        parsed
     }
 
     /// `dir` itself followed by its ancestors up to the root.
@@ -99,24 +187,24 @@ impl<'a> Context<'a> {
         if let Some(v) = self.json.borrow().get(&key) {
             return v.clone();
         }
-        let parsed = dir
-            .read(file)
+        let parsed = self
+            .text(dir, file)
             .and_then(|t| serde_json::from_str(&t).ok())
             .map(Rc::new);
         self.json.borrow_mut().insert(key, parsed.clone());
         parsed
     }
 
-    /// Scanned directories strictly below `dir`.
+    /// Scanned directories strictly below `dir`, in scan order, without ignored ones.
+    /// The scan is depth-first, so this is one contiguous slice, not a search of every
+    /// directory in the repository.
     pub fn descendants(&self, dir: &DirInfo) -> Vec<&'a DirInfo> {
-        let prefix = if dir.rel == "." {
-            String::new()
-        } else {
-            format!("{}/", dir.rel)
+        let Some(i) = self.position(dir) else {
+            return vec![];
         };
-        self.dirs
+        self.dirs[repo::subtree(self.dirs, i)]
             .iter()
-            .filter(|d| d.rel != dir.rel && d.rel.starts_with(&prefix))
+            .filter(|d| !d.ignored)
             .collect()
     }
 
@@ -231,7 +319,10 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     // scaffolding; nothing below them is a project or a helper directory of its own.
     let mut shadow_roots: Vec<String> = Vec::new();
     for dir in dirs.iter() {
-        if repo::is_mobile_app_dir(dir) {
+        if dir.ignored {
+            continue;
+        }
+        if repo::is_mobile_app_dir(dir) || repo::is_native_module_dir(dir) {
             for p in repo::PLATFORM_DIRS {
                 if dir.has_dir(p) {
                     shadow_roots.push(if dir.rel == "." {
@@ -256,7 +347,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     // ---- detection ---------------------------------------------------------------------
     let mut det: Vec<Vec<bool>> = vec![vec![false; discs.len()]; dirs.len()];
     for (di, dir) in dirs.iter().enumerate() {
-        if shadowed[di] {
+        if shadowed[di] || dir.ignored {
             continue;
         }
         for (ki, d) in discs.iter().enumerate() {
@@ -351,6 +442,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             };
             let group_dirs: Vec<&DirInfo> = idxs.iter().map(|&i| &dirs[i]).collect();
             let mut disc = d.discover(&ctx, dir, &group_dirs);
+            disc.actions.retain(|a| typeable(&a.command));
             for a in &mut disc.actions {
                 if a.working_directory.is_empty() {
                     a.working_directory = dir.rel.clone();
@@ -384,6 +476,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             path: dir.rel.clone(),
             kind,
             tools,
+            techs: Vec::new(),
             actions,
             versions,
         });
@@ -402,14 +495,31 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
         for a in &mut p.actions {
             explain::finalize(a, &resolver);
         }
-        hide_duplicates(&mut p.actions);
+        drop_duplicates(&mut p.actions);
     }
-    hide_workspace_fan_out(&mut projects);
+    drop_workspace_fan_out(&mut projects);
     lift_repeated_package_scripts(&mut projects);
-    hide_convention_in_large_repos(&mut projects);
+    drop_convention_in_large_repos(&mut projects);
+    drop_redundant(&mut projects);
+
+    for p in &mut projects {
+        p.techs = crate::techs::of_project(p.kind, &p.actions);
+    }
 
     // ---- identifiers -------------------------------------------------------------------
-    assign_ids(&mut projects);
+    // An inferred action that loses its natural id to one that stands in for it is marked
+    // redundant while ids are handed out; drop it and hand them out again, so the ids that
+    // remain are the natural ones wherever possible.
+    loop {
+        assign_ids(&mut projects);
+        if !projects
+            .iter()
+            .any(|p| p.actions.iter().any(|a| a.redundant))
+        {
+            break;
+        }
+        drop_redundant(&mut projects);
+    }
 
     // ---- runtime suggestions -----------------------------------------------------------
     let suggestions = if opts.probe_runtime {
@@ -442,12 +552,67 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     }
 }
 
+/// The language ecosystem an adapter family (`Action::tool`) belongs to, when it belongs to
+/// one. Generic runners (`make`, `just`, `task`, shell scripts) and infrastructure tools
+/// have none: a `make test` may wrap anything, so it may stand in for anything.
+fn ecosystem(tool: &str) -> Option<&'static str> {
+    Some(match tool {
+        "npm" | "pnpm" | "yarn" | "bun" | "deno" | "nx" | "turbo" | "rush" | "moon" | "expo"
+        | "eas" | "react-native" | "detox" | "playwright" | "cypress" => "js",
+        "ruby" | "rails" | "rake" => "ruby",
+        "php" | "composer" | "artisan" | "symfony" => "php",
+        "python" | "uv" | "poetry" | "pdm" | "hatch" | "poe" | "tox" | "nox" | "invoke"
+        | "django" => "python",
+        "gradle" | "maven" | "sbt" => "jvm",
+        "lein" | "clojure" => "clojure",
+        "dotnet" | "cake" | "nuke" => "dotnet",
+        "stack" | "cabal" | "haskell" => "haskell",
+        "flutter" | "dart" => "dart",
+        "swift" | "xcode" | "cocoapods" => "apple",
+        "cargo" => "rust",
+        "go" => "go",
+        "mix" => "elixir",
+        "zig" => "zig",
+        "cmake" => "cmake",
+        "dune" => "ocaml",
+        "nimble" => "nim",
+        // Bazel and Pants build every language in the tree they root: like `make`, they may
+        // stand in for any language's command there, and no language's for theirs.
+        _ => return None,
+    })
+}
+
+/// Whether an action of tool `holder` makes one of tool `other` with the same name redundant:
+/// same ecosystem, or the holder is a generic runner and the other a language's command. `yarn test` (Jest) says nothing about
+/// `bundle exec rspec`, and `dotnet build` says nothing about the project's own `build.ps1`;
+/// `make test` may well run either.
+fn stands_in_for(holder: &str, other: &str) -> bool {
+    match (ecosystem(holder), ecosystem(other)) {
+        (Some(x), Some(y)) => x == y,
+        (None, Some(_)) => true,
+        // Two runners (`build.cmd` and `build.ps1`, `make test` and `./test.sh`) are two
+        // commands, not one said twice.
+        (None, None) => holder == other,
+        (Some(_), None) => false,
+    }
+}
+
+/// Bazel and Pants build and test the whole tree they root: at that root their inferred
+/// `build`/`test` are the ones to show, not a language convention that happens to share the
+/// directory (`cargo test` next to `bazel test //...`).
+fn builds_whole_tree(tool: &str) -> bool {
+    matches!(tool, "bazel" | "pants")
+}
+
 /// Two adapters describing the same thing must not both show: a `package.json` script and an
 /// Nx target both called `test`, an inferred Expo `start` next to a declared one, or `ios`
 /// (script) and `run-ios` (Nx) that explain identically. Declared beats inferred; among
-/// equals the earlier adapter (priority order) wins. Same-tool variants (`test:watch`,
-/// `test:update`) are never touched: a project that lists them meant them.
-fn hide_duplicates(actions: &mut [Action]) {
+/// equals the earlier adapter (priority order) wins, except that a whole-tree build system
+/// wins over a language convention. A declared script only shadows an inferred action it can
+/// stand in for (`stands_in_for`): a Rails app's `yarn test` does not hide `bundle exec
+/// rspec`. Same-tool variants (`test:watch`, `test:update`) are never touched: a project that
+/// lists them meant them.
+fn drop_duplicates(actions: &mut [Action]) {
     // An explanation shared by several actions of the same tool (`tf:dev:plan`,
     // `tf:prod:plan`) marks parametrised variants: a declared script that reads the same
     // does not make all of them redundant, so those never match on meaning.
@@ -462,26 +627,50 @@ fn hide_duplicates(actions: &mut [Action]) {
         .map(|a| per_tool[&(a.tool, a.description.to_ascii_lowercase())] > 1)
         .collect();
     for i in 0..actions.len() {
-        if actions[i].hidden {
+        if actions[i].redundant {
             continue;
         }
         for j in 0..i {
-            if actions[j].hidden {
+            if actions[j].redundant {
                 continue;
             }
             let (a, b) = (&actions[j], &actions[i]);
-            let same_name = a.name == b.name;
+            // Which one would stay: declared beats inferred; among equals the earlier adapter,
+            // unless the later one builds the whole tree.
+            let later_wins = match (a.source, b.source) {
+                (ActionSource::Inferred, ActionSource::Declared) => true,
+                (ActionSource::Inferred, ActionSource::Inferred) => {
+                    builds_whole_tree(b.tool) && !builds_whole_tree(a.tool)
+                }
+                _ => false,
+            };
+            let (keeper, other) = if later_wins { (b, a) } else { (a, b) };
+            let same_name = a.name == b.name && stands_in_for(keeper.tool, other.tool);
             let same_meaning = a.tool != b.tool
                 && !variant[i]
                 && !variant[j]
                 && a.category == b.category
                 && a.description.eq_ignore_ascii_case(&b.description);
-            if !(same_name || same_meaning) {
+            // A declared script whose body is exactly the command inferred next to it
+            // (`"services": "docker compose -f docker/compose.yml up -d"` and the Compose
+            // adapter's own `docker compose -f docker/compose.yml up -d`): one command, twice.
+            let same_command = a.source != b.source && {
+                let (d, i) = if a.source == ActionSource::Declared {
+                    (a, b)
+                } else {
+                    (b, a)
+                };
+                let words = |s: &str| s.split_whitespace().collect::<Vec<_>>().join(" ");
+                d.raw
+                    .as_deref()
+                    .is_some_and(|raw| words(raw) == words(&i.command))
+            };
+            if !(same_name || same_meaning || same_command) {
                 continue;
             }
             match (a.source, b.source) {
                 (ActionSource::Inferred, ActionSource::Declared) => {
-                    actions[j].hidden = true;
+                    actions[j].redundant = true;
                 }
                 (ActionSource::Declared, ActionSource::Declared)
                     if same_name && !same_meaning && a.tool != b.tool =>
@@ -489,8 +678,13 @@ fn hide_duplicates(actions: &mut [Action]) {
                     // Same name, different explanation, different tools (`make test` vs
                     // `npm test`): both are real and may differ. Keep both.
                 }
+                (ActionSource::Inferred, ActionSource::Inferred)
+                    if builds_whole_tree(b.tool) && !builds_whole_tree(a.tool) =>
+                {
+                    actions[j].redundant = true;
+                }
                 _ => {
-                    actions[i].hidden = true;
+                    actions[i].redundant = true;
                     break;
                 }
             }
@@ -500,65 +694,77 @@ fn hide_duplicates(actions: &mut [Action]) {
 
 /// A workspace root already offers `test`, `build`, `check`, … for every member; the same
 /// inferred action repeated per member (`tokio-util:test`, `api:clippy`) adds nothing.
-/// Hide an inferred, non-Development action of a nested project when the nearest ancestor
+/// Drop an inferred, non-Development action of a nested project when the nearest ancestor
 /// project shows one with the same name and tool. Declared scripts are never touched, and
 /// `run`/`dev`-style actions stay because each app's is its own.
-fn hide_workspace_fan_out(projects: &mut [Project]) {
-    let offered: Vec<(String, HashSet<(String, &'static str)>)> = projects
+fn drop_workspace_fan_out(projects: &mut [Project]) {
+    let offered: HashMap<&str, HashSet<(&str, &'static str)>> = projects
         .iter()
         .map(|p| {
             (
-                p.path.clone(),
-                // Hidden ones count too: a root `test` hidden behind a declared twin still
+                p.path.as_str(),
+                // Redundant ones count too: a root `test` dropped for a declared twin still
                 // means the workspace offers it.
-                p.actions.iter().map(|a| (a.name.clone(), a.tool)).collect(),
+                p.actions
+                    .iter()
+                    .map(|a| (a.name.as_str(), a.tool))
+                    .collect(),
             )
         })
         .collect();
-    for p in projects.iter_mut().filter(|p| !p.is_root()) {
+    let mut hide: Vec<(usize, usize)> = Vec::new();
+    for (pi, p) in projects.iter().enumerate().filter(|(_, p)| !p.is_root()) {
         let mut rel = repo::parent_rel(&p.path);
-        let mut ancestor: Option<&HashSet<(String, &'static str)>> = None;
+        let mut ancestor = None;
         while let Some(r) = rel {
-            if let Some((_, set)) = offered.iter().find(|(path, _)| path == r) {
+            if let Some(set) = offered.get(r) {
                 ancestor = Some(set);
                 break;
             }
             rel = repo::parent_rel(r);
         }
         let Some(set) = ancestor else { continue };
-        for a in &mut p.actions {
+        for (ai, a) in p.actions.iter().enumerate() {
             if a.source == ActionSource::Inferred
                 && a.category != Category::Development
-                && set.contains(&(a.name.clone(), a.tool))
+                && set.contains(&(a.name.as_str(), a.tool))
             {
-                a.hidden = true;
+                hide.push((pi, ai));
             }
         }
+    }
+    for (pi, ai) in hide {
+        projects[pi].actions[ai].redundant = true;
     }
 }
 
 /// A script that five or more nested packages declare with the same explanation (`compile`,
 /// `test`, `lint` in every package of a pnpm monorepo) is a workspace convention. Show it once
-/// at the root as "run in all packages" and take the per-package copies out of the default
-/// view. Only JavaScript package managers have a single command for that.
+/// at the root as "run in all packages" and drop the per-package copies. Only JavaScript
+/// package managers have a single command for that.
 fn lift_repeated_package_scripts(projects: &mut [Project]) {
     const MIN_REPEATS: usize = 5;
+    // Keys in first-appearance order: the lifted actions must come out in the order the
+    // packages declare them, never in hash order, so the output is stable run to run.
     let mut seen: HashMap<(String, &'static str, String), usize> = HashMap::new();
+    let mut order: Vec<(String, &'static str, String)> = Vec::new();
     for p in projects.iter().filter(|p| !p.is_root()) {
         for a in p
             .actions
             .iter()
             .filter(|a| a.source == ActionSource::Declared)
         {
-            *seen
-                .entry((a.name.clone(), a.tool, a.description.to_ascii_lowercase()))
-                .or_default() += 1;
+            let key = (a.name.clone(), a.tool, a.description.to_ascii_lowercase());
+            let n = seen.entry(key.clone()).or_default();
+            if *n == 0 {
+                order.push(key);
+            }
+            *n += 1;
         }
     }
-    let repeated: Vec<(String, &'static str, String)> = seen
+    let repeated: Vec<(String, &'static str, String)> = order
         .into_iter()
-        .filter(|(k, n)| *n >= MIN_REPEATS && matches!(k.1, "npm" | "pnpm" | "yarn" | "bun"))
-        .map(|(k, _)| k)
+        .filter(|k| seen[k] >= MIN_REPEATS && matches!(k.1, "npm" | "pnpm" | "yarn" | "bun"))
         .collect();
     if repeated.is_empty() {
         return;
@@ -577,12 +783,12 @@ fn lift_repeated_package_scripts(projects: &mut [Project]) {
                     if sample.is_none() {
                         sample = Some(a.clone());
                     }
-                    a.confidence = Confidence::Low;
+                    a.redundant = true;
                 }
             }
         }
         let root = &projects[0];
-        if root.actions.iter().any(|a| a.name == *name && !a.hidden) {
+        if root.actions.iter().any(|a| a.name == *name && !a.redundant) {
             continue;
         }
         let yarn_berry = root
@@ -614,10 +820,13 @@ fn lift_repeated_package_scripts(projects: &mut [Project]) {
 }
 
 /// With more than a dozen projects, what each one *declares* and how each app *runs* is the
-/// useful list; the inferred `test`/`lint`/`build`/… every one of them would have by
-/// convention is not. `--all` still shows it.
-fn hide_convention_in_large_repos(projects: &mut [Project]) {
+/// useful list; the inferred `test`/`lint`/`build`/… that many of them have by convention is
+/// boilerplate (`cargo test` in 200 crates), so it is dropped. Only the repetition goes: a
+/// command whose tool and name appear in fewer than `REPEATED` nested projects is that
+/// project's own (the one Pulumi stack's `pulumi up`, the Phoenix backend's `mix test`).
+fn drop_convention_in_large_repos(projects: &mut [Project]) {
     const MANY: usize = 12;
+    const REPEATED: usize = 3;
     let nested = projects
         .iter()
         .filter(|p| !p.is_root() && !p.actions.is_empty())
@@ -625,13 +834,48 @@ fn hide_convention_in_large_repos(projects: &mut [Project]) {
     if nested <= MANY {
         return;
     }
+    let convention =
+        |a: &Action| a.source == ActionSource::Inferred && a.category != Category::Development;
+    let mut seen: HashMap<(&'static str, String), usize> = HashMap::new();
+    for p in projects.iter().filter(|p| !p.is_root()) {
+        let mut own: Vec<(&'static str, String)> = p
+            .actions
+            .iter()
+            .filter(|a| convention(a))
+            .map(|a| (a.tool, a.name.clone()))
+            .collect();
+        own.sort_unstable();
+        own.dedup();
+        for k in own {
+            *seen.entry(k).or_default() += 1;
+        }
+    }
     for p in projects.iter_mut().filter(|p| !p.is_root()) {
         for a in &mut p.actions {
-            if a.source == ActionSource::Inferred && a.category != Category::Development {
-                a.hidden = true;
+            if convention(a) && seen[&(a.tool, a.name.clone())] >= REPEATED {
+                a.redundant = true;
             }
         }
     }
+}
+
+/// A command a developer can type: no control characters beyond line breaks and tabs. A
+/// Makefile saved with terminal colours (`make \x1b[38;2;166;226;46mall`) parses into targets
+/// that no one could run; they are not commands, so they are not reported.
+fn typeable(command: &str) -> bool {
+    !command
+        .chars()
+        .any(|c| c.is_control() && !matches!(c, '\n' | '\t' | '\r'))
+}
+
+/// Remove every action marked redundant, then every nested project left with nothing to
+/// show (no action, no declared version). rhow shows all it reports, so what one tool or one
+/// ancestor already covers is not reported at all.
+fn drop_redundant(projects: &mut Vec<Project>) {
+    for p in projects.iter_mut() {
+        p.actions.retain(|a| !a.redundant);
+    }
+    projects.retain(|p| p.is_root() || !p.actions.is_empty() || !p.versions.is_empty());
 }
 
 fn prefix_for(p: &Project, taken: &HashSet<String>) -> String {
@@ -652,7 +896,9 @@ fn prefix_for(p: &Project, taken: &HashSet<String>) -> String {
 /// Assign globally unique ids: root actions keep their names, nested projects are prefixed
 /// (`api:test`), a nested project's `run`/`dev` collapses to the project name when free.
 fn assign_ids(projects: &mut [Project]) {
-    let mut taken: HashSet<String> = RESERVED_IDS.iter().map(|s| s.to_string()).collect();
+    let mut taken: HashSet<String> = HashSet::new();
+    // Which tool holds each id, to judge whether losing it makes an action redundant.
+    let mut holders: HashMap<String, &'static str> = HashMap::new();
     let mut prefixes: Vec<String> = Vec::new();
     let mut used_prefixes: HashSet<String> = HashSet::new();
     for p in projects.iter() {
@@ -684,13 +930,23 @@ fn assign_ids(projects: &mut [Project]) {
             let collapsible = !pre.is_empty()
                 && matches!(a.name.as_str(), "run" | "dev" | "start" | "serve")
                 && a.category == Category::Development;
+            let naturals = if collapsible { 2 } else { 1 };
+            // Losing the natural id makes an inferred action redundant only when the holder can
+            // stand in for it: `yarn test` holding `test` does not make
+            // `bundle exec rspec` redundant.
+            let shadowed = candidates[..naturals.min(candidates.len())]
+                .iter()
+                .any(|c| {
+                    holders
+                        .get(c)
+                        .is_some_and(|tool| stands_in_for(tool, a.tool))
+                });
+
             for (i, c) in candidates.into_iter().enumerate() {
                 if !taken.contains(&c) {
-                    // An inferred action that loses its natural id to a declared one is redundant:
-                    // the project already exposes that name. Keep it, but out of the default view.
-                    let natural = i == 0 || (collapsible && i == 1);
-                    if !natural && a.source == ActionSource::Inferred {
-                        a.hidden = true;
+                    let natural = i < naturals;
+                    if !natural && a.source == ActionSource::Inferred && shadowed {
+                        a.redundant = true;
                     }
                     chosen = Some(c);
                     break;
@@ -708,6 +964,7 @@ fn assign_ids(projects: &mut [Project]) {
                     .unwrap()
             });
             taken.insert(id.clone());
+            holders.insert(id.clone(), a.tool);
             a.id = id;
         }
     }
@@ -726,6 +983,99 @@ pub fn q(p: &str) -> String {
     }
 }
 
+/// Strip surrounding whitespace and one pair of matching quotes (`"…"` or `'…'`), the way
+/// a `desc "…"` / `description = '…'` line in a Rakefile, Fastfile, Gradle script or
+/// noxfile is written.
+pub fn unquote(s: &str) -> &str {
+    let s = s.trim();
+    for quote in ['"', '\''] {
+        if s.len() >= 2 && s.starts_with(quote) && s.ends_with(quote) {
+            return &s[1..s.len() - 1];
+        }
+    }
+    s
+}
+
+/// The id prefix for one of several helper directories attached to the same project
+/// (`docker/`, `deploy/dev/`, `infra/envs/prod/`). Derived from the directory's path below
+/// the project, never from a file's content: the shortest trailing run of path segments
+/// that no other attached directory shares, joined with `-`. `infra/envs/dev` alone among
+/// the group is `dev`; next to `deploy/dev` the two become `infra-dev` and `deploy-dev`.
+pub fn attach_prefix(ctx: &Context, base: &DirInfo, dir: &DirInfo, group: &[&DirInfo]) -> String {
+    let segs = |d: &DirInfo| -> Vec<String> {
+        ctx.rel_from(base, d)
+            .split('/')
+            .map(|s| s.to_string())
+            .collect()
+    };
+    let mine = segs(dir);
+    let others: Vec<Vec<String>> = group
+        .iter()
+        .filter(|d| d.rel != dir.rel && d.rel != base.rel)
+        .map(|d| segs(d))
+        .collect();
+    for n in 1..=mine.len() {
+        let tail = &mine[mine.len() - n..];
+        let clash = others
+            .iter()
+            .any(|o| o.len() >= n && &o[o.len() - n..] == tail);
+        if !clash {
+            return tail.join("-");
+        }
+    }
+    mine.join("-")
+}
+
+/// `path` (relative to `dir`, `/` or `\\` separated, e.g. `src/Api/Api.csproj`) as text,
+/// through the scan and the cache: `None` when the directory or the file is not there.
+pub fn text_at(ctx: &Context, dir: &DirInfo, path: &str) -> Option<Rc<str>> {
+    let path = path.replace('\\', "/");
+    let path = path.trim_start_matches("./");
+    match path.rsplit_once('/') {
+        None => ctx.text(dir, path),
+        Some((sub, file)) => ctx.text(ctx.child(dir, sub)?, file),
+    }
+}
+
+/// The version pinned for `tool` (asdf/mise naming: `nodejs`, `python`, `ruby`, `golang`,
+/// `terraform`) in the nearest `.tool-versions` at `dir` or above it, with the path of the
+/// file it came from relative to `dir`.
+pub fn tool_version(ctx: &Context, dir: &DirInfo, tool: &str) -> Option<(String, String)> {
+    for a in ctx.ancestors(dir) {
+        let Some(text) = ctx.text(a, ".tool-versions") else {
+            continue;
+        };
+        for l in text.lines() {
+            let l = l.split('#').next().unwrap_or("").trim();
+            let mut parts = l.split_whitespace();
+            if parts.next() == Some(tool) {
+                if let Some(v) = parts.next() {
+                    // The source is the file's path from the repository root, so a pin
+                    // inherited from a parent directory is not mistaken for a local one.
+                    let source = if a.rel == "." {
+                        ".tool-versions".to_string()
+                    } else {
+                        format!("{}/.tool-versions", a.rel)
+                    };
+                    return Some((v.to_string(), source));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Scan a fixture repository under `fixtures/` for an adapter's own unit tests; the caller
+/// builds a [`Context`] over the returned listing.
+#[cfg(test)]
+pub(crate) fn fixture_dirs(name: &str) -> (std::path::PathBuf, Vec<DirInfo>) {
+    let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("fixtures")
+        .join(name);
+    let dirs = repo::scan(&root);
+    (root, dirs)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -736,6 +1086,7 @@ mod tests {
             path: path.into(),
             kind: ProjectKind::JavaScript,
             tools: vec![],
+            techs: vec![],
             actions,
             versions: vec![],
         }
@@ -749,21 +1100,56 @@ mod tests {
     }
 
     #[test]
-    fn reserved_subcommand_names_are_never_action_ids() {
-        let mut ps = vec![project(
-            ".",
-            "root",
-            vec![
-                Action::new("support", "node support.js").tool("npm"),
-                Action::new("why", "node why.js").tool("npm"),
-                Action::new("test", "vitest").tool("npm"),
-            ],
-        )];
-        assign_ids(&mut ps);
-        assert_eq!(ids(&ps), ["npm:support", "npm:why", "test"]);
-        assert!(ids(&ps)
-            .iter()
-            .all(|id| !RESERVED_IDS.contains(&id.as_str())));
+    fn unquote_strips_one_matching_pair() {
+        assert_eq!(unquote("  \"Run it\" "), "Run it");
+        assert_eq!(unquote("'Run it'"), "Run it");
+        assert_eq!(unquote("\"mixed'"), "\"mixed'");
+        assert_eq!(unquote("plain"), "plain");
+    }
+
+    fn dir(rel: &str) -> DirInfo {
+        DirInfo {
+            path: std::path::PathBuf::from(rel),
+            rel: rel.to_string(),
+            depth: if rel == "." {
+                0
+            } else {
+                rel.matches('/').count() + 1
+            },
+            files: vec![],
+            dirs: vec![],
+            ignored: false,
+        }
+    }
+
+    #[test]
+    fn attach_prefix_is_the_shortest_unique_path_tail() {
+        let dirs = vec![
+            dir("."),
+            dir("env"),
+            dir("env/staging"),
+            dir("infra"),
+            dir("infra/envs"),
+            dir("infra/envs/dev"),
+            dir("stacks"),
+            dir("stacks/dev"),
+        ];
+        let root = Path::new(".");
+        let ctx = Context::new(root, &dirs, "linux");
+        let base = &dirs[0];
+        let group: Vec<&DirInfo> = vec![&dirs[2], &dirs[5], &dirs[7]];
+        assert_eq!(attach_prefix(&ctx, base, group[0], &group), "staging");
+        assert_eq!(attach_prefix(&ctx, base, group[1], &group), "envs-dev");
+        assert_eq!(attach_prefix(&ctx, base, group[2], &group), "stacks-dev");
+        // Alone in its group a directory keeps its own name.
+        assert_eq!(attach_prefix(&ctx, base, group[1], &group[1..2]), "dev");
+    }
+
+    #[test]
+    fn commands_with_control_characters_are_not_typeable() {
+        assert!(typeable("make all"));
+        assert!(typeable("set -e\n\tmake all"));
+        assert!(!typeable("make \u{1b}[38;2;166;226;46mall\u{1b}[0m"));
     }
 
     #[test]
@@ -785,6 +1171,9 @@ mod tests {
                     Action::new("test", "cargo test")
                         .tool("cargo")
                         .inferred(Confidence::High),
+                    Action::new("test", "yarn test")
+                        .tool("yarn")
+                        .inferred(Confidence::High),
                 ],
             ),
             project(
@@ -801,11 +1190,14 @@ mod tests {
                 "api:test",
                 "api",
                 "api:cargo:test",
+                "api:yarn:test",
                 "services/api:test"
             ]
         );
-        // The inferred duplicate lost its natural id, so it is hidden by default.
-        assert!(ps[1].actions[2].hidden);
-        assert!(!ps[1].actions[0].hidden);
+        // An inferred action that lost its natural id to one that can stand in for it (same
+        // ecosystem) is redundant; `npm run test` says nothing about `cargo test`.
+        assert!(!ps[1].actions[0].redundant);
+        assert!(!ps[1].actions[2].redundant);
+        assert!(ps[1].actions[3].redundant);
     }
 }

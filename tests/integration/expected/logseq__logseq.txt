@@ -1,0 +1,211 @@
+logseq_logseq  [Node.js, webpack, Clojure, Docker]
+
+  pnpm run watch                          Start webpack dev server (+2 more steps)  ∞ long-running
+  pnpm run electron-watch                 Start webpack dev server (+2 more steps)  ∞ long-running
+  pnpm run app-watch                      Start webpack dev server (+2 more steps)  ∞ long-running
+  pnpm run mobile-watch                   Start webpack dev server (+2 more steps)  ∞ long-running
+  pnpm run dev                            Start webpack dev server (+3 more steps)  ∞ long-running
+  pnpm run release                        Bundle with webpack (+2 more steps)
+  pnpm run release-app                    Bundle with webpack (+2 more steps)
+  pnpm run release-mobile                 Bundle with webpack (+2 more steps)
+  pnpm run dev-release-app                Bundle with webpack (+2 more steps)
+  pnpm run dev-electron-app               Run electron gulp task
+  pnpm run release-electron               Run build gulp task, then run electronMaker gulp task
+  pnpm run release-electron:unsigned      Run build gulp task, then run electronMakerUnsigned gulp task
+  pnpm run debug-electron
+  pnpm run webpack-watch                  Start webpack dev server  ∞ long-running
+  pnpm run webpack-app-watch              Start webpack dev server  ∞ long-running
+  pnpm run webpack-mobile-watch           Start webpack dev server  ∞ long-running
+  pnpm run webpack-app-build              Bundle with webpack
+  pnpm run webpack-mobile-build           Bundle with webpack
+  pnpm run sync-android-release           Bundle with webpack (+5 more steps)
+  pnpm run sync-ios-release               Bundle with webpack (+6 more steps)
+  pnpm run clean                          Run clean gulp task
+  pnpm run test                           Run test deps.edn alias, then run bb
+  pnpm run test:ios-web-fonts             Run scripts/check-ios-web-fonts.mjs
+  pnpm run test:node-adapter
+  pnpm run report                         Run cljs deps.edn alias
+  pnpm run style:lint                     Check stylesheets with Stylelint
+  pnpm run gulp:watch
+  pnpm run gulp:build
+  pnpm run gulp:buildMobile
+  pnpm run css:build
+  pnpm run css:watch                        ∞ long-running
+  pnpm run cljs:watch                     Run cljs deps.edn alias
+  pnpm run gulp:mobile-watch              Run watchMobile gulp task
+  pnpm run css:mobile-build
+  pnpm run css:mobile-watch                 ∞ long-running
+  pnpm run cljs:mobile-watch              Run cljs deps.edn alias
+  pnpm run cljs:release-mobile            Run cljs deps.edn alias
+  pnpm run cljs:dev-watch                 Run cljs deps.edn alias
+  pnpm run cljs:app-watch                 Run cljs deps.edn alias
+  pnpm run cljs:electron-watch            Run cljs deps.edn alias
+  pnpm run cljs:release                   Run cljs deps.edn alias
+  pnpm run cljs:release-electron          Run cljs deps.edn alias
+  pnpm run cljs:release-app               Run cljs deps.edn alias
+  pnpm run cljs:release-publishing        Run cljs deps.edn alias
+  pnpm run cljs:test                      Run test deps.edn alias
+  pnpm run cljs:run-test
+  pnpm run cljs:test-no-worker            Run test deps.edn alias
+  pnpm run cljs:run-test-no-worker        Run static/tests-no-worker.js
+  pnpm run db-worker-node:compile         Run cljs deps.edn alias
+  pnpm run db-worker-node:release         Run cljs deps.edn alias
+  pnpm run db-worker-node:bundle          Run scripts/build-db-worker-node-bundle.mjs
+  pnpm run db-worker-node:release:bundle  Run scripts/build-db-worker-node-bundle.mjs (+1 more step)
+  pnpm run db-worker-node:compile:bundle  Run scripts/build-db-worker-node-bundle.mjs (+1 more step)
+  pnpm run cli:release                    Install Ruby gems, then run scripts/stage-cli-runtime.mjs
+  pnpm run desktop:prepare-runtime-js     Run scripts/prepare-desktop-runtime-js.mjs
+  pnpm run cli:e2e
+  pnpm run cli:e2e:skip-build
+  pnpm run cljs:dev-release-app           Run cljs deps.edn alias
+  pnpm run cljs:dev-release-electron      Run cljs deps.edn alias
+  pnpm run cljs:debug                     Run cljs deps.edn alias
+  pnpm run cljs:report                    Run cljs deps.edn alias
+  pnpm run cljs:build-electron            Run cljs deps.edn alias
+  pnpm run cljs:lint                      Run clj-kondo deps.edn alias
+  pnpm run ios:dev                        Run cap gulp task
+  pnpm run android:dev                    Run cap gulp task
+  clojure -M:cljs                         Run cljs deps.edn alias
+  clojure -M:test                         Run test deps.edn alias
+  clojure -M:bench                        Run bench deps.edn alias
+  clojure -M:replace-deps                 Run replace-deps deps.edn alias
+  clojure … do/issues/1536                Run //github.com/clj-kondo/clj-kondo/issues/1536 deps.edn alias
+  clojure -M:clj-kondo                    Run clj-kondo deps.edn alias
+  clojure -M -r                           Start Clojure REPL  ∞ long-running
+  docker build -t logseq_logseq .         Build Docker image
+
+android  [JVM, Gradle]
+  ./gradlew clean
+  ./gradlew build
+  ./gradlew test   Run Gradle tests
+  ./gradlew check  Run Gradle checks (tests and linters)
+  ./gradlew tasks  List all Gradle tasks
+  .\gradlew.bat    Copyright 2015 original author or authors
+
+android/app  [JVM, Gradle]
+  ./gradlew :app:installDebug          Build and install debug app on device  ⊙ device
+  ./gradlew :app:assembleDebug         Build debug APK
+  ./gradlew :app:assembleRelease       Build release APK
+  ./gradlew :app:bundleRelease         Build release App Bundle
+  ./gradlew :app:connectedAndroidTest  Run instrumented tests on device  ⊙ device
+  ./gradlew :app:lint                  Run Android Lint
+
+cli  [Node.js]
+  pnpm run bundle
+  pnpm run test
+  dune build
+  dune test        Run tests with dune
+  dune fmt         Format OCaml source with dune
+
+clj-e2e  [Clojure]
+  clojure -M:build                         Run build deps.edn alias
+  clojure -M:serve                         Run serve deps.edn alias  ∞ long-running
+  clojure -M:dev                           Run dev deps.edn alias  ∞ long-running
+  clojure -M:dev-run-rtc-extra-test        Run dev-run-rtc-extra-test deps.edn alias  ∞ long-running
+  clojure -M:dev-run-rtc-extra-part2-test  Run dev-run-rtc-extra-part2-test deps.edn alias  ∞ long-running
+  clojure -M:dev-run-all-basic-test        Run dev-run-all-basic-test deps.edn alias  ∞ long-running
+  clojure -M -r                            Start Clojure REPL  ∞ long-running
+
+deps/common  [Node.js, Clojure]
+  clojure -M -r  Start Clojure REPL  ∞ long-running
+
+deps/db  [Node.js, Clojure]
+  pnpm run test-v
+  clojure -M -r    Start Clojure REPL  ∞ long-running
+
+deps/db-sync  [Node.js, Cloudflare Workers, Sentry, Clojure]
+  pnpm run dev                     Run Cloudflare Worker locally  ∞ long-running
+  pnpm run watch                   Run cljs deps.edn alias
+  pnpm run release                 Run cljs deps.edn alias
+  pnpm run delete-graphs-for-user  Run worker/scripts/delete_graphs_for_user.js
+  pnpm run delete-user-totally     Run worker/scripts/delete_user_totally.js
+  pnpm run download-graph-db       Run worker/scripts/download_graph_db.js
+  pnpm run show-graphs-for-user    Run worker/scripts/show_graphs_for_user.js
+  pnpm run show-usage-stats        Run worker/scripts/show_usage_stats.js
+  pnpm run build:node-adapter      Run cljs deps.edn alias
+  pnpm run dev:node-adapter        Run cljs deps.edn alias
+  pnpm run start:node-adapter      Run worker/dist/node-adapter.js
+  pnpm run show-sqlite-checksum    Run cljs deps.edn alias, then run worker/dist/show-sqlite-checksum.js
+  pnpm run recompute-log-checksum  Run cljs deps.edn alias, then run worker/dist/recompute-log-checksum.js
+  pnpm run migrate:local           Apply D1 migrations locally
+  pnpm run migrate:staging         Apply D1 migrations  [external]
+  pnpm run migrate:prod            Apply D1 migrations  [external]
+  pnpm run test:node-adapter       Run cljs deps.edn alias, then run worker/dist/worker-test.js
+  pnpm run test:chatgpt-app        Run Node.js tests
+  pnpm run build:api-docs          Run worker/scripts/embed_api_docs.mjs (+3 more steps)
+  pnpm run test:api-docs           Run Node.js tests (+4 more steps)
+  pnpm run test:large-op-128m      Run cljs deps.edn alias, then run worker/dist/large-op-memory-test.js
+  pnpm run test                    Run cljs deps.edn alias, then run worker/dist/worker-test.js
+  pnpm run test:mcp                Deploy Cloudflare Worker (+5 more steps)  [external]
+  pnpm run clean                   Delete worker/dist
+  pnpm run sentry:sourcemaps       Upload to Sentry  [external]
+  pnpm run deploy-prod             Deploy Cloudflare Worker (+6 more steps)  [external]
+  pnpm run deploy-staging          Deploy Cloudflare Worker (+6 more steps)  [external]
+  clojure -M -r                    Start Clojure REPL  ∞ long-running
+  ./start.sh
+
+deps/graph-parser  [Node.js, Clojure]
+  pnpm run test-v
+  clojure -M -r    Start Clojure REPL  ∞ long-running
+
+deps/outliner  [Node.js, Clojure]
+  clojure -M -r  Start Clojure REPL  ∞ long-running
+
+deps/publish  [Node.js, Cloudflare Workers, Clojure]
+  pnpm run dev                   Run Cloudflare Worker locally  ∞ long-running
+  pnpm run watch                 Run cljs deps.edn alias
+  pnpm run release               Run cljs deps.edn alias
+  pnpm run test                  Run cljs deps.edn alias, then run worker/dist/worker-test.js
+  pnpm run clean                 Delete worker/dist
+  pnpm run bump-publish-version  Run scripts/bump-publish-version.js
+  pnpm run deploy                Deploy Cloudflare Worker (+3 more steps)  [external]
+  clojure -M -r                  Start Clojure REPL  ∞ long-running
+
+deps/publishing  [Node.js, Clojure]
+  clojure -M -r  Start Clojure REPL  ∞ long-running
+
+deps/shui  [Clojure]
+  clojure -M -r  Start Clojure REPL  ∞ long-running
+
+ios/App  [Xcode, Fastlane]
+  xcodebuild -workspace … build     Build App scheme for iOS Simulator  ⊙ device
+  xcodebuild -workspace … 16' test  Run App tests in iOS Simulator  ⊙ device
+  pod install                       Install CocoaPods dependencies
+  fastlane ios beta                 Push new beta build to TestFlight  [external]
+
+libs  [Node.js, webpack]
+  pnpm run build:user       Bundle with webpack
+  pnpm run dev:user         Start webpack dev server  ∞ long-running
+  pnpm run build:core       Bundle with webpack
+  pnpm run dev:core         Start webpack dev server  ∞ long-running
+  pnpm run generate:schema  Run scripts/extract-sdk-schema.js
+  pnpm run build            Compile TypeScript sources, then delete dist/*.js, then bundle with webpack
+  pnpm run lint             Check formatting with Prettier
+  pnpm run fix              Format source code with Prettier
+  pnpm run build:docs       Generate API docs with TypeDoc
+  pnpm run build:docs:json  Generate API docs with TypeDoc
+
+libs/cljs-sdk  [Node.js, Clojure]
+  clojure -M:dev    Run dev deps.edn alias  ∞ long-running
+  clojure -M:build  Run build deps.edn alias
+  clojure -M -r     Start Clojure REPL  ∞ long-running
+
+resources  [Node.js, Electron]
+  pnpm run electron:dev               Start Electron app  ∞ long-running
+  pnpm run electron:debug             Start Electron app  ∞ long-running
+  pnpm run electron:make              Package Electron app
+  pnpm run electron:make-unsigned     Run ../scripts/electron-builder-unsigned.mjs
+  pnpm run electron:make-linux-arm64  Package Electron app
+  pnpm run electron:publish-snap      Package Electron app
+  pnpm run electron:make-macos-arm64  Package Electron app
+  pnpm run electron:make-win-arm64    Package Electron app
+  pnpm run electron:publish:github    Package Electron app
+  pnpm run rebuild:all
+  pnpm run postinstall
+
+scripts  [Node.js, Clojure]
+  clojure -M -r             Start Clojure REPL  ∞ long-running
+  ./build-ios.sh
+  ./bump-version.sh
+  ./install-linux.sh        Logseq Linux Installer Script
+  ./patch-xcode-project.sh

@@ -3,9 +3,9 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [python-poetry] Python tools=pdm,poe
+## . [python-poetry] Python tools=pdm,poe techs=Python,Flask,FastAPI
 lint                     Quality        declared exact  safe        .          pdm run lint :: Run all linters
-start                    Development    declared exact  safe        .          pdm run start :: Start the Flask development server [long-running]
+start                    Development    declared exact  safe        .          pdm run start :: Start Flask development server [long-running]
 test                     Testing        declared exact  safe        .          pdm run test :: Run Python tests
-docs                     Build          declared exact  safe        .          pdm run poe docs :: Build the documentation site
+docs                     Build          declared exact  safe        .          pdm run poe docs :: Build documentation site
 serve                    Development    declared exact  safe        .          pdm run poe serve :: Start app:app with Uvicorn and auto-reload [long-running]

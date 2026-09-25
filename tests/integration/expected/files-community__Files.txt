@@ -1,0 +1,19 @@
+files-community_Files  [.NET]
+
+  dotnet build    Build Files solution
+  dotnet test     Run all Files solution tests
+  dotnet restore  Restore NuGet packages  ↓ download
+  dotnet clean    Delete .NET build outputs
+  dotnet format   Format .NET source code
+
+src/Files.App  [.NET]
+  dotnet run                 Run .NET Files.App app
+  dotnet publish -c Release  Publish Files.App for deployment
+
+src/Files.App.Server  [.NET]
+  dotnet run                 Run .NET Files.App.Server app
+  dotnet publish -c Release  Publish Files.App.Server for deployment
+
+tests/Files.App.UITests  [.NET]
+  dotnet run                 Run .NET Files.App.UITests app
+  dotnet publish -c Release  Publish Files.App.UITests for deployment

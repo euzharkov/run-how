@@ -1,0 +1,10 @@
+version: "3"
+tasks:
+  fmt:
+    desc: Format Go source
+    cmds:
+      - gofmt -w .
+  test:
+    desc: Would shadow the root test task
+    cmds:
+      - echo shadowed

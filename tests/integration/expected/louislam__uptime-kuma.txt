@@ -1,0 +1,86 @@
+louislam_uptime-kuma  [Node.js, Docker, Playwright, Vite]
+
+  npm run lint:js                     Check source code with ESLint
+  npm run lint:js-prod                Run lint:js
+  npm run lint-fix:js                 Fix lint issues with ESLint
+  npm run lint:style                  Check stylesheets with Stylelint
+  npm run lint-fix:style              Check stylesheets with Stylelint
+  npm run lint                        Run lint:js, then run lint:style
+  npm run fmt                         Format source code with Prettier
+  npm run lint:prod                   Run lint:js-prod, then run lint:style
+  npm run dev                         Run start-frontend-dev (+2 more steps)
+  npm run start-frontend-dev          Start Vite development server  ∞ long-running
+  npm run start                       Run start-server
+  npm run start-server                Run server/server.js
+  npm run start-server-dev            Run server/server.js
+  npm run start-server-dev:watch      Run server/server.js with auto-restart  ∞ long-running
+  npm run build                       Build app with Vite
+  npm run test                        Run test-backend, then run test-e2e
+  npm run test-with-build             Run build, then run test-backend, then run test-e2e
+  npm run test-backend                Run Node.js tests
+  npm run test-e2e                    Run Playwright end-to-end tests
+  npm run test-e2e-local              Build app with Vite, then run Playwright end-to-end tests
+  npm run test-e2e-ui                 Open Playwright test UI
+  npm run playwright-codegen          Record Playwright test interactively
+  npm run playwright-show-report      Open Playwright HTML report
+  npm run vite-preview-dist           Preview production build with Vite  ∞ long-running
+  npm run build-docker-base           Build Docker image
+  npm run build-docker-base-slim      Build Docker image
+  npm run build-docker-builder-go     Build Docker image
+  npm run build-docker-nightly-local  Run build, then build Docker image
+  npm run build-docker-pr-test        Build Docker image
+  npm run upload-artifacts            Run extra/release/upload-artifacts.mjs
+  npm run upload-artifacts-beta       Run extra/release/upload-artifacts-beta.mjs
+  npm run setup                       Run extra/download-dist.js (+2 more steps)  ↓ download  ∆ git
+  npm run download-dist               Run extra/download-dist.js
+  npm run mark-as-nightly             Run extra/mark-as-nightly.js
+  npm run reset-password              Run extra/reset-password.mts
+  npm run remove-2fa                  Run extra/remove-2fa.js
+  npm run start-clear-server          Run extra/start-clear-server.mjs
+  npm run simple-dns-server           Run extra/simple-dns-server.js
+  npm run simple-mqtt-server          Run extra/simple-mqtt-server.js
+  npm run simple-mongo                Run 27017:27017 container
+  npm run simple-postgres             Run 5432:5432 container
+  npm run simple-mariadb              Run 3306:3306 container
+  npm run release-final               Run extra/release/release.mjs
+  npm run release-beta                Run extra/release/release.mjs
+  npm run release-nightly             Run extra/release/nightly.mjs
+  npm run git-remove-tag              Create Git tag  ∆ git
+  npm run build-dist-and-restart      Run build, then run start-server-dev
+  npm run start-pr-test               Run extra/checkout-pr.mjs, then install dependencies with npm, then run dev  ↓ download
+  npm run deploy-demo-server          Run extra/deploy-demo-server.js
+  npm run quick-run-nightly           Run NODE_ENV=development container
+  npm run start-dev-container         Start Docker services  ∞ long-running
+  npm run … te-table-state            Run extra/reset-migrate-aggregate-table-state.js
+  npm run generate-changelog          Run extra/release/generate-changelog.mjs
+  npm run create-release              Run extra/release/create-release.mjs
+  npm run audit                       Audit dependencies for vulnerabilities  ↓ download
+  docker compose up -d                Start all Docker services
+  docker compose up -d uptime-kuma    Start uptime-kuma service (uptime-kuma)
+  docker compose logs -f              Follow Docker service logs  ∞ long-running
+  docker compose down                 Stop and remove Docker services
+
+extra/docker-latest-warning  [Node.js, Docker]
+  npm run build                 Build Docker image
+  npm run multi-build-and-push  Build Docker image
+  docker build -f … .           Build Docker image from Dockerfile.latest-warning
+
+extra/push-examples/javascript-fetch  [Node.js]
+  npm run start  Run index.js
+
+extra/push-examples/typescript-fetch  [Node.js, Deno, Bun]
+  npm run ts-node  Run index.ts
+  npm run deno     Run index.ts with Deno
+  npm run bun      Run index.ts with Bun
+
+extra/uptime-kuma-push  [Node.js, Go, Docker]
+  npm run build-docker                Build build/uptime-kuma-push-riscv64 (+7 more steps)
+  npm run build-all                   Build build/uptime-kuma-push-riscv64 (+6 more steps)
+  npm run build-win                   Build build/uptime-kuma-push.exe
+  npm run build-linux-amd64           Build build/uptime-kuma-push-amd64
+  npm run build-linux-arm64           Build build/uptime-kuma-push-arm64
+  npm run build-linux-armv7           Build build/uptime-kuma-push-armv7
+  npm run build-linux-armv6           Build build/uptime-kuma-push-armv6
+  npm run build-linux-armv5           Build build/uptime-kuma-push-armv5
+  npm run build-linux-riscv64         Build build/uptime-kuma-push-riscv64
+  docker build -t uptime-kuma-push .  Build Docker image

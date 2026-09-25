@@ -1,0 +1,14 @@
+{
+  "name": "web",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": { "next": "15.0.0", "react": "19.0.0", "@storefront/ui": "workspace:*" },
+  "devDependencies": { "vitest": "^2", "@playwright/test": "^1.48", "typescript": "^5" }
+}
