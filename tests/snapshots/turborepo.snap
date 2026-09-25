@@ -9,7 +9,7 @@ test                     Testing        inferred medium safe        .          t
 lint                     Quality        inferred medium safe        .          turbo run lint :: Run lint across packages with Turborepo
 dev                      Development    inferred medium safe        .          turbo run dev :: Run dev across packages with Turborepo [long-running]
 ## apps/web [web] JavaScript tools=pnpm techs=Node.js,Next.js,Vitest
-web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start the Next.js development server [long-running]
-web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build the Next.js app
+web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start Next.js development server [long-running]
+web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build Next.js app
 web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
-web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Lint the Next.js app
+web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Lint Next.js app

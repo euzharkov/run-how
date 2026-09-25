@@ -81,6 +81,7 @@ pub fn from_tool(tool: &str) -> Option<&'static str> {
     Some(match tool {
         // Frameworks and runtimes
         "next" => "Next.js",
+        "nest" => "NestJS",
         "nuxt" => "Nuxt",
         "remix" | "react-router" => "React Router",
         "astro" => "Astro",

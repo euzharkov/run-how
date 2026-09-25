@@ -194,8 +194,9 @@ impl Discoverer for Taskfile {
             if let Some(d) = &t.desc {
                 a = a.desc(d.clone());
             }
-            if t.internal || t.name.starts_with('_') || t.name.contains(":_") {
-                a = a.hidden();
+            // `task` refuses to run an internal task from the command line.
+            if t.internal {
+                a = a.redundant();
             }
             out.actions.push(a);
         }

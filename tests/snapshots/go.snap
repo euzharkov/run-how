@@ -10,6 +10,6 @@ vet                      Quality        inferred high   safe        .          g
 fmt                      Quality        inferred high   safe        .          go fmt ./... :: Format Go source
 lint                     Quality        inferred high   safe        .          golangci-lint run :: Lint Go source with golangci-lint
 tidy                     Other          inferred low    safe        .          go mod tidy :: Tidy Go module dependencies [download]
-run:migrate              Development    inferred high   safe        .          go run ./cmd/migrate :: Run the migrate command
-run:worker               Development    inferred high   safe        .          go run ./cmd/worker :: Run the worker command
+run:migrate              Development    inferred high   safe        .          go run ./cmd/migrate :: Run migrate command
+run:worker               Development    inferred high   safe        .          go run ./cmd/worker :: Run worker command
 generate                 Build          inferred high   safe        .          go generate ./... :: Run go:generate directives

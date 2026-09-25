@@ -5,7 +5,7 @@ expression: table
 ---
 ## . [mobile-maestro] JavaScript tools=maestro,npm techs=Node.js,Expo,Maestro,Jest,Detox
 test:maestro             Testing        inferred high   safe        .          maestro test .maestro :: Run Maestro mobile end-to-end flows [device]
-start                    Development    declared exact  safe        .          npm run start :: Start the Expo development server [long-running]
+start                    Development    declared exact  safe        .          npm run start :: Start Expo development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests
 e2e                      Testing        declared exact  safe        .          npm run e2e :: Run Maestro mobile end-to-end flows in .maestro [device]
 e2e:cloud                Testing        declared exact  external    .          npm run e2e:cloud :: Run Maestro flows in Maestro Cloud [device]

@@ -33,6 +33,26 @@ pub(super) fn summarize(
             Some("telemetry") => s("next", "Configure Next.js telemetry", Other, Safe),
             Some(x) => s("next", format!("Run next {x}"), Other, Safe),
         },
+        "nest" => match sub {
+            Some("start") if a.has("--watch") || a.has("-w") => {
+                s("nest", "Start the NestJS app in watch mode", Dev, Safe)
+            }
+            Some("start") if a.has("--debug") || a.has("-d") => s(
+                "nest",
+                "Start the NestJS app with the debugger attached",
+                Dev,
+                Safe,
+            ),
+            Some("start") => s("nest", "Start the NestJS app", Dev, Safe),
+            Some("build") => s("nest", "Build the NestJS app", Build, Safe),
+            Some("generate") | Some("g") => {
+                s("nest", "Generate NestJS source files", Generate, Safe)
+            }
+            Some("new") | Some("n") => s("nest", "Scaffold a new NestJS project", Other, Safe),
+            Some("info") | Some("i") => s("nest", "Print NestJS project information", Other, Safe),
+            Some(x) => s("nest", format!("Run nest {x}"), Other, Safe),
+            None => s("nest", "Run the NestJS CLI", Other, Safe),
+        },
         "nuxt" | "nuxi" => match sub {
             None | Some("dev") => s("nuxt", "Start the Nuxt development server", Dev, Safe),
             Some("build") => s("nuxt", "Build the Nuxt app", Build, Safe),
@@ -282,6 +302,12 @@ mod tests {
         assert_eq!(sum("vite build").text, "Build the app with Vite");
         assert_eq!(sum("next dev").text, "Start the Next.js development server");
         assert_eq!(sum("next build").kind, Build);
+        assert_eq!(
+            sum("nest start --watch").text,
+            "Start the NestJS app in watch mode"
+        );
+        assert_eq!(sum("nest start").kind, Dev);
+        assert_eq!(sum("nest build").kind, Build);
         assert_eq!(sum("nuxt generate").text, "Generate the static Nuxt site");
         assert_eq!(sum("astro check").kind, TypeCheck);
     }

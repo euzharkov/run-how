@@ -5,6 +5,6 @@ expression: table
 ---
 ## . [zig] Other tools=zig techs=Zig
 build                    Build          inferred high   safe        .          zig build :: Build with Zig
-run                      Development    inferred high   safe        .          zig build run :: Build and run the Zig program
+run                      Development    inferred high   safe        .          zig build run :: Build and run Zig program
 test                     Testing        inferred high   safe        .          zig build test :: Run Zig tests
 fmt                      Quality        inferred medium safe        .          zig fmt . :: Format Zig source

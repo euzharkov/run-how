@@ -54,6 +54,7 @@ fixture_tests!(
     kubernetes,
     helm,
     polyglot,
+    storefront,
     tricky,
     empty,
     ruby_rails,
@@ -111,7 +112,7 @@ fn ids_are_unique_and_json_roundtrips() {
         assert_eq!(n, ids.len(), "duplicate ids in {name}");
         let json = rhow::ui::json::render(&repo);
         let v: serde_json::Value = serde_json::from_str(&json).unwrap();
-        assert_eq!(v["schema"], 1);
+        assert_eq!(v["schema"], 2);
         assert!(v["projects"].is_array());
     }
 }
@@ -170,18 +171,61 @@ fn discovery_is_read_only() {
         }
         out.sort_by(|a, b| a.path.cmp(&b.path));
     }
-    for name in ["polyglot", "ci"] {
-        let root = fixture(name);
-        let mut before = Vec::new();
-        stamp(&root, &mut before);
-        assert!(!before.is_empty());
-        let _ = discover(&root, &Options::default());
-        let mut after = Vec::new();
-        stamp(&root, &mut after);
-        let files = |v: &[Entry]| v.iter().map(|e| e.path.clone()).collect::<Vec<_>>();
-        assert_eq!(files(&before), files(&after), "{name}: entries changed");
-        assert_eq!(before, after, "{name}: sizes or mtimes changed");
+    // Every fixture, with runtime probing on: all adapters and the runtime checks run.
+    let root = fixture("");
+    let mut before = Vec::new();
+    stamp(&root, &mut before);
+    let mut discovered = 0;
+    for e in std::fs::read_dir(&root).unwrap().flatten() {
+        if e.path().is_dir() {
+            let _ = discover(&e.path(), &Options::default());
+            discovered += 1;
+        }
     }
+    assert!(discovered > 40, "only {discovered} fixtures found");
+    let mut after = Vec::new();
+    stamp(&root, &mut after);
+    let files = |v: &[Entry]| v.iter().map(|e| e.path.clone()).collect::<Vec<_>>();
+    assert_eq!(files(&before), files(&after), "fixture entries changed");
+    assert_eq!(before, after, "fixture sizes or mtimes changed");
+}
+
+#[test]
+fn nothing_spawns_a_process_or_opens_a_socket() {
+    // The other half of "read-only": no project tool is run and nothing touches the network.
+    // A timestamp walk cannot see either, so the source itself must not contain the means.
+    const FORBIDDEN: &[&str] = &[
+        "process::Command",
+        "Command::new",
+        "std::net",
+        "TcpStream",
+        "UdpSocket",
+    ];
+    fn scan(dir: &std::path::Path, hits: &mut Vec<String>) {
+        for e in std::fs::read_dir(dir).unwrap().flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                scan(&p, hits);
+            } else if p.extension().is_some_and(|x| x == "rs") {
+                let text = std::fs::read_to_string(&p).unwrap();
+                for (i, line) in text.lines().enumerate() {
+                    if FORBIDDEN.iter().any(|f| line.contains(f)) {
+                        hits.push(format!("{}:{}: {}", p.display(), i + 1, line.trim()));
+                    }
+                }
+            }
+        }
+    }
+    let mut hits = Vec::new();
+    scan(
+        &PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src"),
+        &mut hits,
+    );
+    assert!(
+        hits.is_empty(),
+        "rhow must not spawn or connect:\n{}",
+        hits.join("\n")
+    );
 }
 
 #[test]

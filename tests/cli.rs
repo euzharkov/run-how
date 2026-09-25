@@ -11,7 +11,6 @@ fn fixture(name: &str) -> PathBuf {
         .join(name)
 }
 
-/// Global flags go first: after `why <command>` the rest of the line is the command.
 fn rhow(args: &[&str]) -> Output {
     Command::new(env!("CARGO_BIN_EXE_rhow"))
         .args(["--no-runtime", "--color", "never"])
@@ -71,15 +70,14 @@ fn hint_when_no_git_repository_above_cwd() {
     let err = stderr(&o);
     assert!(
         err.starts_with("rhow: no git repository above ")
-            && err.contains("(use -C to pick a directory)"),
+            && err.contains("(use `rhow <dir>` to pick a directory)"),
         "{err:?}"
     );
     assert_eq!(err.lines().count(), 1, "{err:?}");
     assert!(stdout(&o).contains("npm run test"), "{}", stdout(&o));
 
-    // The hint is for the listing only: JSON consumers and `why` get a clean stderr.
+    // The hint is for the listing only: JSON consumers and `support` get a clean stderr.
     assert_eq!(stderr(&run(&["--json"])), "");
-    assert_eq!(stderr(&run(&["test"])), "");
     assert_eq!(stderr(&run(&["support"])), "");
 
     // With a repository the walk finds one and stays quiet.
@@ -113,7 +111,7 @@ fn json_envelope_has_a_schema_and_every_action() {
     let v = json(&o);
     let keys: Vec<&str> = v.as_object().unwrap().keys().map(String::as_str).collect();
     assert_eq!(keys[0], "schema");
-    assert_eq!(v["schema"], 1);
+    assert_eq!(v["schema"], 2);
     assert!(v["root"].as_str().unwrap().ends_with("polyglot"));
     let actions: Vec<&serde_json::Value> = v["projects"]
         .as_array()
@@ -121,19 +119,21 @@ fn json_envelope_has_a_schema_and_every_action() {
         .iter()
         .flat_map(|p| p["actions"].as_array().unwrap())
         .collect();
-    // Hidden actions are in the document, flagged, so `--all` changes nothing here.
-    assert!(actions.iter().any(|a| a["hidden"] == true));
+    // Nothing is hidden: the document holds exactly the actions the listing shows, one row
+    // each, and there is no flag to reveal more.
+    assert!(actions.iter().all(|a| a.get("hidden").is_none()));
     assert!(actions.iter().all(|a| a["opaque"].is_boolean()));
     assert!(actions
         .iter()
         .all(|a| !a["working_directory"].as_str().unwrap().contains('\\')));
-    let all = rhow(&[
-        "-C",
-        fixture("polyglot").to_str().unwrap(),
-        "--json",
-        "--all",
-    ]);
-    assert_eq!(stdout(&all), stdout(&o));
+    let listing = stdout(&rhow(&[fixture("polyglot").to_str().unwrap()]));
+    let rows = listing
+        .lines()
+        .filter(|l| l.starts_with("  ") && !l.starts_with("   "))
+        .count();
+    assert_eq!(rows, actions.len(), "{listing}");
+    let all = rhow(&[fixture("polyglot").to_str().unwrap(), "--all"]);
+    assert_eq!(all.status.code(), Some(2));
 }
 
 #[test]
@@ -153,25 +153,39 @@ fn ci_json_is_only_the_pipelines() {
 }
 
 #[test]
-fn one_action_as_json() {
+fn the_argument_is_a_directory_or_support() {
     let dir = fixture("polyglot");
-    let o = rhow(&["-C", dir.to_str().unwrap(), "dev", "--json"]);
-    assert!(o.status.success(), "{}", stderr(&o));
-    let v = json(&o);
-    assert_eq!(v["schema"], 1);
-    assert_eq!(v["project"], ".");
-    assert_eq!(v["action"]["id"], "dev");
-    assert_eq!(v["action"]["command"], "pnpm run dev");
-    // The script body the command resolves to, as the terminal view's `runs` line.
-    assert!(v["runs"].as_str().is_some(), "{v}");
-    let why = rhow(&["-C", dir.to_str().unwrap(), "why", "dev", "--json"]);
-    assert_eq!(stdout(&why), stdout(&o));
-    // The exact command text works as a key too, as it does without --json.
-    let by_cmd = rhow(&["-C", dir.to_str().unwrap(), "why", "pnpm run dev", "--json"]);
-    assert_eq!(stdout(&by_cmd), stdout(&o));
-    // An unknown action is an error in both modes; nothing half-formed goes to stdout.
-    let missing = rhow(&["-C", dir.to_str().unwrap(), "nope", "--json"]);
-    assert_eq!(missing.status.code(), Some(2));
-    assert_eq!(stdout(&missing), "");
-    assert!(stderr(&missing).contains("no action named `nope`"));
+    let d = dir.to_str().unwrap();
+    // `rhow DIR` inspects exactly that directory; `-C DIR` is the same, kept for muscle memory.
+    let by_arg = rhow(&[d]);
+    assert!(by_arg.status.success(), "{}", stderr(&by_arg));
+    assert!(
+        stdout(&by_arg).starts_with("polyglot"),
+        "{}",
+        stdout(&by_arg)
+    );
+    assert_eq!(stdout(&rhow(&["-C", d])), stdout(&by_arg));
+    assert_eq!(
+        stdout(&rhow(&["--json", d])),
+        stdout(&rhow(&["--json", "-C", d]))
+    );
+    // `support` takes the directory too, flags before or after.
+    let support = rhow(&["support", d]);
+    assert!(support.status.success(), "{}", stderr(&support));
+    assert_eq!(stdout(&rhow(&["support", "-C", d])), stdout(&support));
+    assert!(rhow(&["support", d, "--json"]).status.success());
+    // There is no per-action view: an id or a row number is just a directory that is not
+    // there, and anything that is not one directory is refused. Nothing reaches stdout.
+    for args in [
+        &["dev"][..],
+        &["1"],
+        &["why", "dev"],
+        &[d, "support"],
+        &[d, "-C", d],
+    ] {
+        let o = rhow(args);
+        assert_eq!(o.status.code(), Some(2), "{args:?}");
+        assert_eq!(stdout(&o), "", "{args:?}");
+    }
+    assert!(stderr(&rhow(&["dev"])).contains("dev is not a directory"));
 }

@@ -71,7 +71,7 @@ fn foreign_step(name: Option<String>, command: &str, shell: &str) -> CiStep {
     CiStep {
         name,
         command: command.trim().to_string(),
-        description: format!("Run a {shell} script"),
+        description: format!("Run {shell} script"),
         risk: Risk::Safe,
         notes: Vec::new(),
     }
@@ -183,7 +183,7 @@ fn github(file: &str, text: &str, resolver: Resolver) -> Option<CiPipeline> {
             // A reusable workflow call has no steps of its own; show what it calls.
             if let Some(uses) = get(jm, "uses").and_then(str_of) {
                 let mut s = step(None, "", resolver);
-                s.description = format!("Run the reusable workflow {uses}");
+                s.description = format!("Run reusable workflow {uses}");
                 s.command = format!("uses: {uses}");
                 steps.push(s);
             }
@@ -357,17 +357,17 @@ jobs:
 "#;
         let p = github(".github/workflows/ci.yml", yml, &analyze::no_resolver).unwrap();
         let s = &p.jobs[0].steps;
-        assert_eq!(s[0].description, "Run a python script");
+        assert_eq!(s[0].description, "Run python script");
         assert_eq!(s[0].risk, Risk::Safe);
         assert!(s[0].notes.is_empty());
-        assert_eq!(s[1].description, "Run a pwsh script");
-        assert_eq!(s[2].description, "Run a cmd script");
+        assert_eq!(s[1].description, "Run pwsh script");
+        assert_eq!(s[2].description, "Run cmd script");
         // A POSIX shell, however spelled, is analysed as before.
         assert_eq!(s[3].risk, Risk::Destructive);
         assert_eq!(s[4].risk, Risk::Destructive);
         // A job-level default shell applies to steps without their own; a step's own wins.
         let s = &p.jobs[1].steps;
-        assert_eq!(s[0].description, "Run a node script");
+        assert_eq!(s[0].description, "Run node script");
         assert_eq!(s[0].risk, Risk::Safe);
         assert_eq!(s[1].risk, Risk::Destructive);
     }
@@ -386,7 +386,7 @@ jobs:
       - run: Remove-Item -Recurse -Force build
 "#;
         let p = github("w.yml", yml, &analyze::no_resolver).unwrap();
-        assert_eq!(p.jobs[0].steps[0].description, "Run a pwsh script");
+        assert_eq!(p.jobs[0].steps[0].description, "Run pwsh script");
     }
 
     #[test]
@@ -463,7 +463,7 @@ jobs:
         assert_eq!(s.command, "uses: org/repo/.github/workflows/build.yml@main");
         assert_eq!(
             s.description,
-            "Run the reusable workflow org/repo/.github/workflows/build.yml@main"
+            "Run reusable workflow org/repo/.github/workflows/build.yml@main"
         );
         assert_eq!(s.risk, Risk::Safe);
         assert!(s.notes.is_empty());

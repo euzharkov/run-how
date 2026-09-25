@@ -1,2 +1,19 @@
-{ "name": "mobile-app", "scripts": { "start": "expo start", "test": "jest --watchAll", "lint": "expo lint" },
-  "dependencies": { "expo": "~51.0.0", "react-native": "0.74.0", "react-native-web": "~0.19" }, "devDependencies": { "detox": "^20" } }
+{
+  "name": "mobile-app",
+  "scripts": {
+    "start": "expo start",
+    "test": "jest --watchAll",
+    "lint": "expo lint",
+    "build-ios": "./scripts/with-build-number.sh eas build -p ios",
+    "build-embed": "cd embed && npm run build",
+    "bundle": "bob build"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "react-native": "0.74.0",
+    "react-native-web": "~0.19"
+  },
+  "devDependencies": {
+    "detox": "^20"
+  }
+}

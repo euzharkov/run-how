@@ -124,7 +124,41 @@ pub fn name_hint(name: &str) -> Option<NameHint> {
     None
 }
 
-/// Normalise an explicit description: single line, trimmed, capitalised, no trailing period.
+/// Drop the articles `the`, `a` and `an` from a description: `Build the app on Android`
+/// becomes `Build app on Android`. Every description passes through here, whether it comes
+/// from the knowledge table, from composing several steps, or from the project's own text, so
+/// the listing reads in one voice. Only whole words go; `a.out`, `(the`, `--an` and any token
+/// carrying punctuation stay as written.
+pub fn terse(d: &str) -> String {
+    let mut out: Vec<&str> = Vec::new();
+    let mut dropped_first = false;
+    for w in d.split(' ') {
+        if matches!(w.to_ascii_lowercase().as_str(), "the" | "a" | "an") {
+            if out.is_empty() {
+                dropped_first = true;
+            }
+            continue;
+        }
+        out.push(w);
+    }
+    let s = out.join(" ");
+    if dropped_first {
+        capitalize(&s)
+    } else {
+        s
+    }
+}
+
+fn capitalize(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+        None => String::new(),
+    }
+}
+
+/// Normalise an explicit description: single line, trimmed, capitalised, no trailing period,
+/// no articles.
 pub fn tidy(d: &str) -> String {
     let first = d
         .lines()
@@ -136,11 +170,7 @@ pub fn tidy(d: &str) -> String {
     while s.ends_with('.') {
         s.pop();
     }
-    let mut c = s.chars();
-    match c.next() {
-        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
-        None => String::new(),
-    }
+    terse(&capitalize(&s))
 }
 
 fn join_and(items: &[String]) -> String {
@@ -163,13 +193,52 @@ fn lower_first(s: &str) -> String {
     }
 }
 
+/// `test-integration`, `test:unit`, `smoke-test`: the qualifier in the name is the only
+/// observable fact when the command itself says nothing, so keep it ("Run integration
+/// tests") instead of flattening every such name to "Run tests".
+fn test_name_description(name: &str) -> Option<String> {
+    const TEST: &[&str] = &["test", "tests", "spec", "specs", "jest", "vitest", "pytest"];
+    const FILLER: &[&str] = &["run", "all", "ci", "only", "fast", "quick", "local", "full"];
+    let lower = name.to_ascii_lowercase();
+    let tokens: Vec<&str> = lower
+        .split([':', '-', '_', '.', ' ', '/'])
+        .filter(|t| !t.is_empty())
+        .collect();
+    if !tokens.iter().any(|t| TEST.contains(t)) {
+        return None;
+    }
+    if tokens
+        .iter()
+        .any(|t| matches!(*t, "e2e" | "playwright" | "cypress" | "acceptance"))
+    {
+        return Some("Run end-to-end tests".to_string());
+    }
+    if tokens.iter().any(|t| matches!(*t, "coverage" | "cov")) {
+        return Some("Run tests with coverage".to_string());
+    }
+    let qualifiers: Vec<&str> = tokens
+        .iter()
+        .copied()
+        .filter(|t| !TEST.contains(t) && !FILLER.contains(t))
+        .collect();
+    match qualifiers.len() {
+        1 | 2 => Some(format!("Run {} tests", qualifiers.join(" "))),
+        _ => None,
+    }
+}
+
 /// Build a description from a command analysis.
 pub fn describe(analysis: &Analysis, name: &str) -> String {
+    terse(&compose(analysis, name))
+}
+
+fn compose(analysis: &Analysis, name: &str) -> String {
     let steps = &analysis.steps;
     match steps.len() {
-        0 => name_hint(name)
-            .map(|h| h.description.to_string())
-            .unwrap_or_else(|| format!("Run {name}")),
+        0 => test_name_description(name)
+            .or_else(|| name_hint(name).map(|h| h.description.to_string()))
+            .or_else(|| (!name.trim().is_empty()).then(|| format!("Run {name}")))
+            .unwrap_or_default(),
         1 => steps[0].text.clone(),
         _ => {
             // Drop noise steps (echo, sleep) when something meaningful remains.
@@ -317,13 +386,9 @@ pub fn finalize(a: &mut Action, resolver: Resolver) {
     let analysis = analyze::analyze(&text, resolver);
     if a.description.is_empty() {
         a.description = describe(&analysis, &a.name);
-        a.opaque = analysis.steps.iter().all(|s| {
-            s.unknown
-                || matches!(
-                    s.tool.as_deref(),
-                    Some("echo") | Some("cat") | Some("sleep")
-                )
-        }) && !analysis.steps.is_empty();
+        // Opaque means rhow could not tell what runs; a target that only prints is
+        // understood ("Print message"), so it is shown, not blanked.
+        a.opaque = analysis.steps.iter().all(|s| s.unknown) && !analysis.steps.is_empty();
     }
     if a.category == Category::Other {
         a.category = categorize(&analysis, &a.name);
@@ -366,6 +431,23 @@ fn truncate(s: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn test_names_keep_their_qualifier() {
+        let empty = analyze::analyze("", &analyze::no_resolver);
+        assert_eq!(
+            describe(&empty, "test-integration"),
+            "Run integration tests"
+        );
+        assert_eq!(describe(&empty, "test:unit"), "Run unit tests");
+        assert_eq!(
+            describe(&empty, "test-circular-deps"),
+            "Run circular deps tests"
+        );
+        assert_eq!(describe(&empty, "test-coverage"), "Run tests with coverage");
+        assert_eq!(describe(&empty, "test"), "Run tests");
+        assert_eq!(describe(&empty, "test:e2e"), "Run end-to-end tests");
+    }
+
     use super::*;
     use crate::analyze::{analyze, no_resolver};
 
@@ -389,7 +471,7 @@ mod tests {
     fn mixed_steps_are_sequenced() {
         assert_eq!(
             d("rimraf dist && tsup"),
-            "Delete dist, then build the package with tsup"
+            "Delete dist, then build package with tsup"
         );
     }
 
@@ -418,7 +500,19 @@ mod tests {
 
     #[test]
     fn tidy_descriptions() {
-        assert_eq!(tidy("  run the thing.  "), "Run the thing");
+        assert_eq!(tidy("  run the thing.  "), "Run thing");
         assert_eq!(tidy("## Build it\nmore"), "Build it");
+    }
+
+    #[test]
+    fn terse_drops_articles_and_nothing_else() {
+        assert_eq!(terse("Build the app on Android"), "Build app on Android");
+        assert_eq!(terse("Open an interactive shell"), "Open interactive shell");
+        assert_eq!(terse("Run a Rails console"), "Run Rails console");
+        assert_eq!(terse("The app, then a test"), "App, then test");
+        assert_eq!(terse("Run a.out (the binary)"), "Run a.out (the binary)");
+        assert_eq!(terse("Run --an flag"), "Run --an flag");
+        assert_eq!(terse("Ant build"), "Ant build");
+        assert_eq!(terse(""), "");
     }
 }

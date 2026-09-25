@@ -4,7 +4,7 @@ assertion_line: 27
 expression: table
 ---
 ## . [clojure] Other tools=clojure techs=Clojure
-test                     Testing        inferred medium safe        .          clojure -M:test :: Run the test deps.edn alias
-dev                      Development    inferred medium safe        .          clojure -M:dev :: Run the dev deps.edn alias [long-running]
-build                    Build          inferred medium safe        .          clojure -X:build :: Run the build deps.edn alias
-repl                     Development    inferred low    safe        .          clojure -M -r :: Start a Clojure REPL [long-running]
+test                     Testing        inferred medium safe        .          clojure -M:test :: Run test deps.edn alias
+dev                      Development    inferred medium safe        .          clojure -M:dev :: Run dev deps.edn alias [long-running]
+build                    Build          inferred medium safe        .          clojure -X:build :: Run build deps.edn alias
+repl                     Development    inferred low    safe        .          clojure -M -r :: Start Clojure REPL [long-running]

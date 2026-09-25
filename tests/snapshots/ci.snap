@@ -4,22 +4,22 @@ assertion_line: 27
 expression: table
 ---
 ## . [ci] JavaScript tools=npm techs=Node.js,Vite,Vitest,Cloudflare Workers
-dev                      Development    declared exact  safe        .          npm run dev :: Start the Vite development server [long-running]
+dev                      Development    declared exact  safe        .          npm run dev :: Start Vite development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Vitest tests
-build                    Build          declared exact  safe        .          npm run build :: Build the app with Vite
-deploy                   Release        declared exact  external    .          npm run deploy :: Deploy the Cloudflare Worker
-release                  Release        declared exact  external    .          npm run release :: Bump versions from pending changesets, then push commits to the remote [git]
+build                    Build          declared exact  safe        .          npm run build :: Build app with Vite
+deploy                   Release        declared exact  external    .          npm run deploy :: Deploy Cloudflare Worker
+release                  Release        declared exact  external    .          npm run release :: Bump versions from pending changesets, then push commits to remote [git]
 ## ci .github/workflows/ci.yml [CI] github-actions on=push main|pull_request
 job Test (ubuntu-latest)
   safe        npm ci :: Install dependencies with npm [download]
   safe        npm test :: Run Vitest tests
-  safe        npm run build :: Build the app with Vite, then run Playwright end-to-end tests
-  safe        import shutil, subprocess :: Run a python script
+  safe        npm run build :: Build app with Vite, then run Playwright end-to-end tests
+  safe        import shutil, subprocess :: Run python script
 job deploy (ubuntu-latest)
-  external    npx wrangler deploy :: Deploy the Cloudflare Worker
+  external    npx wrangler deploy :: Deploy Cloudflare Worker
 ## ci .gitlab-ci.yml [GitLab CI] gitlab-ci on=
 job unit (test)
   safe        npm ci :: Install dependencies with npm [download]
   safe        npm test :: Run Vitest tests
 job pages (deploy)
-  external    npx wrangler deploy :: Deploy the Cloudflare Worker
+  external    npx wrangler deploy :: Deploy Cloudflare Worker

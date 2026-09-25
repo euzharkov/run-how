@@ -1,6 +1,7 @@
 .PHONY: all build test lint clean docker-up docker-down deploy help
 
 BIN := bin/app
+ECHO := @echo
 
 all: build test ## Build and test
 
@@ -10,6 +11,14 @@ build: deps
 
 test: ## Run the test suite
 	go test ./...
+
+test-integration:
+	@# one process per package: the tests mutate the work directory
+	$(foreach t,$(INTEGRATION_TESTS),$(GO_TEST) -run $(t);)
+
+test-coverage:
+	@# coverage per package
+	$(foreach p,$(PACKAGES),$(GO_TEST) -cover $(p);)
 
 lint:
 	golangci-lint run
@@ -31,6 +40,9 @@ deploy: build
 
 _internal:
 	@echo internal
+
+version: ## Print the binary name
+	$(ECHO) "app $(BIN)"
 
 $(BIN): build
 

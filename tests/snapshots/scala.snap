@@ -6,6 +6,6 @@ expression: table
 ## . [scala] Other tools=sbt techs=sbt
 compile                  Build          inferred high   safe        .          sbt compile :: Compile with sbt
 test                     Testing        inferred high   safe        .          sbt test :: Run tests with sbt
-run                      Development    inferred medium safe        .          sbt run :: Run the main class with sbt
+run                      Development    inferred medium safe        .          sbt run :: Run main class with sbt
 format                   Quality        inferred medium safe        .          sbt scalafmtAll :: Format Scala source with scalafmt
-package                  Build          inferred low    safe        .          sbt package :: Package the JAR with sbt
+package                  Build          inferred low    safe        .          sbt package :: Package JAR with sbt

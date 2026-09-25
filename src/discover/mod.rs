@@ -33,9 +33,6 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
 use std::rc::Rc;
 
-/// Built-in `rhow` subcommands. An action can never take one of these names as its id.
-pub const RESERVED_IDS: &[&str] = &["why", "support"];
-
 #[derive(Debug, Clone)]
 pub struct Options {
     /// Look at the local machine (PATH, installed apps) to suggest runtime commands.
@@ -445,6 +442,7 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
             };
             let group_dirs: Vec<&DirInfo> = idxs.iter().map(|&i| &dirs[i]).collect();
             let mut disc = d.discover(&ctx, dir, &group_dirs);
+            disc.actions.retain(|a| typeable(&a.command));
             for a in &mut disc.actions {
                 if a.working_directory.is_empty() {
                     a.working_directory = dir.rel.clone();
@@ -497,18 +495,31 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
         for a in &mut p.actions {
             explain::finalize(a, &resolver);
         }
-        hide_duplicates(&mut p.actions);
+        drop_duplicates(&mut p.actions);
     }
-    hide_workspace_fan_out(&mut projects);
+    drop_workspace_fan_out(&mut projects);
     lift_repeated_package_scripts(&mut projects);
-    hide_convention_in_large_repos(&mut projects);
+    drop_convention_in_large_repos(&mut projects);
+    drop_redundant(&mut projects);
 
     for p in &mut projects {
         p.techs = crate::techs::of_project(p.kind, &p.actions);
     }
 
     // ---- identifiers -------------------------------------------------------------------
-    assign_ids(&mut projects);
+    // An inferred action that loses its natural id to one that stands in for it is marked
+    // redundant while ids are handed out; drop it and hand them out again, so the ids that
+    // remain are the natural ones wherever possible.
+    loop {
+        assign_ids(&mut projects);
+        if !projects
+            .iter()
+            .any(|p| p.actions.iter().any(|a| a.redundant))
+        {
+            break;
+        }
+        drop_redundant(&mut projects);
+    }
 
     // ---- runtime suggestions -----------------------------------------------------------
     let suggestions = if opts.probe_runtime {
@@ -541,12 +552,67 @@ pub fn discover(root: &Path, opts: &Options) -> Repo {
     }
 }
 
+/// The language ecosystem an adapter family (`Action::tool`) belongs to, when it belongs to
+/// one. Generic runners (`make`, `just`, `task`, shell scripts) and infrastructure tools
+/// have none: a `make test` may wrap anything, so it may stand in for anything.
+fn ecosystem(tool: &str) -> Option<&'static str> {
+    Some(match tool {
+        "npm" | "pnpm" | "yarn" | "bun" | "deno" | "nx" | "turbo" | "rush" | "moon" | "expo"
+        | "eas" | "react-native" | "detox" | "playwright" | "cypress" => "js",
+        "ruby" | "rails" | "rake" => "ruby",
+        "php" | "composer" | "artisan" | "symfony" => "php",
+        "python" | "uv" | "poetry" | "pdm" | "hatch" | "poe" | "tox" | "nox" | "invoke"
+        | "django" => "python",
+        "gradle" | "maven" | "sbt" => "jvm",
+        "lein" | "clojure" => "clojure",
+        "dotnet" | "cake" | "nuke" => "dotnet",
+        "stack" | "cabal" | "haskell" => "haskell",
+        "flutter" | "dart" => "dart",
+        "swift" | "xcode" | "cocoapods" => "apple",
+        "cargo" => "rust",
+        "go" => "go",
+        "mix" => "elixir",
+        "zig" => "zig",
+        "cmake" => "cmake",
+        "dune" => "ocaml",
+        "nimble" => "nim",
+        // Bazel and Pants build every language in the tree they root: like `make`, they may
+        // stand in for any language's command there, and no language's for theirs.
+        _ => return None,
+    })
+}
+
+/// Whether an action of tool `holder` makes one of tool `other` with the same name redundant:
+/// same ecosystem, or the holder is a generic runner and the other a language's command. `yarn test` (Jest) says nothing about
+/// `bundle exec rspec`, and `dotnet build` says nothing about the project's own `build.ps1`;
+/// `make test` may well run either.
+fn stands_in_for(holder: &str, other: &str) -> bool {
+    match (ecosystem(holder), ecosystem(other)) {
+        (Some(x), Some(y)) => x == y,
+        (None, Some(_)) => true,
+        // Two runners (`build.cmd` and `build.ps1`, `make test` and `./test.sh`) are two
+        // commands, not one said twice.
+        (None, None) => holder == other,
+        (Some(_), None) => false,
+    }
+}
+
+/// Bazel and Pants build and test the whole tree they root: at that root their inferred
+/// `build`/`test` are the ones to show, not a language convention that happens to share the
+/// directory (`cargo test` next to `bazel test //...`).
+fn builds_whole_tree(tool: &str) -> bool {
+    matches!(tool, "bazel" | "pants")
+}
+
 /// Two adapters describing the same thing must not both show: a `package.json` script and an
 /// Nx target both called `test`, an inferred Expo `start` next to a declared one, or `ios`
 /// (script) and `run-ios` (Nx) that explain identically. Declared beats inferred; among
-/// equals the earlier adapter (priority order) wins. Same-tool variants (`test:watch`,
-/// `test:update`) are never touched: a project that lists them meant them.
-fn hide_duplicates(actions: &mut [Action]) {
+/// equals the earlier adapter (priority order) wins, except that a whole-tree build system
+/// wins over a language convention. A declared script only shadows an inferred action it can
+/// stand in for (`stands_in_for`): a Rails app's `yarn test` does not hide `bundle exec
+/// rspec`. Same-tool variants (`test:watch`, `test:update`) are never touched: a project that
+/// lists them meant them.
+fn drop_duplicates(actions: &mut [Action]) {
     // An explanation shared by several actions of the same tool (`tf:dev:plan`,
     // `tf:prod:plan`) marks parametrised variants: a declared script that reads the same
     // does not make all of them redundant, so those never match on meaning.
@@ -561,26 +627,50 @@ fn hide_duplicates(actions: &mut [Action]) {
         .map(|a| per_tool[&(a.tool, a.description.to_ascii_lowercase())] > 1)
         .collect();
     for i in 0..actions.len() {
-        if actions[i].hidden {
+        if actions[i].redundant {
             continue;
         }
         for j in 0..i {
-            if actions[j].hidden {
+            if actions[j].redundant {
                 continue;
             }
             let (a, b) = (&actions[j], &actions[i]);
-            let same_name = a.name == b.name;
+            // Which one would stay: declared beats inferred; among equals the earlier adapter,
+            // unless the later one builds the whole tree.
+            let later_wins = match (a.source, b.source) {
+                (ActionSource::Inferred, ActionSource::Declared) => true,
+                (ActionSource::Inferred, ActionSource::Inferred) => {
+                    builds_whole_tree(b.tool) && !builds_whole_tree(a.tool)
+                }
+                _ => false,
+            };
+            let (keeper, other) = if later_wins { (b, a) } else { (a, b) };
+            let same_name = a.name == b.name && stands_in_for(keeper.tool, other.tool);
             let same_meaning = a.tool != b.tool
                 && !variant[i]
                 && !variant[j]
                 && a.category == b.category
                 && a.description.eq_ignore_ascii_case(&b.description);
-            if !(same_name || same_meaning) {
+            // A declared script whose body is exactly the command inferred next to it
+            // (`"services": "docker compose -f docker/compose.yml up -d"` and the Compose
+            // adapter's own `docker compose -f docker/compose.yml up -d`): one command, twice.
+            let same_command = a.source != b.source && {
+                let (d, i) = if a.source == ActionSource::Declared {
+                    (a, b)
+                } else {
+                    (b, a)
+                };
+                let words = |s: &str| s.split_whitespace().collect::<Vec<_>>().join(" ");
+                d.raw
+                    .as_deref()
+                    .is_some_and(|raw| words(raw) == words(&i.command))
+            };
+            if !(same_name || same_meaning || same_command) {
                 continue;
             }
             match (a.source, b.source) {
                 (ActionSource::Inferred, ActionSource::Declared) => {
-                    actions[j].hidden = true;
+                    actions[j].redundant = true;
                 }
                 (ActionSource::Declared, ActionSource::Declared)
                     if same_name && !same_meaning && a.tool != b.tool =>
@@ -588,8 +678,13 @@ fn hide_duplicates(actions: &mut [Action]) {
                     // Same name, different explanation, different tools (`make test` vs
                     // `npm test`): both are real and may differ. Keep both.
                 }
+                (ActionSource::Inferred, ActionSource::Inferred)
+                    if builds_whole_tree(b.tool) && !builds_whole_tree(a.tool) =>
+                {
+                    actions[j].redundant = true;
+                }
                 _ => {
-                    actions[i].hidden = true;
+                    actions[i].redundant = true;
                     break;
                 }
             }
@@ -599,16 +694,16 @@ fn hide_duplicates(actions: &mut [Action]) {
 
 /// A workspace root already offers `test`, `build`, `check`, … for every member; the same
 /// inferred action repeated per member (`tokio-util:test`, `api:clippy`) adds nothing.
-/// Hide an inferred, non-Development action of a nested project when the nearest ancestor
+/// Drop an inferred, non-Development action of a nested project when the nearest ancestor
 /// project shows one with the same name and tool. Declared scripts are never touched, and
 /// `run`/`dev`-style actions stay because each app's is its own.
-fn hide_workspace_fan_out(projects: &mut [Project]) {
+fn drop_workspace_fan_out(projects: &mut [Project]) {
     let offered: HashMap<&str, HashSet<(&str, &'static str)>> = projects
         .iter()
         .map(|p| {
             (
                 p.path.as_str(),
-                // Hidden ones count too: a root `test` hidden behind a declared twin still
+                // Redundant ones count too: a root `test` dropped for a declared twin still
                 // means the workspace offers it.
                 p.actions
                     .iter()
@@ -639,32 +734,37 @@ fn hide_workspace_fan_out(projects: &mut [Project]) {
         }
     }
     for (pi, ai) in hide {
-        projects[pi].actions[ai].hidden = true;
+        projects[pi].actions[ai].redundant = true;
     }
 }
 
 /// A script that five or more nested packages declare with the same explanation (`compile`,
 /// `test`, `lint` in every package of a pnpm monorepo) is a workspace convention. Show it once
-/// at the root as "run in all packages" and take the per-package copies out of the default
-/// view. Only JavaScript package managers have a single command for that.
+/// at the root as "run in all packages" and drop the per-package copies. Only JavaScript
+/// package managers have a single command for that.
 fn lift_repeated_package_scripts(projects: &mut [Project]) {
     const MIN_REPEATS: usize = 5;
+    // Keys in first-appearance order: the lifted actions must come out in the order the
+    // packages declare them, never in hash order, so the output is stable run to run.
     let mut seen: HashMap<(String, &'static str, String), usize> = HashMap::new();
+    let mut order: Vec<(String, &'static str, String)> = Vec::new();
     for p in projects.iter().filter(|p| !p.is_root()) {
         for a in p
             .actions
             .iter()
             .filter(|a| a.source == ActionSource::Declared)
         {
-            *seen
-                .entry((a.name.clone(), a.tool, a.description.to_ascii_lowercase()))
-                .or_default() += 1;
+            let key = (a.name.clone(), a.tool, a.description.to_ascii_lowercase());
+            let n = seen.entry(key.clone()).or_default();
+            if *n == 0 {
+                order.push(key);
+            }
+            *n += 1;
         }
     }
-    let repeated: Vec<(String, &'static str, String)> = seen
+    let repeated: Vec<(String, &'static str, String)> = order
         .into_iter()
-        .filter(|(k, n)| *n >= MIN_REPEATS && matches!(k.1, "npm" | "pnpm" | "yarn" | "bun"))
-        .map(|(k, _)| k)
+        .filter(|k| seen[k] >= MIN_REPEATS && matches!(k.1, "npm" | "pnpm" | "yarn" | "bun"))
         .collect();
     if repeated.is_empty() {
         return;
@@ -683,12 +783,12 @@ fn lift_repeated_package_scripts(projects: &mut [Project]) {
                     if sample.is_none() {
                         sample = Some(a.clone());
                     }
-                    a.confidence = Confidence::Low;
+                    a.redundant = true;
                 }
             }
         }
         let root = &projects[0];
-        if root.actions.iter().any(|a| a.name == *name && !a.hidden) {
+        if root.actions.iter().any(|a| a.name == *name && !a.redundant) {
             continue;
         }
         let yarn_berry = root
@@ -720,10 +820,13 @@ fn lift_repeated_package_scripts(projects: &mut [Project]) {
 }
 
 /// With more than a dozen projects, what each one *declares* and how each app *runs* is the
-/// useful list; the inferred `test`/`lint`/`build`/… every one of them would have by
-/// convention is not. `--all` still shows it.
-fn hide_convention_in_large_repos(projects: &mut [Project]) {
+/// useful list; the inferred `test`/`lint`/`build`/… that many of them have by convention is
+/// boilerplate (`cargo test` in 200 crates), so it is dropped. Only the repetition goes: a
+/// command whose tool and name appear in fewer than `REPEATED` nested projects is that
+/// project's own (the one Pulumi stack's `pulumi up`, the Phoenix backend's `mix test`).
+fn drop_convention_in_large_repos(projects: &mut [Project]) {
     const MANY: usize = 12;
+    const REPEATED: usize = 3;
     let nested = projects
         .iter()
         .filter(|p| !p.is_root() && !p.actions.is_empty())
@@ -731,13 +834,48 @@ fn hide_convention_in_large_repos(projects: &mut [Project]) {
     if nested <= MANY {
         return;
     }
+    let convention =
+        |a: &Action| a.source == ActionSource::Inferred && a.category != Category::Development;
+    let mut seen: HashMap<(&'static str, String), usize> = HashMap::new();
+    for p in projects.iter().filter(|p| !p.is_root()) {
+        let mut own: Vec<(&'static str, String)> = p
+            .actions
+            .iter()
+            .filter(|a| convention(a))
+            .map(|a| (a.tool, a.name.clone()))
+            .collect();
+        own.sort_unstable();
+        own.dedup();
+        for k in own {
+            *seen.entry(k).or_default() += 1;
+        }
+    }
     for p in projects.iter_mut().filter(|p| !p.is_root()) {
         for a in &mut p.actions {
-            if a.source == ActionSource::Inferred && a.category != Category::Development {
-                a.hidden = true;
+            if convention(a) && seen[&(a.tool, a.name.clone())] >= REPEATED {
+                a.redundant = true;
             }
         }
     }
+}
+
+/// A command a developer can type: no control characters beyond line breaks and tabs. A
+/// Makefile saved with terminal colours (`make \x1b[38;2;166;226;46mall`) parses into targets
+/// that no one could run; they are not commands, so they are not reported.
+fn typeable(command: &str) -> bool {
+    !command
+        .chars()
+        .any(|c| c.is_control() && !matches!(c, '\n' | '\t' | '\r'))
+}
+
+/// Remove every action marked redundant, then every nested project left with nothing to
+/// show (no action, no declared version). rhow shows all it reports, so what one tool or one
+/// ancestor already covers is not reported at all.
+fn drop_redundant(projects: &mut Vec<Project>) {
+    for p in projects.iter_mut() {
+        p.actions.retain(|a| !a.redundant);
+    }
+    projects.retain(|p| p.is_root() || !p.actions.is_empty() || !p.versions.is_empty());
 }
 
 fn prefix_for(p: &Project, taken: &HashSet<String>) -> String {
@@ -758,7 +896,9 @@ fn prefix_for(p: &Project, taken: &HashSet<String>) -> String {
 /// Assign globally unique ids: root actions keep their names, nested projects are prefixed
 /// (`api:test`), a nested project's `run`/`dev` collapses to the project name when free.
 fn assign_ids(projects: &mut [Project]) {
-    let mut taken: HashSet<String> = RESERVED_IDS.iter().map(|s| s.to_string()).collect();
+    let mut taken: HashSet<String> = HashSet::new();
+    // Which tool holds each id, to judge whether losing it makes an action redundant.
+    let mut holders: HashMap<String, &'static str> = HashMap::new();
     let mut prefixes: Vec<String> = Vec::new();
     let mut used_prefixes: HashSet<String> = HashSet::new();
     for p in projects.iter() {
@@ -790,13 +930,23 @@ fn assign_ids(projects: &mut [Project]) {
             let collapsible = !pre.is_empty()
                 && matches!(a.name.as_str(), "run" | "dev" | "start" | "serve")
                 && a.category == Category::Development;
+            let naturals = if collapsible { 2 } else { 1 };
+            // Losing the natural id makes an inferred action redundant only when the holder can
+            // stand in for it: `yarn test` holding `test` does not make
+            // `bundle exec rspec` redundant.
+            let shadowed = candidates[..naturals.min(candidates.len())]
+                .iter()
+                .any(|c| {
+                    holders
+                        .get(c)
+                        .is_some_and(|tool| stands_in_for(tool, a.tool))
+                });
+
             for (i, c) in candidates.into_iter().enumerate() {
                 if !taken.contains(&c) {
-                    // An inferred action that loses its natural id to a declared one is redundant:
-                    // the project already exposes that name. Keep it, but out of the default view.
-                    let natural = i == 0 || (collapsible && i == 1);
-                    if !natural && a.source == ActionSource::Inferred {
-                        a.hidden = true;
+                    let natural = i < naturals;
+                    if !natural && a.source == ActionSource::Inferred && shadowed {
+                        a.redundant = true;
                     }
                     chosen = Some(c);
                     break;
@@ -814,6 +964,7 @@ fn assign_ids(projects: &mut [Project]) {
                     .unwrap()
             });
             taken.insert(id.clone());
+            holders.insert(id.clone(), a.tool);
             a.id = id;
         }
     }
@@ -995,21 +1146,10 @@ mod tests {
     }
 
     #[test]
-    fn reserved_subcommand_names_are_never_action_ids() {
-        let mut ps = vec![project(
-            ".",
-            "root",
-            vec![
-                Action::new("support", "node support.js").tool("npm"),
-                Action::new("why", "node why.js").tool("npm"),
-                Action::new("test", "vitest").tool("npm"),
-            ],
-        )];
-        assign_ids(&mut ps);
-        assert_eq!(ids(&ps), ["npm:support", "npm:why", "test"]);
-        assert!(ids(&ps)
-            .iter()
-            .all(|id| !RESERVED_IDS.contains(&id.as_str())));
+    fn commands_with_control_characters_are_not_typeable() {
+        assert!(typeable("make all"));
+        assert!(typeable("set -e\n\tmake all"));
+        assert!(!typeable("make \u{1b}[38;2;166;226;46mall\u{1b}[0m"));
     }
 
     #[test]
@@ -1031,6 +1171,9 @@ mod tests {
                     Action::new("test", "cargo test")
                         .tool("cargo")
                         .inferred(Confidence::High),
+                    Action::new("test", "yarn test")
+                        .tool("yarn")
+                        .inferred(Confidence::High),
                 ],
             ),
             project(
@@ -1047,11 +1190,14 @@ mod tests {
                 "api:test",
                 "api",
                 "api:cargo:test",
+                "api:yarn:test",
                 "services/api:test"
             ]
         );
-        // The inferred duplicate lost its natural id, so it is hidden by default.
-        assert!(ps[1].actions[2].hidden);
-        assert!(!ps[1].actions[0].hidden);
+        // An inferred action that lost its natural id to one that can stand in for it (same
+        // ecosystem) is redundant; `npm run test` says nothing about `cargo test`.
+        assert!(!ps[1].actions[0].redundant);
+        assert!(!ps[1].actions[2].redundant);
+        assert!(ps[1].actions[3].redundant);
     }
 }

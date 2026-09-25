@@ -48,22 +48,59 @@ fn synopsis(text: &str, ext: &str) -> Option<String> {
                     .map(|s| s.trim().to_string())
             })
             .filter(|s| !s.is_empty() && !s.to_ascii_lowercase().starts_with("echo off")),
-        _ => lines
-            .iter()
-            .map(|l| l.trim())
-            .skip_while(|l| l.starts_with("#!") || l.is_empty())
-            .take_while(|l| l.starts_with('#'))
-            .map(|l| l.trim_start_matches('#').trim())
-            .find(|l| {
-                !l.is_empty()
-                    && !l.starts_with('-')
-                    && !l.starts_with('=')
-                    && !l.to_ascii_lowercase().starts_with("shellcheck")
-                    && !l.to_ascii_lowercase().starts_with("usage")
-            })
-            .map(|s| s.to_string()),
+        _ => {
+            // The header is a run of comment paragraphs. A paragraph with one licensing line
+            // is a licence block (the Apache one spans six lines, most of them without the
+            // word); a paragraph opening with "This script …" is prose. The synopsis is the
+            // first line of the first paragraph that is neither.
+            let header: Vec<&str> = lines
+                .iter()
+                .map(|l| l.trim())
+                .skip_while(|l| l.starts_with("#!") || l.is_empty())
+                .take_while(|l| l.starts_with('#') || l.is_empty())
+                .map(|l| l.trim_start_matches('#').trim())
+                .collect();
+            for paragraph in header.split(|l| l.is_empty()) {
+                let lower: Vec<String> = paragraph.iter().map(|l| l.to_ascii_lowercase()).collect();
+                if lower
+                    .iter()
+                    .any(|l| LICENCE_WORDS.iter().any(|w| l.contains(w)))
+                {
+                    continue;
+                }
+                let Some(first) = lower.first() else { continue };
+                if first.starts_with("this script") || first.starts_with("this file") {
+                    return None;
+                }
+                // Within a paragraph, provenance lines (`Author:`, `Usage:`) are skipped
+                // one by one: the synopsis may share the paragraph with them.
+                if let Some(l) = paragraph.iter().zip(&lower).find(|(l, low)| {
+                    !l.starts_with('-')
+                        && !l.starts_with('=')
+                        && !HEADER_NOISE.iter().any(|p| low.starts_with(p))
+                }) {
+                    return Some(l.0.to_string());
+                }
+            }
+            None
+        }
     }
 }
+
+/// Any header line about licensing is provenance, wherever the word falls in the sentence
+/// (the Apache header spans six lines, only the first of which starts with "Licensed").
+const LICENCE_WORDS: &[&str] = &["license", "licence", "copyright", "warrant"];
+
+/// Comment lines that describe the file's provenance, not what it does.
+const HEADER_NOISE: &[&str] = &[
+    "shellcheck",
+    "usage",
+    "author",
+    "maintainer",
+    "spdx-",
+    "(c)",
+    "©",
+];
 
 impl Discoverer for Scripts {
     fn id(&self) -> &'static str {
@@ -170,5 +207,42 @@ impl Discoverer for Scripts {
             }
         }
         out
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::synopsis;
+
+    #[test]
+    fn synopsis_skips_provenance_and_prose_headers() {
+        let licensed = "#!/bin/bash\n# Copyright 2018- Pixie Authors\n# SPDX-License-Identifier: Apache-2.0\n\n# Build the release artifacts.\nset -e\n";
+        assert_eq!(
+            synopsis(licensed, "sh").as_deref(),
+            Some("Build the release artifacts.")
+        );
+        let prose = "#!/bin/bash\n# This script must be sourced so that credentials are exported in\n# the calling shell.\nexport X=1\n";
+        assert_eq!(synopsis(prose, "sh"), None);
+        let plain = "#!/bin/sh\n# Rebuild the icon set.\nmake icons\n";
+        assert_eq!(
+            synopsis(plain, "sh").as_deref(),
+            Some("Rebuild the icon set.")
+        );
+        let see = "#!/bin/sh\n# Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved\n# See LICENSE.txt for license information\nmake icons\n";
+        assert_eq!(synopsis(see, "sh"), None);
+        let apache = "#!/bin/sh\n# Licensed to the Apache Software Foundation (ASF) under one or more\n# contributor license agreements.  See the NOTICE file distributed with\n# this work for additional information regarding copyright ownership.\n# The ASF licenses this file to You under the Apache License, Version 2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an AS IS BASIS.\n\n# Start the daemon.\nstart\n";
+        assert_eq!(synopsis(apache, "sh").as_deref(), Some("Start the daemon."));
+        let with_usage = "#!/bin/sh\n# Script to recursively copy terragrunt.hcl files\n# Usage: ./propagate.sh <from> <to>\n# Author: someone\nset -e\n";
+        assert_eq!(
+            synopsis(with_usage, "sh").as_deref(),
+            Some("Script to recursively copy terragrunt.hcl files")
+        );
+        let usage_first = "#!/bin/sh\n# Usage: ./x.sh <from>\n# Copy files between trees\nset -e\n";
+        assert_eq!(
+            synopsis(usage_first, "sh").as_deref(),
+            Some("Copy files between trees")
+        );
+        let only_licence = "#!/bin/sh\n# Licensed under MIT\nmake icons\n";
+        assert_eq!(synopsis(only_licence, "sh"), None);
     }
 }

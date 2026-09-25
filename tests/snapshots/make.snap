@@ -5,14 +5,17 @@ expression: table
 ---
 ## . [make] Make tools=make techs=Go,Docker,Kubernetes
 all                      Testing        declared exact  safe        .          make all :: Build and test
-build                    Build          declared exact  safe        .          make build :: Build the application binary
-test                     Testing        declared exact  safe        .          make test :: Run the test suite
+build                    Build          declared exact  safe        .          make build :: Build application binary
+test                     Testing        declared exact  safe        .          make test :: Run test suite
+test-integration         Testing        declared low    safe        .          make test-integration :: Run integration tests
+test-coverage            Testing        declared low    safe        .          make test-coverage :: Run tests with coverage
 lint                     Quality        declared exact  safe        .          make lint :: Lint Go source with golangci-lint
 deps                     Other          declared low    safe        .          make deps :: Download Go module dependencies [download]
 clean                    Build          declared exact  destructive .          make clean :: Remove build artifacts
 docker-up                Infrastructure declared exact  safe        .          make docker-up :: Start local services
 docker-down              Infrastructure declared exact  destructive .          make docker-down :: Stop Docker services and delete their volumes
 deploy                   Release        declared exact  external    .          make deploy :: Apply Kubernetes resources
-_internal                Other          declared exact  safe        hidden .          make _internal :: Print a message
-help                     Other          declared exact  safe        .          make help :: Run the help make target
-image                    Infrastructure declared exact  safe        .          make image :: Build the Docker image
+_internal                Other          declared low    safe        .          make _internal :: Print message
+version                  Release        declared exact  safe        .          make version :: Print binary name
+help                     Other          declared exact  safe        .          make help :: Run help make target
+image                    Infrastructure declared exact  safe        .          make image :: Build Docker image

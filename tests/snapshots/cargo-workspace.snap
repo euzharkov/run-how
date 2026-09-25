@@ -4,29 +4,15 @@ assertion_line: 27
 expression: table
 ---
 ## . [cargo-workspace] Rust tools=cargo techs=Rust
-lint                     Quality        declared exact  safe        .          cargo lint :: Lint Rust source with Clippy for the whole workspace
-xt                       Testing        declared exact  safe        .          cargo xt :: Run Rust tests for the whole workspace
-build                    Build          inferred high   safe        .          cargo build --workspace :: Build the workspace
-test                     Testing        inferred high   safe        .          cargo test --workspace :: Run Rust tests for the whole workspace
-check                    Quality        inferred high   safe        .          cargo check --workspace :: Type-check the Rust project for the whole workspace
-clippy                   Quality        inferred medium safe        .          cargo clippy --workspace :: Lint Rust source with Clippy for the whole workspace
+lint                     Quality        declared exact  safe        .          cargo lint :: Lint Rust source with Clippy for whole workspace
+xt                       Testing        declared exact  safe        .          cargo xt :: Run Rust tests for whole workspace
+build                    Build          inferred high   safe        .          cargo build --workspace :: Build workspace
+test                     Testing        inferred high   safe        .          cargo test --workspace :: Run Rust tests for whole workspace
+check                    Quality        inferred high   safe        .          cargo check --workspace :: Type-check Rust project for whole workspace
+clippy                   Quality        inferred medium safe        .          cargo clippy --workspace :: Lint Rust source with Clippy for whole workspace
 fmt                      Quality        inferred medium safe        .          cargo fmt --workspace :: Format Rust source
 bench                    Testing        inferred low    safe        .          cargo bench --workspace :: Run Rust benchmarks
-doc                      Build          inferred low    safe        .          cargo doc --no-deps --workspace :: Build the Rust docs
+doc                      Build          inferred low    safe        .          cargo doc --no-deps --workspace :: Build Rust docs
 ## crates/cli [cli] Rust tools=cargo techs=Rust
-cli                      Development    inferred high   safe        .          cargo run -p cli :: Run the Rust program for cli
-cli:build                Build          inferred high   safe        hidden .          cargo build -p cli :: Build the crate
-cli:test                 Testing        inferred high   safe        hidden .          cargo test -p cli :: Run Rust tests for cli
-cli:check                Quality        inferred high   safe        hidden .          cargo check -p cli :: Type-check the Rust project for cli
-cli:clippy               Quality        inferred medium safe        hidden .          cargo clippy -p cli :: Lint Rust source with Clippy for cli
-cli:fmt                  Quality        inferred medium safe        hidden .          cargo fmt -p cli :: Format Rust source
-cli:bench                Testing        inferred low    safe        hidden .          cargo bench -p cli :: Run Rust benchmarks
-cli:doc                  Build          inferred low    safe        hidden .          cargo doc --no-deps -p cli :: Build the Rust docs
+cli                      Development    inferred high   safe        .          cargo run -p cli :: Run Rust program for cli
 ## crates/core [core] Rust tools=cargo techs=Rust
-core:build               Build          inferred high   safe        hidden .          cargo build -p core :: Build the crate
-core:test                Testing        inferred high   safe        hidden .          cargo test -p core :: Run Rust tests for core
-core:check               Quality        inferred high   safe        hidden .          cargo check -p core :: Type-check the Rust project for core
-core:clippy              Quality        inferred medium safe        hidden .          cargo clippy -p core :: Lint Rust source with Clippy for core
-core:fmt                 Quality        inferred medium safe        hidden .          cargo fmt -p core :: Format Rust source
-core:bench               Testing        inferred low    safe        hidden .          cargo bench -p core :: Run Rust benchmarks
-core:doc                 Build          inferred low    safe        hidden .          cargo doc --no-deps -p core :: Build the Rust docs

@@ -3,17 +3,21 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [expo] JavaScript tools=expo,eas,detox,npm techs=Node.js,Expo,Detox,Jest
-ios                      Development    inferred high   safe        .          npx expo run:ios :: Build and run the app on iOS [long-running,device]
-android                  Development    inferred high   safe        .          npx expo run:android :: Build and run the app on Android [long-running,device]
-web                      Development    inferred medium safe        .          npx expo start --web :: Start the Expo app in the browser [long-running]
+## . [expo] JavaScript tools=expo,eas,detox,npm,sh techs=Node.js,Expo,Detox,Jest
+ios                      Development    inferred high   safe        .          npx expo run:ios :: Build and run app on iOS [long-running,device]
+android                  Development    inferred high   safe        .          npx expo run:android :: Build and run app on Android [long-running,device]
+web                      Development    inferred medium safe        .          npx expo start --web :: Start Expo app in browser [long-running]
 prebuild                 Build          inferred low    safe        .          npx expo prebuild :: Generate native iOS and Android projects
-doctor                   Quality        inferred low    safe        .          npx expo-doctor :: Check the Expo project for common issues
-eas:build                Build          inferred high   external    .          npx eas build :: Build the app with EAS Build
-eas:build:local          Build          inferred low    safe        .          npx eas build --local :: Build the app locally with EAS
-eas:update               Release        inferred medium external    .          npx eas update :: Publish an over-the-air update with EAS
-eas:submit               Release        inferred medium external    .          npx eas submit :: Submit the app to the app stores
+doctor                   Quality        inferred low    safe        .          npx expo-doctor :: Check Expo project for common issues
+eas:build:local          Build          inferred low    safe        .          npx eas build --local :: Build app locally with EAS
+eas:update               Release        inferred medium external    .          npx eas update :: Publish over-the-air update with EAS
+eas:submit               Release        inferred medium external    .          npx eas submit :: Submit app to app stores
 test:e2e                 Testing        inferred high   safe        .          npx detox test :: Run Detox end-to-end tests [device]
-start                    Development    declared exact  safe        .          npm run start :: Start the Expo development server [long-running]
+start                    Development    declared exact  safe        .          npm run start :: Start Expo development server [long-running]
 test                     Testing        declared exact  safe        .          npm run test :: Run Jest tests in watch mode
 lint                     Quality        declared exact  safe        .          npm run lint :: Run expo lint
+build-ios                Build          declared exact  external    .          npm run build-ios :: Build app with EAS Build
+build-embed              Build          declared exact  safe        .          npm run build-embed :: Run build in embed
+bundle                   Build          declared exact  safe        .          npm run bundle :: Run bob build
+release                  Release        inferred medium external    .          ./scripts/release.sh :: Upload release build to TestFlight
+with-build-number        Build          inferred medium safe        .          ./scripts/with-build-number.sh :: Set build number, then run given command

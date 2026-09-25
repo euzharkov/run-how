@@ -4,14 +4,14 @@ assertion_line: 27
 expression: table
 ---
 ## . [flutter] Mobile tools=flutter techs=Flutter
-run                      Development    inferred high   safe        .          flutter run :: Run the Flutter app [long-running,device]
+run                      Development    inferred high   safe        .          flutter run :: Run Flutter app [long-running,device]
 test                     Testing        inferred high   safe        .          flutter test :: Run Flutter tests
 analyze                  Quality        inferred high   safe        .          flutter analyze :: Analyze Dart source
 format                   Quality        inferred medium safe        .          dart format . :: Run dart format
-build:apk                Build          inferred medium safe        .          flutter build apk :: Build the Android APK
-build:appbundle          Build          inferred low    safe        .          flutter build appbundle :: Build the Android App Bundle
-build:ios                Build          inferred low    safe        .          flutter build ios :: Build the iOS app
-build:web                Build          inferred medium safe        .          flutter build web :: Build the web app
+build:apk                Build          inferred medium safe        .          flutter build apk :: Build Android APK
+build:appbundle          Build          inferred low    safe        .          flutter build appbundle :: Build Android App Bundle
+build:ios                Build          inferred low    safe        .          flutter build ios :: Build iOS app
+build:web                Build          inferred medium safe        .          flutter build web :: Build web app
 generate                 Build          inferred high   safe        .          dart run build_runner build --delete-conflicting-outputs :: Generate code with build_runner
-test:integration         Testing        inferred high   safe        .          flutter test integration_test :: Run Flutter integration tests on a device
+test:integration         Testing        inferred high   safe        .          flutter test integration_test :: Run Flutter integration tests on device
 pub:get                  Other          inferred low    safe        .          flutter pub get :: Install Dart dependencies [download]

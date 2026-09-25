@@ -223,7 +223,7 @@ impl Discoverer for Mono {
                         let ex = c.trim_start_matches("nx-executor:");
                         if ex == "nx:noop" {
                             // A dependency-graph anchor with no work of its own.
-                            a = a.hidden();
+                            a = a.redundant();
                         }
                         let opts = nx_options(
                             read_jsonc(base, "project.json").as_ref(),
@@ -242,7 +242,7 @@ impl Discoverer for Mono {
                     }
                 }
                 if t.inherited && !CORE_TARGETS.contains(&target.as_str()) {
-                    a = a.hidden();
+                    a = a.redundant();
                 }
                 out.actions.push(a);
             }
@@ -284,7 +284,7 @@ impl Discoverer for Mono {
                         let (text, cat, risk) = executor_desc(ex, t, &opts);
                         a = a.inferred_desc(text).cat(cat).risk(risk);
                     } else if executor == Some("nx:noop") {
-                        a = a.hidden();
+                        a = a.redundant();
                     }
                     out.actions.push(a);
                 }
