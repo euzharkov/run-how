@@ -1,0 +1,72 @@
+signalapp_Signal-Android  [JVM, Gradle]
+
+  ./gradlew buildQa              Quality Assurance for build logic
+  ./gradlew qa                   Quality Assurance. Run before release
+  ./gradlew ci                   Faster version of qa that's intended to be run on PRs. Uses :fast-lint instead of full lint
+  ./gradlew validateScreenshots  Validates Compose screenshot tests. Intended to run only on CI, not local builds
+  ./gradlew qaRemote             Full qa plus screenshot validation. Intended to run on CI, not local builds
+  ./gradlew ciRemote             Faster PR verification (ci) plus screenshot validation. Intended to run on CI, not local builds
+  ./gradlew clean
+  ./gradlew format               Runs ktlint formatter on all sources in this project and included builds
+  ./gradlew checkStopship
+  ./gradlew run                  Run app with Gradle
+  ./gradlew build
+  ./gradlew test                 Run Gradle tests
+  ./gradlew check                Run Gradle checks (tests and linters)
+  ./gradlew ktlintCheck          Check Kotlin style with ktlint
+  ./gradlew tasks                List all Gradle tasks
+  .\gradlew.bat                  Copyright 2015 original author or authors
+
+app  [JVM, Gradle]
+  ./gradlew :app:firebaseTestLab  Runs ${variant.name} instrumentation tests on Firebase Test Lab via gcloud CLI. Run single clas…
+
+build-logic/plugins  [JVM, Gradle]
+  gradle :plugins:run  Run app with Gradle
+
+demo/apng  [JVM, Gradle]
+  ./gradlew :demo:apng:run  Run app with Gradle
+
+demo/camera  [JVM, Gradle]
+  ./gradlew :demo:camera:run  Run app with Gradle
+
+demo/contacts  [JVM, Gradle]
+  ./gradlew :demo:contacts:run  Run app with Gradle
+
+demo/debuglogs-viewer  [JVM, Gradle]
+  ./gradlew :demo:debuglogs-viewer:run  Run app with Gradle
+
+demo/device-transfer  [JVM, Gradle]
+  ./gradlew :demo:device-transfer:run  Run app with Gradle
+
+demo/donations  [JVM, Gradle]
+  ./gradlew :demo:donations:run  Run app with Gradle
+
+demo/image-editor  [JVM, Gradle]
+  ./gradlew :demo:image-editor:run  Run app with Gradle
+
+demo/list-detail  [JVM, Gradle]
+  ./gradlew :demo:list-detail:run  Run app with Gradle
+
+demo/media-keyboard  [JVM, Gradle]
+  ./gradlew :demo:media-keyboard:run  Run app with Gradle
+
+demo/paging  [JVM, Gradle]
+  ./gradlew :demo:paging:run  Run app with Gradle
+
+demo/qr  [JVM, Gradle]
+  ./gradlew :demo:qr:run  Run app with Gradle
+
+demo/registration  [JVM, Gradle]
+  ./gradlew :demo:registration:run  Run app with Gradle
+
+demo/spinner  [JVM, Gradle]
+  ./gradlew :demo:spinner:run  Run app with Gradle
+
+demo/video  [JVM, Gradle]
+  ./gradlew :demo:video:run  Run app with Gradle
+
+fast-lint  [JVM, Gradle]
+  ./gradlew :fast-lint:fastLint  Runs fast custom AST linter (:fast-lint) over whole repository. Fails on any finding
+
+lib/libsignal-service  [JVM, Gradle]
+  ./gradlew :lib:libsignal-service:publish  Publish artifacts with Gradle  [external]

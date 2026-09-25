@@ -1,5 +1,6 @@
 ---
 source: tests/fixtures.rs
+assertion_line: 27
 expression: table
 ---
-## . [empty] Root tools=
+## . [empty] Root tools= techs=

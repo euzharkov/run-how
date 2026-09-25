@@ -1,0 +1,49 @@
+AppFlowy-IO_AppFlowy
+
+  ./install.sh
+
+frontend/appflowy_flutter  [Flutter]
+  flutter run                    Run Flutter app  ∞ long-running  ⊙ device
+  flutter test integration_test  Run Flutter integration tests on device
+  make freeze_build              Run dart run
+  make watch                     Run dart run
+
+frontend/appflowy_flutter/packages/appflowy_backend  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/appflowy_backend/example  [Flutter]
+  flutter run                    Run Flutter app  ∞ long-running  ⊙ device
+  flutter test integration_test  Run Flutter integration tests on device
+
+frontend/appflowy_flutter/packages/appflowy_popover  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/appflowy_popover/example  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/appflowy_result  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/appflowy_ui  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/appflowy_ui/example  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_infra  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_infra_ui  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_infra_ui/example  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_infra_ui/flowy_infra_ui_platform_interface  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_infra_ui/flowy_infra_ui_web  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device
+
+frontend/appflowy_flutter/packages/flowy_svg  [Flutter]
+  flutter run  Run Flutter app  ∞ long-running  ⊙ device

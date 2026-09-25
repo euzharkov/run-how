@@ -3,7 +3,7 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [bun] JavaScript tools=bun
+## . [bun] JavaScript tools=bun techs=Node.js,Bun
 dev                      Development    declared exact  safe        .          bun run dev :: Run src/index.ts with Bun and auto-reload [long-running]
 start                    Development    declared exact  safe        .          bun run start :: Run src/index.ts with Bun
 test                     Testing        declared exact  safe        .          bun run test :: Run tests with Bun

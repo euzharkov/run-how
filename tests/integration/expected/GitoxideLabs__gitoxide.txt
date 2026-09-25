@@ -1,0 +1,143 @@
+GitoxideLabs_gitoxide  [Rust, Docker]
+
+  cargo run                  Run Rust program
+  make help                  Display this help
+  make always
+  make release-all           All release builds
+  make release               Default build, big but pretty (builds in ~2min 35s)
+  make release-lean          Lean and fast, with line renderer (builds in ~1min 30s)
+  make release-small         Minimal dependencies, at cost of performance (builds in ~46s)
+  make debug                 Default build, big but pretty
+  make debug-lean            Lean and fast, with line renderer
+  make debug-small           Minimal dependencies, at cost of performance
+  make clear-cache           Remove persisted results of test-repositories, they regenerate automatically
+  make stress                Run various algorithms on big repositories
+  make stress-commitgraph
+  make bench-gix-config      Run Rust benchmarks
+  make update-curl-fixtures  Use curl to fetch raw fixtures for use in unit test. Changes there might break them  ↓ download
+  make update-assets         Refresh assets compiled into binaries from their source  [destructive]
+  make force-update-assets   As update-assets, but will run git to update baseline as well  [destructive]
+  just default               List available recipes
+  just test                  Run full check and test suite, including docs and journey tests
+  just clippy                Run `cargo clippy` on all crates
+  just clippy-fix            Apply Clippy fixes to all crates, then format
+  just check                 Build all code in suitable configurations
+  just doc                   Run `cargo doc` on all crates
+  just unit-tests            Run all unit tests
+  just doc-tests             Run all doctests
+  just unit-tests-flaky      Run optional flaky async tests
+  just query-meta            Extract cargo metadata, excluding dependencies, and query it
+  just dbg                   Get path to directory where debug binaries are created during builds
+  just journey-tests         Run journey tests (`max`)
+  just journey-tests-pure    Run journey tests (`max-pure`)
+  just journey-tests-small   Run journey tests (`small`)
+  just journey-tests-async   Run journey tests (`lean-async`)
+  just cross-image           Build customized `cross` container image for testing
+  just cross-test            Test another platform with `cross`
+  just cross-test-s390x      Test s390x with `cross`
+  just cross-test-android    Test Android with `cross` (max-pure)
+  just check-size            Check crate package sizes with `cargo diet`
+  just msrv                  Print minimum Rust version for `gix` (X.Y.Z)
+  just msrv-badge            Regenerate MSRV badge SVG
+  just check-rust-version    Build `gix` and its locked dependencies with this Rust version
+  just nix-shell-macos       Enter nix-shell able to build on macOS
+  just audit                 Audit dependency advisories, bans, licenses, and sources
+  just sbom-install          Install pinned Rust tools for CycloneDX and SPDX SBOMs  ↓ download
+  just sbom                  Generate CycloneDX and SPDX SBOMs (--help for crate and feature options)
+  just sbom-test             Test SBOM generation with tools installed by sbom-install
+  just nextest               Run unit tests with `cargo nextest` (no doctests)
+  just summarize             Run nextest tests, including ignored tests, without status reports
+  just fmt                   Format with nightly Rust, check stable formatting, and format justfile
+  just find-yanked           Look for yanked crates (cancel after initial warnings)  ↓ download
+  just check-mode            Check shell scripts' executable bits and shebangs
+  just clear-target          Clean `target` directory
+  just release               Publish crates, allowing empty release messages and fully generated changelogs
+  just unique-v-tag          Get unique `v*` tag at `HEAD`, or fail with error
+  just run-release-workflow  Trigger `release.yml` workflow on current `v*` tag  [external]
+  just roll-release          Run `cargo smart-release` and then trigger `release.yml` for `v*` tag
+  just ci-test               Run checks, docs, and unit tests for CI
+  just ci-journey-tests      Run all journey tests (use fresh clone or run `cargo clean` first)
+
+gix-actor/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-attributes/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-bitmap/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-command/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-commitgraph/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-config/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-config-value/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-credentials/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-date/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-filter  [Rust]
+  cargo run -p gix-filter  Run Rust program for gix-filter
+
+gix-ignore/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-imara-diff/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-index/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-mailmap/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-merge/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-object/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-pack/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-packetline/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-pathspec/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-ref/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-refspec/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-revision/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-tix  [Rust]
+  cargo run -p gix-tix  Run Rust program for gix-tix
+
+gix-transport/fuzz  [Rust]
+  cargo run  Run Rust program
+
+gix-tui  [Rust]
+  cargo run -p gix-tui  Run Rust program for gix-tui
+
+gix-url/fuzz  [Rust]
+  cargo run  Run Rust program
+
+tests/it  [Rust]
+  cargo run -p internal-tools  Run Rust program for internal-tools
+
+tests/tools  [Rust]
+  cargo run -p gix-testtools  Run Rust program for gix-testtools

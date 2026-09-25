@@ -1,0 +1,13 @@
+{
+  "version": 6,
+  "configurePresets": [
+    { "name": "base", "hidden": true, "generator": "Ninja" },
+    { "name": "dev", "inherits": "base", "binaryDir": "${sourceDir}/build/dev" }
+  ],
+  "buildPresets": [
+    { "name": "dev", "configurePreset": "dev" }
+  ],
+  "testPresets": [
+    { "name": "dev", "configurePreset": "dev" }
+  ]
+}

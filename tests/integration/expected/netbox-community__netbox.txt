@@ -1,0 +1,37 @@
+netbox-community_netbox  [Python]
+
+  netbox                       Run netbox command (netbox.cli)
+  ruff check .                 Check Python source code with Ruff
+  ruff format .                Format Python code with Ruff
+  pyright                      Run static type checking with Pyright
+  pre-commit run --all-files   Run pre-commit hooks on all files  ∆ git
+  mkdocs serve                 Serve MkDocs site locally  ∞ long-running
+  ./upgrade.sh
+  ./scripts/drop_database.sh   Drop and re-create local NetBox database, granting role named after
+  ./scripts/load_database.sh   Drop, re-create and load local NetBox database from SQL dump, granting
+  ./scripts/save_database.sh   Dump local NetBox database to SQL file that load_database.sh can
+  ./scripts/verify-bundles.sh
+  ./scripts/verify-openapi.sh
+
+netbox  [Python, Django]
+  python manage.py runserver                Start Django development server  ∞ long-running
+  python manage.py migrate                  Apply Django database migrations
+  python manage.py makemigrations           Create Django migrations from model changes
+  python manage.py shell                    Open Django shell  ∞ long-running
+  python manage.py collectstatic --noinput  Collect Django static files
+  python manage.py createsuperuser          Create Django admin user
+  python manage.py test                     Run Django tests
+
+netbox/project-static  [Node.js]
+  yarn bundle                       Run bundle.cjs
+  yarn bundle:styles                Run bundle.cjs
+  yarn bundle:scripts               Run bundle.cjs
+  yarn format                       Format source code with Prettier and format source code with Prettier
+  yarn format:scripts               Format source code with Prettier
+  yarn format:styles                Format source code with Prettier
+  yarn validate                     Run type checks, linting, and formatting
+  yarn validate:lint                Check source code with ESLint
+  yarn validate:types               Check TypeScript types
+  yarn validate:formatting          Check formatting with Prettier and check formatting with Prettier
+  yarn validate:formatting:styles   Check formatting with Prettier
+  yarn validate:formatting:scripts  Check formatting with Prettier

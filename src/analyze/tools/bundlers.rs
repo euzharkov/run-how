@@ -383,3 +383,31 @@ pub(super) fn summarize(
         _ => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::test_sum as sum;
+    use super::*;
+
+    #[test]
+    fn typescript_and_bundlers() {
+        assert_eq!(sum("tsc --noEmit").kind, TypeCheck);
+        assert_eq!(sum("tsc -b").text, "Build TypeScript project references");
+        assert_eq!(sum("tsc -w").kind, Dev);
+        assert_eq!(sum("tsup src/index.ts").text, "Build the package with tsup");
+        assert_eq!(sum("tsup --watch").text, "Build with tsup in watch mode");
+        assert_eq!(sum("esbuild src/index.ts --bundle").kind, Build);
+    }
+
+    #[test]
+    fn monorepo_runners_and_release_tools() {
+        assert_eq!(
+            sum("turbo run build").text,
+            "Run build across packages with Turborepo"
+        );
+        assert_eq!(sum("turbo test").kind, Test);
+        assert_eq!(sum("np").risk, External);
+        assert_eq!(sum("semantic-release").risk, External);
+        assert_eq!(sum("changeset version").risk, Safe);
+    }
+}

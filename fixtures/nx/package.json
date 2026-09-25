@@ -1,1 +1,8 @@
-{ "name": "platform", "scripts": { "test": "nx run-many -t test" } }
+{
+  "name": "platform",
+  "scripts": {
+    "test": "nx run-many -t test",
+    "ng": "cross-env NODE_ENV=development nx",
+    "start:api": "npm run ng -- serve api"
+  }
+}

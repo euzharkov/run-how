@@ -1,0 +1,146 @@
+prometheus_prometheus  [Go, Docker]
+
+  golangci-lint run                        Lint Go source with golangci-lint
+  go mod tidy                              Tidy Go module dependencies  ↓ download
+  go run ./cmd/prometheus                  Run prometheus command
+  go run ./cmd/promtool                    Run promtool command
+  make update-npm-deps                     Run scripts/npm-deps.sh
+  make upgrade-npm-deps                    Run scripts/npm-deps.sh
+  make ui-bump-version                     Install dependencies with pnpm, then stage files  ↓ download  ∆ git
+  make ui-install                          Install dependencies with pnpm  ↓ download
+  make ui-build                            Run build:mantine-ui in ui, then run build in ui
+  make ui-build-module                     Run build:module in ui
+  make ui-test                             Run test in ui
+  make ui-lint                             Run lint in ui
+  make generate-promql-functions           Format source code with Prettier (+2 more steps)
+  make check-generated-promql-functions    Inspect Git repository, then run false)
+  make assets                              Print message
+  make assets-compress                     Run scripts/compress_assets.sh
+  make assets-tarball                      Run scripts/package_assets.sh
+  make protoc                              Print message
+  make parser                              Print message
+  make clean-parser                        Delete promql/parser/generated_parser.y.go
+  make check-generated-parser              Inspect Git repository, then run false)
+  make install-goyacc                      Install Go binaries  ↓ download
+  make test                                Which is called by all
+  make tarball                             Print message
+  make docker                              Run common-docker make target
+  make build                               Run scripts/compress_assets.sh
+  make bench_tsdb                          Run promtool, then run Go tool pprof
+  make cli-documentation                   Run cmd/prometheus, then run cmd/promtool
+  make check-go-mod-version                Run scripts/check-go-mod-version.sh
+  make update-features-testdata            Run Go tests in cmd/prometheus
+  make update-all-go-deps                  Manage Go workspace
+  make update-go-deps-in-dir               Set up project
+  make check-node-version
+  make bump-go-version                     Run scripts/bump_go_version.sh
+  make generate-fuzzing-seed-corpus        Run go:generate directives
+  make common-all                          Run test in ui (+12 more steps)
+  make common-style                        Print message
+  make common-check_license                Print message
+  make common-deps                         Download Go module dependencies  ↓ download
+  make update-go-deps                      Print message  ↓ download
+  make common-test-short                   Run Go tests with gotestsum
+  make common-test                         Print message
+  make common-format                       Format Go source
+  make common-vet                          Check Go source with go vet
+  make common-lint                         Print message
+  make common-lint-fix                     Print message
+  make common-yamllint                     Run yamllint
+  make common-staticcheck                  For backward-compatibility
+  make common-unused                       Tidy Go module dependencies, then inspect Git repository  ↓ download
+  make common-build                        Print message
+  make common-tarball                      Print message
+  make common-docker-repo-name             Print message
+  make common-docker
+  make common-docker-current-arch
+  make common-docker-publish
+  make common-docker-tag-latest
+  make common-docker-manifest
+  make promu
+  make common-proto                        Run scripts/genproto.sh
+  make common-print-golangci-lint-version  Print message
+  make precheck
+  docker build -t prometheus_prometheus .  Build Docker image
+  docker build -f … .                      Build Docker image from Dockerfile.distroless
+  ./scripts/check-go-mod-version.sh        Description: Validate `go` directive in various Go mod files
+  ./scripts/check_release_notes.sh           [external]
+  ./scripts/compress_assets.sh             Compress static assets
+  ./scripts/generate_release_notes.sh        [external]
+  ./scripts/genproto.sh                    Generate all protobuf bindings
+  ./scripts/get_module_version.sh          If no version string is passed as argument, read VERSION file
+  ./scripts/npm-deps.sh
+  ./scripts/package_assets.sh              Compress static assets
+  ./scripts/sync_repo_files.sh             Vim: ts=2 et
+  ./scripts/ui_release.sh                  /!\ This file must be used at root of prometheus project  [external]
+
+documentation/examples  [Kubernetes]
+  make all                              Run ../../promtool check
+  make check-examples-syntax            Run ../../promtool check
+  kubectl apply --dry-run=client -f ./  Validate Kubernetes manifests
+  kubectl apply -f ./                   Apply resources to cluster  [external]
+  kubectl delete -f ./                  Delete resources from cluster  [destructive]
+
+documentation/examples/remote_storage  [Go]
+  go test ./...  Run Go tests
+  go vet ./...   Check Go source with go vet
+  go fmt ./...   Format Go source
+  go mod tidy    Tidy Go module dependencies  ↓ download
+  make build     Print message
+
+documentation/prometheus-mixin
+  make all             Create dashboards_out (+5 more steps)
+  make fmt
+  make dashboards_out  Create dashboards_out, then run jsonnet
+  make lint
+  make jb_install
+  make clean           Delete dashboards_out and prometheus_alerts.yaml  [destructive]
+
+web/ui  [Node.js]
+  pnpm run build             Run build_ui.sh
+  pnpm run build:mantine-ui  Run build_ui.sh
+  pnpm run build:module      Run build_ui.sh
+  pnpm run start             Run start in @prometheus-io/mantine-ui  ∞ long-running
+  pnpm run test              Run test in all workspace packages
+  pnpm run lint              Run lint in all workspace packages
+  ./build_ui.sh
+
+web/ui/mantine-ui  [Node.js, Vite, Vitest]
+  pnpm run start     Start Vite development server  ∞ long-running
+  pnpm run build     Compile TypeScript sources, then build app with Vite
+  pnpm run lint      Check source code with ESLint
+  pnpm run lint:fix  Fix lint issues with ESLint
+  pnpm run preview   Preview production build with Vite  ∞ long-running
+  pnpm run test      Run Vitest tests
+
+web/ui/mantine-ui/src/promql/tools  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+
+web/ui/module/codemirror-promql  [Node.js, Jest]
+  pnpm run build      Run build.sh
+  pnpm run build:lib  Run build.sh
+  pnpm run test       Run Jest tests
+  pnpm run lint       Check source code with ESLint
+  pnpm run lint:fix   Fix lint issues with ESLint
+  ./build.sh
+
+web/ui/module/lezer-promql  [Node.js, Jest]
+  pnpm run build       Run build.sh
+  pnpm run lint        Print message
+  pnpm run test        Run Jest tests
+  ./generate-types.sh
+
+web/ui/react-app  [Node.js]
+  pnpm run start          Start Create React App dev server  ∞ long-running
+  pnpm run build          Build React app
+  pnpm run test           Run Node.js tests and run React app tests
+  pnpm run test:coverage  Run React app tests
+  pnpm run test:debug     Run React app tests
+  pnpm run eject          Eject from Create React App  [destructive]
+  pnpm run lint:ci        Check source code with ESLint
+  pnpm run lint           Fix lint issues with ESLint
+  pnpm run snapshot       Run React app tests

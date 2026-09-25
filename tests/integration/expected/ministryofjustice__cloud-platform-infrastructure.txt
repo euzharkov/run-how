@@ -1,0 +1,103 @@
+ministryofjustice_cloud-platform-infrastructure  [Go, Terraform, Kubernetes, Docker]
+
+  go build ./...
+  go test ./...                       Run Go tests
+  go vet ./...                        Check Go source with go vet
+  go fmt ./...                        Format Go source
+  go mod tidy                         Tidy Go module dependencies  ↓ download
+  make tools-shell                    Pull Docker image  ↓ download
+  make list-clusters                  For CP team-members. List all clusters which currently exist  [external]
+  make run-tests                      Pull Docker image  ↓ download
+  kubectl apply … nts/resources/      Validate Kubernetes manifests
+  kubectl apply -f … nts/resources/   Apply resources to cluster  [external]
+  kubectl delete -f … nts/resources/  Delete resources from cluster  [destructive]
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+  terraform … init                    Initialise Terraform working directory
+  terraform … plan                    Plan Terraform changes  [external]
+  terraform … apply                   Apply Terraform changes to infrastructure  [external]
+  terraform … destroy                 Destroy Terraform-managed infrastructure  [destructive]
+  terraform … validate                Validate Terraform configuration
+  terraform … fmt -recursive          Format Terraform files
+
+scripts/generate-github-app-user-access-token  [Go]
+  go run .  Run Go generate-token-oauth program
+
+scripts/iam-policy-usage  [Go]
+  go run .  Run Go unused-policies program

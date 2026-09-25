@@ -1,0 +1,41 @@
+BookStackApp_BookStack  [Node.js, Docker, PHP, Laravel, Jest]
+
+  npm run build:css:dev
+  npm run build:css:watch             ∞ long-running
+  npm run build:css:production
+  npm run build:js:dev              Run dev/build/esbuild.mjs
+  npm run build:js:watch            Run dev/build/esbuild.mjs
+  npm run build:js:production       Run dev/build/esbuild.mjs
+  npm run build                     Run all build:*:dev scripts
+  npm run production                Run all build:*:production scripts
+  npm run dev                       Run all build:*:watch scripts
+  npm run watch                     Run all build:*:watch scripts
+  npm run permissions
+  npm run lint                      Check source code with ESLint
+  npm run fix                       Fix lint issues with ESLint
+  npm run ts:lint                   Check TypeScript types
+  npm run test                      Run Jest tests
+  npm run test:ci                   Run Jest tests
+  composer check-static             Analyse PHP code with PHPStan
+  composer format                   Fix PHP code style with PHP_CodeSniffer
+  composer lint                     Check PHP code style with PHP_CodeSniffer
+  composer test                     Run PHP tests
+  composer t-reset                  Run Laravel tests
+  composer build-licenses           Run dev/licensing/gen-js-licenses, then run dev/licensing/gen-php-licenses
+  composer refresh-test-database    Run putenv, then run artisan migrate:refresh, then run artisan db:seed
+  php artisan serve                 Start Laravel development server  ∞ long-running
+  php artisan tinker                Open Laravel REPL
+  php artisan migrate               Apply Laravel migrations
+  php artisan db:seed               Seed database
+  php artisan migrate:fresh --seed  Drop all tables, re-run migrations and seed  [destructive]
+  php artisan queue:work            Start Laravel queue worker
+  php artisan route:list            List Laravel routes
+  docker compose up -d              Start all Docker services
+  docker compose up -d db           Start MySQL
+  docker compose up -d app          Start app service (built from source)
+  docker compose up -d node         Start node service (node)
+  docker compose up -d mailhog      Start MailHog (test mail server)
+  docker compose logs -f            Follow Docker service logs  ∞ long-running
+  docker compose build              Build Docker service images
+  docker compose down               Stop and remove Docker services
+  docker compose down -v            Stop Docker services and delete their volumes  [destructive]

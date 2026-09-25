@@ -1,0 +1,135 @@
+unkeyed_unkey  [Go, Docker, Kubernetes, Tilt, Drizzle]
+
+  go vet ./...                              Check Go source with go vet
+  golangci-lint run                         Lint Go source with golangci-lint
+  go mod tidy                               Tidy Go module dependencies  ↓ download
+  goreleaser release --snapshot --clean     Build GoReleaser snapshot  [external]
+  make help                                 Display this help
+  make install-go                           Install Go dependencies  ↓ download
+  make install-brew-tools                   Install Homebrew tools if they don't exist  [external]
+  make install                              Install all dependencies  ↓ download
+  make generate-sql                         Generate Drizzle migrations (+4 more steps)
+  make pscale-branch                        Create PlanetScale branch + run drizzle migration (BRANCH=name [FROM=staging])
+  make nuke-docker                          Stop all containers and clean up Docker system  [destructive]
+  make fmt-yaml                             Format YAML files
+  make fmt                                  Format code
+  make build                                Build all artifacts (binaries land in ./bin)  ↓ download
+  make generate                             Generate code from protobuf and other sources (NOT eBPF, see generate-bpf)  [destructive]
+  make generate-bpf                         Compile heimdall eBPF program and regenerate Go bindings (uses pinned clang/Go in docker for by…
+  make test                                 Run tests  ↓ download
+  make clean-docker-test                    Clean up dangling test containers
+  make tunnel                               Forward ports 80/443 to frontline for *.unkey.local (run in separate terminal)  [external]
+  make dev                                  Start dev environment
+  make down                                 Stop tilt (keeps cluster)  [destructive]
+  make dashboard                            Run local development setup for dashboard  ∞ long-running
+  make build-local-image                    Build and push image to local registry (usage: make build-local-image DOCKERFILE=./path/to/Dock…
+  make fuzz                                 Run fuzz tests
+  make unkey                                Run unkey CLI (usage: make unkey dev seed local)
+  docker build -t unkeyed_unkey .           Build Docker image
+  docker build -f … .                       Build Docker image from Dockerfile.dockerignore
+  docker build -f Dockerfile.release … .    Build Docker image from Dockerfile.release
+  docker build -f dev/Dockerfile -t … .     Build Docker image
+  docker build -f … .                       Build Docker image from Dockerfile.binary
+  docker build -f … .                       Build Docker image from Dockerfile.clickhouse
+  docker build -f dev/Dockerfile.mysql … .  Build Docker image from Dockerfile.mysql
+  tilt up                                   Start Tilt development environment  [external]  ∞ long-running
+  kubectl apply --dry-run=client -f dev/    Validate Kubernetes manifests
+  kubectl apply -f dev/                     Apply resources to cluster  [external]
+  kubectl delete -f dev/                    Delete resources from cluster  [destructive]
+
+docs/engineering  [Docker]
+  make build  Build Docker image
+  make dev    Run 3000:3000 container
+  make lint   Run .:/app container
+
+docs/product  [Docker]
+  make build  Build Docker image
+  make dev    Run 3000:3000 container
+  make lint   Run .:/app container
+
+tools/pricing  [Go]
+  go run ./cmd/pricing  Run pricing command
+
+web  [Node.js, Turborepo, Docker]
+  pnpm run dev        Run dev across packages with Turborepo  ∞ long-running
+  pnpm run build      Run build across packages with Turborepo
+  pnpm run fmt        Run formatting and linting
+  pnpm run test       Run test across packages with Turborepo
+  pnpm run bootstrap  Run bootstrap across packages with Turborepo
+  pnpm run up         Start Docker services  ∞ long-running
+  pnpm run migrate    Run migrate across packages with Turborepo
+  turbo run install   Run install across packages with Turborepo
+  turbo run lint      Run lint across packages with Turborepo
+  turbo run start     Run start across packages with Turborepo  ∞ long-running
+
+web/apps/dashboard  [Node.js, Docker, Next.js, MySQL, ClickHouse]
+  pnpm run dev                        Start Next.js development server  ∞ long-running
+  pnpm run build                      Run scripts/check-tailwind-classes.mjs, then build Next.js app
+  pnpm run start                      Start Next.js production server  ∞ long-running
+  pnpm run typecheck                  Run next typegen, then compile TypeScript sources
+  pnpm run check:tailwind-classes     Run scripts/check-tailwind-classes.mjs
+  docker compose -f … up -d           Start all Docker services
+  docker compose -f … up -d mysql     Start MySQL
+  docker compose -f … -d clickhouse   Start ClickHouse
+  docker compose -f … up -d redis     Start Redis
+  docker compose -f … up -d vault     Start HashiCorp Vault
+  docker compose -f … up -d restate   Start restate service (restate)
+  docker compose -f … up -d ctrl-api  Start ctrl-api service (built from source)
+  docker compose -f … -d ctrl-worker  Start ctrl-worker service (built from source)
+  docker compose -f … up -d api       Start api service (built from source)
+  docker compose -f … logs -f         Follow Docker service logs  ∞ long-running
+  docker compose -f … build           Build Docker service images
+  docker compose -f … down            Stop and remove Docker services
+  docker compose -f … down -v         Stop Docker services and delete their volumes  [destructive]
+
+web/apps/design  [Node.js]
+  pnpm run dev      Run blume dev  ∞ long-running
+  pnpm run build    Run blume build
+  pnpm run preview  Run blume preview  ∞ long-running
+  pnpm run doctor
+
+web/apps/portal  [Node.js, Vite, Docker]
+  pnpm run dev                   Start Vite development server  ∞ long-running
+  pnpm run build                 Build app with Vite
+  pnpm run start                 Run .output/server/index.mjs
+  pnpm run typecheck             Compile TypeScript sources
+  docker build -f … -t portal .  Build Docker image from Dockerfile.dockerignore
+
+web/internal/api  [Node.js]
+  pnpm run build    Compile TypeScript sources
+  pnpm run prepare  Compile TypeScript sources
+
+web/internal/clickhouse  [Node.js, Docker]
+  pnpm run build-clickhouse  Build images for clickhouse service
+
+web/internal/db  [Node.js, Drizzle]
+  pnpm run migrate   Push Drizzle schema to database
+  pnpm run generate  Generate Drizzle migrations
+  pnpm run export    Run drizzle-kit export
+  pnpm run studio    Open Drizzle Studio
+
+web/internal/resend  [Node.js]
+  pnpm run dev             Run email dev  ∞ long-running
+  pnpm run sync-templates  Run scripts/sync-templates.tsx
+
+web/tools/gha-fetch-digest  [Go]
+  go vet ./...  Check Go source with go vet
+  go fmt ./...  Format Go source
+  go mod tidy   Tidy Go module dependencies  ↓ download
+  make help     Show this help message
+  make build    Build binary
+  make install  Install binary to /usr/local/bin/gha-fetch-digest
+  make test     Runs vet and test
+
+web/tools/local  [Node.js]
+  pnpm run local                Run src/main.ts
+  pnpm run seed                 Run src/seed.ts
+  pnpm run audit-log-benchmark  Run src/audit-log-benchmark.ts
+
+web/tools/migrate  [Node.js]
+  pnpm run environment-kind         Run environment-kind.ts
+  pnpm run key-prefix               Run key-prefix.ts
+  pnpm run logging-policy           Run logging-policy.ts
+  pnpm run migrate                  Run main.ts
+  pnpm run test                     Run *.test.ts
+  pnpm run workspace-k8s-namespace  Run workspace-k8s-namespace.ts

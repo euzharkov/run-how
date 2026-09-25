@@ -3,11 +3,11 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [yarn-workspace] JavaScript tools=yarn
+## . [yarn-workspace] JavaScript tools=yarn techs=Node.js
 build                    Build          declared exact  safe        .          yarn build :: Run build in all workspace packages
 test                     Testing        declared exact  safe        .          yarn test :: Run test in all workspace packages
-publish:all              Release        declared exact  external    .          yarn publish:all :: Publish the package to npm
-## packages/core [core] JavaScript tools=yarn
+publish:all              Release        declared exact  external    .          yarn publish:all :: Publish package to npm
+## packages/core [core] JavaScript tools=yarn techs=Node.js
 core:build               Build          declared exact  safe        packages/core yarn build :: Build TypeScript project references
 core:test                Testing        declared exact  safe        packages/core yarn test :: Run Node.js tests
 core:docs                Build          declared exact  safe        packages/core yarn docs :: Generate API docs with TypeDoc

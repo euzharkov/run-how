@@ -1,0 +1,85 @@
+direktiv_direktiv  [Go, Docker, Kubernetes, Helm]
+
+  go build ./...
+  go vet ./...                          Check Go source with go vet
+  go fmt ./...                          Format Go source
+  golangci-lint run                     Lint Go source with golangci-lint
+  go mod tidy                           Tidy Go module dependencies  ↓ download
+  task default                          Basic Kind cluster with Direktiv. Run with TELEMETRY=true to enable telemetry with grafana  [external]  ∞ long-running
+  task github-ci                        Basic Kind cluster with Direktiv to run in github CI  [external]  ∞ long-running
+  task ee                               Basic EE cluster with Direktiv. Run with `IS_ENTERPRISE=true`  [external]  ∞ long-running
+  task zarf:create                      Builds zarf airgap package for direktiv and dependencies
+  task zarf:deploy                      Deploys zarf airgap package
+  task zarf:yolo-create                 Builds yolo zarf package for direktiv and dependencies
+  task zarf:yolo-deploy                 Deploys yolo zarf package
+  task zarf:ee-create                   Builds ee  zarf package for direktiv and dependencies
+  task zarf:ee-yolo-create              Builds ee yolo zarf package for direktiv and dependencies
+  task zarf:ee-yolo-deploy              Deploys yolo zarf package for EE
+  task cluster:clean                    Clean kind cluster  [destructive]
+  task cluster:one-node                 Setup empty one node kind cluster. Use `TLS` to enable 443 instead of port 80  ∞ long-running
+  task cluster:multi-node               Setup empty multi-node kind cluster. Use `TLS` to enable 443 instead of port 80  ∞ long-running
+  task cluster:metrics-server           Installing metrics server  [external]
+  task cluster:database                 Installing basic Postgres database  [external]
+  task cluster:docker-proxy-delete      Deleting repository proxies
+  task cluster:docker-proxy-create      Creating repository proxies
+  task cluster:install                  Install Direktiv on Kind. Run with TELEMETRY=true to enable telemetry  [external]
+  task cluster:telemetry                Uninstall loki Helm release (+7 more steps)  [destructive]
+  task cluster:uninstall                Uninstalling Direktiv  [destructive]
+  task cluster:kill-pod                 Kill all direktiv pods  [destructive]
+  task cluster:wait-api                 Wait for direktiv API to be ready
+  task build:build-and-log              Builds and logs direktiv  [destructive]  ∞ long-running
+  task build:build                      Building for local architecture
+  task build:build-push                 Builds and pushed image for local architecture  [external]
+  task build:dev                        Builds and pushed image for local architecture and replaces container for local development  [destructive]  ∞ long-running
+  task build:buildx                     Builds cross-platform image and pushes it directly to registry
+  task test:scan-ui                     Runs trivy for UI folder
+  task test:scan-backend                Runs trivy on go binary  [external]
+  task test:scan-helm                   Runs trivy on Helm charts. Includes dependencies  [external]
+  task test:scan-docker                 Scans Dockerfile for misconfiguration
+  task test:go-unit                     Run go unit tests
+  task test:api-ee                      Runs EE API tests against server set with `DIREKTIV_BASE_URL`  [external]
+  task test:api                         Runs API tests against server set with `DIREKTIV_BASE_URL`  [external]
+  task test:lint                        Runs Go linting
+  task test:lint-second                 Runs Go linting
+  task test:licenses                    Scans dependencies looking for blacklisted licenses  ↓ download
+  task test:playwright                  Run Playwright tests
+  task openapi:serve                    Serve openapi swagger UI
+  task openapi:lint                     Lint openapi files
+  docker build -t direktiv_direktiv .   Build Docker image
+  kubectl apply --dry-run=client -f ./  Validate Kubernetes manifests
+  kubectl apply -f ./                   Apply resources to cluster  [external]
+  kubectl delete -f ./                  Delete resources from cluster  [destructive]
+  ./scripts/install-eventing.sh
+  ./scripts/install.sh
+
+tests  [Node.js]
+  npm run jest  Install dependencies with npm, then run node_modules/jest/bin/jest.js  ↓ download
+  npm run lint  Run linting and formatting
+
+ui  [Node.js, Vite, Vitest, Storybook, Playwright]
+  pnpm run dev                     Start Vite development server  ∞ long-running
+  pnpm run dev-pages               Run vite src/_direktiv-pages/vite.config.mts
+  pnpm run build                   Run all build:* scripts
+  pnpm run build:check             Run all check:* scripts
+  pnpm run build:compile-direktiv  Run vite vite.config.mts
+  pnpm run build:compile-pages     Run vite src/_direktiv-pages/vite.config.mts
+  pnpm run analyze-pages           Run vite src/_direktiv-pages/vite.config.mts
+  pnpm run preview                 Run all preview:* scripts  ∞ long-running
+  pnpm run preview:ui              Preview production build with Vite  ∞ long-running
+  pnpm run preview:pages           Run vite src/_direktiv-pages/vite.config.mts
+  pnpm run test                    Run Vitest tests
+  pnpm run storybook               Start Storybook  ∞ long-running
+  pnpm run storybook:build         Build static Storybook
+  pnpm run check                   Run all check:* scripts
+  pnpm run check:lint              Check source code with ESLint
+  pnpm run check:types             Compile TypeScript sources
+  pnpm run check:prettier          Check formatting with Prettier
+  pnpm run check:deps              Install dependencies with pnpm  ↓ download
+  pnpm run check:test              Run Vitest tests
+  pnpm run check:knip              Find unused files and dependencies with Knip
+  pnpm run fix
+  pnpm run fix:prettier            Format source code with Prettier
+  pnpm run fix:knip                Find unused files and dependencies with Knip
+  pnpm run e2e:headless            Run Playwright end-to-end tests
+  pnpm run e2e:ui                  Open Playwright test UI
+  ./scripts/runAPIKeyChrome.sh

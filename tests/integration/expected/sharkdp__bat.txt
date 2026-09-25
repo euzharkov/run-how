@@ -1,0 +1,85 @@
+sharkdp_bat  [Rust]
+
+  cargo run            Run Rust program
+  cargo build          Build crate
+  cargo test           Run Rust tests
+  cargo check          Type-check Rust project
+  cargo clippy         Lint Rust source with Clippy
+  cargo fmt            Format Rust source
+  cargo bench          Run Rust benchmarks
+  cargo doc --no-deps  Build Rust docs
+
+tests/syntax-tests/highlighted/CMake  [CMake]
+  cmake -S . -B build  Configure CMake project into build/
+  cmake --build build
+
+tests/syntax-tests/highlighted/Cabal  [Haskell]
+  cabal build
+  cabal test   Run tests with Cabal
+  cabal run    Run executable with Cabal
+
+tests/syntax-tests/highlighted/Go  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+
+tests/syntax-tests/highlighted/XML  [.NET]
+  dotnet build solution.slnx    Build solution solution
+  dotnet restore solution.slnx  Restore NuGet packages  ↓ download
+  dotnet clean solution.slnx    Delete .NET build outputs
+  dotnet format solution.slnx   Format .NET source code
+
+tests/syntax-tests/highlighted/nim
+  nimble build
+  nimble test   Run tests with Nimble
+
+tests/syntax-tests/source/CMake  [CMake]
+  cmake -S . -B build  Configure CMake project into build/
+  cmake --build build
+
+tests/syntax-tests/source/Cabal  [Haskell]
+  cabal build
+  cabal test   Run tests with Cabal
+  cabal run    Run executable with Cabal
+
+tests/syntax-tests/source/Go  [Go]
+  go build ./...
+  go test ./...   Run Go tests
+  go vet ./...    Check Go source with go vet
+  go fmt ./...    Format Go source
+  go mod tidy     Tidy Go module dependencies  ↓ download
+  go run .        Run Go hugeparam program
+
+tests/syntax-tests/source/Makefile
+  make all               Print message
+  make persist-settings  Run hiredis in deps
+  make dict-benchmark
+  make clean             Delete redis-server, redis-sentinel, redis-cli, redis-benchmark, redis-check-rdb, redis-check-a…  [destructive]
+  make distclean         Run distclean) in deps, then delete .make-*)
+  make test
+  make test-sentinel
+  make check
+  make lcov
+  make test-sds
+  make bench
+  make 32bit             Run default make target
+  make gcov
+  make noopt
+  make valgrind
+  make helgrind
+  make install           Copy redis-check-aof to /usr/local/bin (+6 more steps)
+  make uninstall         Delete /usr/local/bin/{redis-server,redis-benchmark,redis-cli,redis-check-rdb,redis-check-aof,r…
+
+tests/syntax-tests/source/XML  [.NET]
+  dotnet build solution.slnx                Build solution solution
+  dotnet restore solution.slnx              Restore NuGet packages  ↓ download
+  dotnet clean solution.slnx                Delete .NET build outputs
+  dotnet format solution.slnx               Format .NET source code
+  dotnet run console.csproj                 Run .NET console app
+  dotnet publish -c Release console.csproj  Publish console for deployment
+
+tests/syntax-tests/source/nim
+  nimble build
+  nimble test   Run tests with Nimble

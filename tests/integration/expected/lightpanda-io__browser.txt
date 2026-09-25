@@ -1,0 +1,26 @@
+lightpanda-io_browser  [Go, Docker, Zig, Rust]
+
+  zig fmt .                                Format Zig source
+  make help                                Display this help screen
+  make download-v8                         Download prebuilt V8 libraries (skips 10+ min source build)
+  make build-v8-snapshot                   Build v8 snapshot
+  make build                               Build in release-fast mode
+  make build-dev                           Build in debug mode
+  make run                                 Run server in release mode
+  make run-debug                           Run server in debug mode
+  make test
+  make end2end                             Run demo/runner end to end tests
+  make test-agent                          Without one only deterministic layer runs. See ../demo/agent/README.md
+  make clean                               Remove build artifacts (keeps .lp-cache/ and zig-pkg/ — slow to re-fetch)  [destructive]
+  make install                             Run zig build
+  make data                                Run public_suffix_list_gen.go
+  docker build -t lightpanda-io_browser .  Build Docker image
+
+src/rust  [Rust]
+  cargo build --workspace
+  cargo test --workspace           Run Rust tests for whole workspace
+  cargo check --workspace          Type-check Rust project for whole workspace
+  cargo clippy --workspace         Lint Rust source with Clippy for whole workspace
+  cargo fmt --workspace            Format Rust source
+  cargo bench --workspace          Run Rust benchmarks
+  cargo doc --no-deps --workspace  Build Rust docs

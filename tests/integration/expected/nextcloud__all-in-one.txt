@@ -1,0 +1,43 @@
+nextcloud_all-in-one  [Docker, Kubernetes, Helm]
+
+  docker compose up -d                     Start all Docker services
+  docker compose up -d … astercontainer    Start Jaeger tracing
+  docker compose logs -f                   Follow Docker service logs  ∞ long-running
+  docker compose down                      Stop and remove Docker services
+  docker compose down -v                   Stop Docker services and delete their volumes  [destructive]
+  helm template … aio-helm-chart           Render nextcloud-aio-helm-chart Helm chart
+  helm lint nextcloud-aio-helm-chart       Validate nextcloud-aio-helm-chart Helm chart
+  helm upgrade --install … aio-helm-chart  Install or upgrade nextcloud-aio-helm-chart Helm release  [external]
+  helm uninstall nextcloud-aio-helm-chart  Uninstall nextcloud-aio-helm-chart Helm release  [destructive]
+
+php  [PHP]
+  composer dev                         Run localhost:8080
+  composer psalm                       Analyse PHP code with Psalm
+  composer psalm:update-baseline       Analyse PHP code with Psalm
+  composer psalm:strict                Analyse PHP code with Psalm
+  composer lint                        Run src/*.php
+  composer lint:twig                   Run twig-linter lint
+  composer php-deprecation-detector
+  ./vendor/bin/psalm                   Analyse PHP code with Psalm
+  ./get-configurable-aio-variables.sh
+
+php/tests  [Node.js, Docker, Playwright]
+  npx playwright test                       Run Playwright end-to-end tests
+  docker compose up -d                      Start all Docker services
+  docker compose up -d composer             Start composer service (built from source)
+  docker compose up -d app-base             Start Jaeger tracing
+  docker compose up -d app-code-from-image  Start app-code-from-image service
+  docker compose up -d app-local-code       Start app-local-code service
+  docker compose up -d desec-mock           Start desec-mock service (node)
+  docker compose up -d npm-installer        Start npm-installer service (node)
+  docker compose up -d test-runner-base     Start test-runner-base service (playwright)
+  docker compose up -d … ode-from-image     Start test-runner-code-from-image service
+  docker compose up -d … ner-local-code     Start test-runner-local-code service
+  docker compose --profile none up -d       Start Docker services in none profile
+  docker compose --profile … up -d          Start Docker services in code-from-image profile
+  docker compose --profile … up -d          Start Docker services in local-code profile
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose build                      Build Docker service images
+  docker compose down                       Stop and remove Docker services
+  docker compose down -v                    Stop Docker services and delete their volumes  [destructive]
+  ./run.sh

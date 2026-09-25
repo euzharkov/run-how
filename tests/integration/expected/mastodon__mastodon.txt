@@ -1,0 +1,77 @@
+mastodon_mastodon  [Node.js, Rails, Docker, Vite, Vitest]
+
+  yarn dev                                  Start Vite development server  ∞ long-running
+  yarn build:development                    Build app with Vite
+  yarn build:production                     Build app with Vite
+  yarn fix:js                               Fix lint issues with ESLint
+  yarn fix:css                              Check stylesheets with Stylelint
+  yarn fix                                  Fix lint issues with ESLint and check stylesheets with Stylelint
+  yarn format
+  yarn format:check
+  yarn i18n:extract
+  yarn lint:js                              Check source code with ESLint
+  yarn lint:css                             Check stylesheets with Stylelint
+  yarn lint                                 Check source code with ESLint and check stylesheets with Stylelint
+  yarn postversion                          Push tags to remote  [external]  ∆ git
+  yarn postinstall                          Check environment, then install Git hooks with Husky  ∆ git
+  yarn start                                Run streaming/index.js
+  yarn test                                 Run linting, type checks, and tests
+  yarn test:js                              Run Vitest tests
+  yarn test:storybook                       Run Vitest tests
+  yarn typecheck                            Check TypeScript types
+  yarn storybook                            Start Storybook  ∞ long-running
+  yarn build-storybook                      Build static Storybook
+  yarn chromatic                            Publish Storybook to Chromatic  [external]
+  yarn msw:updateWorker                     Run msw init
+  bundle exec rake … e_static_pages         Generate static pages
+  bundle exec rake branding:generate        Generate necessary graphic assets for branding from source SVG files
+  bundle exec rake … _mailer_assets         Generate PNG icons and logos for e-mail templates
+  bundle exec rake … _github_assets         Generate light/dark logotypes for GitHub
+  bundle exec rake … rate_app_icons         Generate favicons and app icons from SVG source files
+  bundle exec rake … rate_app_badge         Generate badge icon from SVG source files
+  bundle exec rake db:encryption:init       Generate set of keys for configuring Active Record encryption in given environment
+  bundle exec rake db:migrate:setup         Setup db or migrate depending on state of db
+  bundle exec rake db:pre_migration_check
+  bundle exec rake … te_sample_data         Populate database with test data. Can be run multiple times. Should not be run in production en…
+  bundle exec rake emojis:generate          Generate unicode to filename mapping
+  bundle exec rake emojis:generate_borders  Generate emoji variants with white borders
+  bundle exec rake emojis:generate_json     Generate JSON emoji data
+  bundle exec rake … te_emoji_sheet         Generate spritesheet of emojis
+  bundle exec rake icons:download           Download used Material Symbols icons
+  bundle exec rake mastodon:setup           Configure instance for production use
+  bundle exec rake … rate_vapid_key         Generate VAPID key
+  bundle exec rake repo:authors             Generate AUTHORS.md file
+  bundle exec rake repo:changelog           Replace pull requests with authors in CHANGELOG.md file
+  bundle exec rake check_locales_files
+  bundle exec rake … lete_all_locks
+  bundle exec rake … epare_database         Prepares all migrations and test data for consistency checks
+  bundle exec rake … check_database         Check that database state is consistent with successful migration from populated data
+  bundle exec rake … opulate_v3_3_0         Populate database with test data for 3.3.0
+  bundle exec rake … opulate_v2_4_3         Populate database with test data for 2.4.3
+  bundle exec rake … :populate_v2_4         Populate database with test data for 2.4.0
+  bundle exec rake … ns:populate_v2         Populate database with test data for 2.0.0
+  bin/dev                                   Start Rails app and its dev processes  ∞ long-running
+  bin/rails server                          Start Rails server  ∞ long-running
+  bin/rails console                         Open Rails console  ∞ long-running
+  bin/rails db:migrate                      Apply Rails migrations
+  bin/rails db:seed                         Seed database
+  bin/rails db:prepare                      Create database and apply migrations
+  bin/rails db:reset                        Drop and recreate database  [destructive]
+  bin/rails routes                          List Rails routes
+  bin/setup                                 Set up app (bin/setup)
+  bundle exec rspec                         Run RSpec tests
+  bundle exec rubocop                       Check Ruby source with RuboCop
+  bundle exec brakeman -q                   Scan Rails app with Brakeman
+  docker build -t mastodon_mastodon .       Build Docker image
+  docker compose up -d                      Start all Docker services
+  docker compose up -d db                   Start PostgreSQL
+  docker compose up -d redis                Start Redis
+  docker compose up -d web                  Start web service (mastodon)
+  docker compose up -d streaming            Start streaming service (mastodon-streaming)
+  docker compose up -d sidekiq              Start sidekiq service (mastodon)
+  docker compose logs -f                    Follow Docker service logs  ∞ long-running
+  docker compose down                       Stop and remove Docker services
+
+streaming  [Node.js]
+  yarn start      Run index.js
+  yarn typecheck  Check TypeScript types

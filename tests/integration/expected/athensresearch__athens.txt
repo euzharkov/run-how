@@ -1,0 +1,82 @@
+athensresearch_athens  [Node.js, Electron, Clojure, Docker, Playwright]
+
+  yarn playwright test              Run Playwright end-to-end tests
+  yarn // repo scripts
+  yarn update:dry                   Bump version and update changelog  ∆ git
+  yarn update                       Bump version and update changelog  ∆ git
+  yarn clean                        Delete resources/public/**/*.js, resources/public/**/*.js.map, target, .shadow-cljs, and src/gen  [destructive]
+  yarn lint                         Run clj-kondo deps.edn alias
+  yarn style                        Run cljstyle deps.edn alias
+  yarn style:fix                    Run cljstyle deps.edn alias
+  yarn carve                        Run carve deps.edn alias
+  yarn carve:interactive            Run carve deps.edn alias
+  yarn clj:outdated                 Run outdated deps.edn alias
+  yarn notebooks                    Run notebooks deps.edn alias
+  yarn notebooks:static             Run notebooks-static deps.edn alias
+  yarn vercel:install               Start Clojure REPL (+2 more steps)  ∞ long-running  ↓ download
+  yarn vercel:build                 Run shadow-cljs release (+3 more steps)
+  yarn // client scripts
+  yarn dev                          Compile sources with Babel, then run shadow-cljs watch  ∞ long-running
+  yarn client:watch                 Run shadow-cljs watch  ∞ long-running
+  yarn client:dev-build             Compile sources with Babel, then run shadow-cljs compile
+  yarn client:test                  Run Karma browser tests (+2 more steps)
+  yarn client:electron              Start Electron app  ∞ long-running
+  yarn client:web:server            Serve 3000 over HTTP  ∞ long-running
+  yarn client:web:static            Run shadow-cljs release (+2 more steps)
+  yarn client:debug                 Run flowstorm deps.edn alias
+  yarn components                   Compile sources with Babel
+  yarn components:watch             Compile sources with Babel  ∞ long-running
+  yarn prod                         Compile sources with Babel, then run shadow-cljs release
+  yarn dist                         Package Electron app
+  yarn // client e2e scripts
+  yarn //   add … of web build
+  yarn client:e2e
+  yarn client:e2e:electron
+  yarn client:e2e:only
+  yarn client:e2e:only:debug
+  yarn client:e2e:only:verbose
+  yarn client:e2e:new               Copy test/e2e/new-test.template.ts to test/e2e/new-test.spec.ts (+1 more step)
+  yarn client:e2e:server            Serve 3000 over HTTP  ∞ long-running
+  yarn // server scripts
+  yarn server                       Run athens deps.edn alias
+  yarn server:fluree                Start fluree service in background
+  yarn server:fluree:down           Stop and remove Docker services
+  yarn server:fluree:wipe           Delete athens-data/fluree  [destructive]
+  yarn server:compile               Start Clojure REPL  ∞ long-running
+  yarn server:uberjar               Run uberdeps deps.edn alias
+  yarn server:test                  Run test deps.edn alias
+  yarn server:test:fluree           Run test deps.edn alias
+  yarn server:test:only             Run test deps.edn alias
+  yarn server:repl                  Run repl deps.edn alias
+  yarn server:wipe                  Delete athens-data/fluree and athens-data/datascript  [destructive]
+  yarn // cli scripts
+  yarn cli:save                     Run athens-cli deps.edn alias
+  yarn cli:load                     Run athens-cli deps.edn alias
+  yarn cli:recover                  Run athens-cli deps.edn alias
+  yarn cli:compile                  Start Clojure REPL  ∞ long-running
+  yarn cli:uberjar                  Run uberdeps deps.edn alias
+  clojure -X:shadow-cljs            Run shadow-cljs deps.edn alias
+  clojure -X:carve                  Run carve deps.edn alias
+  clojure -X:cljstyle               Run cljstyle deps.edn alias
+  clojure -X:clj-kondo              Run clj-kondo deps.edn alias
+  clojure -M:3000                   Run 3000 deps.edn alias
+  clojure -X:debug                  Run debug deps.edn alias
+  clojure … ser_guide.html          Run //jpmonettas.github.io/flow-storm-debugger/user_guide.html deps.edn alias
+  clojure -X:uberdeps               Run uberdeps deps.edn alias
+  clojure -X:compiled-classes       Run compiled-classes deps.edn alias
+  clojure -X:test                   Run test deps.edn alias
+  clojure -X:repl                   Run repl deps.edn alias
+  clojure -X:athens                 Run athens deps.edn alias
+  clojure -X:athens-cli             Run athens-cli deps.edn alias
+  docker compose up -d              Start all Docker services
+  docker compose up -d athens       Start athens service (athens)
+  docker compose up -d nginx        Start nginx
+  docker compose up -d fluree       Start fluree service (ledger)
+  docker compose logs -f            Follow Docker service logs  ∞ long-running
+  ./script/docker-run-lan-party.sh
+  ./script/save-cronjob.sh
+  ./script/vercel-setup.sh          Fail on all sorts of errors
+
+vercel-release  [Node.js]
+  yarn vercel:install  Print message
+  yarn vercel:build    Print message

@@ -1,0 +1,104 @@
+Kong_insomnia  [Node.js]
+
+  npm run dev                              Run start in all workspace packages  ∞ long-running
+  npm run dev:autoRestart                  Run start:autoRestart in all workspace packages  ∞ long-running
+  npm run lint                             Run lint in all workspace packages
+  npm run type-check                       Run type-check in all workspace packages
+  npm run test                             Run test in all workspace packages
+  npm run clean                            Delete untracked files  [destructive]  ∆ git
+  npm run install-libcurl-electron
+  npm run install-libcurl-node
+  npm run inso-start                       Run start in all workspace packages  ∞ long-running
+  npm run inso-package                     Run package in all workspace packages (+1 more step)
+  npm run watch:app                        Run start:dev-server in all workspace packages (+1 more step)  ∞ long-running
+  npm run app-build                        Run build in all workspace packages
+  npm run app-package                      Run package in all workspace packages
+  npm run test:smoke:dev                   Run test:dev in all workspace packages
+  npm run test:smoke:build                 Run test:build in all workspace packages
+  npm run test:smoke:package               Run test:package in all workspace packages
+  npm run test:crit:package                Run test:package in all workspace packages
+  npm run test:crit:dev                    Run test:dev in all workspace packages
+  npm run postinstall                      Run verify-bundle-plugins in all workspace packages (+2 more steps)
+  npm run check-cycle-references           Run scripts/circular-references/check-cycle-references.mjs
+  npm run check-cycle-references:baseline  Run scripts/circular-references/check-cycle-references.mjs
+  ./build-secure-wrapper.sh                If you're curious about what this does and why it's here,
+
+packages/insomnia  [Node.js, Electron, Vitest, React Router, Vite]
+  npm run verify-bundle-plugins
+  npm run install-x64-native-dependencies
+  npm run build                             Build React Router app, then run esr
+  npm run build:react-router                Build React Router app
+  npm run generate:schema
+  npm run build:electron-entrypoints
+  npm run package                           Build React Router app, then run esr, then package Electron app
+  npm run package:windows:unpacked          Build React Router app, then run esr, then package Electron app
+  npm run package:windows:dist              Package Electron app
+  npm run start                             Start Electron app (+3 more steps)  ∞ long-running
+  npm run start:autoRestart                 Start Vite development server, then run esr  ∞ long-running
+  npm run start:dev-server                  Start Vite development server  ∞ long-running
+  npm run start:electron                    Start Electron app (+2 more steps)  ∞ long-running
+  npm run start:electron:autoRestart
+  npm run type-check                        Generate React Router route types, then compile TypeScript sources
+  npm run type-check:watch                  Generate React Router route types, then compile TypeScript in watch mode  ∞ long-running
+  npm run convert-svg
+  npm run sandbox:vendored:ci               Install dependencies with npm, then run esr  ↓ download
+  npm run sandbox:vendored:generate
+  npm run sandbox:vendored:guardrail
+  npm run sandbox:vendored:upgrade
+  npm run sandbox:vendored:test-regression  Run Vitest tests
+  npm run sandbox:surface                   Run Vitest tests
+  npm run sandbox:surface:test              Run Vitest tests
+  npm run sandbox:bridge-trust              Run Vitest tests
+  npm run sandbox:bridge-trust:test         Run Vitest tests
+  npm run sandbox:bridge-inventory          Run Vitest tests
+  npm run sandbox:bridge-inventory:test     Run Vitest tests
+
+packages/insomnia-analytics  [Node.js]
+  npm run type-check  Check TypeScript types
+
+packages/insomnia-api  [Node.js]
+  npm run type-check  Check TypeScript types
+
+packages/insomnia-component-docs  [Node.js]
+  npm run docusaurus
+  npm run start       Start Docusaurus site locally  ∞ long-running
+  npm run build       Build Docusaurus site
+  npm run deploy      Deploy Docusaurus site  [external]
+  npm run clear       Run docusaurus clear
+  npm run serve       Serve built Docusaurus site  ∞ long-running
+  npm run typecheck   Compile TypeScript sources
+
+packages/insomnia-data  [Node.js]
+  npm run type-check  Compile TypeScript sources
+
+packages/insomnia-inso  [Node.js, Vitest, Docker]
+  npm run test:unit                Run Vitest tests
+  npm run test:unit:color          Run Vitest tests
+  npm run test:bundle              Run Vitest tests in cli.test.ts
+  npm run test:binary              Run Vitest tests in cli.test.ts
+  npm run type-check               Compile TypeScript sources
+  npm run build
+  npm run build:production
+  npm run start
+  npm run prepackage               Run esr, then delete binaries/inso  [destructive]
+  npm run package
+  npm run postpackage              Run src/scripts/verify-pkg.js
+  npm run artifacts
+  docker build -t insomnia-inso .  Build Docker image
+
+packages/insomnia-scripting-environment  [Node.js]
+  npm run type-check             Compile TypeScript sources
+  npm run generate:autocomplete
+
+packages/insomnia-smoke-test  [Node.js, Playwright]
+  npx playwright test   Run Playwright end-to-end tests
+  npm run test:dev
+  npm run test:build
+  npm run test:package
+  npm run serve
+
+packages/insomnia-testing  [Node.js]
+  npm run type-check  Compile TypeScript sources
+
+packages/insomnia-vcs  [Node.js]
+  npm run type-check  Check TypeScript types, then compile TypeScript sources

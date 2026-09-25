@@ -1,0 +1,24 @@
+saleor_saleor  [Node.js, Django, Celery, Docker, FastAPI]
+
+  npm run release                          Cut release with release-it  [external]  ∆ git
+  uv run poe build-schema                  Build GraphQL schema to saleor/graphql/schema.graphql file
+  uv run poe make-migrations               Create new migrations based on changes in models
+  uv run poe migrate                       Run database migrations
+  uv run poe populatedb                    Populates database with sample data and creates admin user with credentials:
+  uv run poe release                       Release new Saleor verison  [external]
+  uv run poe scheduler                     Start Celery Beat scheduler  ∞ long-running
+  uv run poe shell                         Start Django shell in interactive mode  ∞ long-running
+  uv run poe start                         Start development server with hot reload  ∞ long-running
+  uv run poe test                          Run tests with db reuse to speed up testing time
+  uv run poe worker                        Start Celery worker  ∞ long-running
+  uv run python manage.py runserver        Start Django development server  ∞ long-running
+  uv run python manage.py makemigrations   Create Django migrations from model changes
+  uv run python manage.py … --noinput      Collect Django static files
+  uv run python manage.py createsuperuser  Create Django admin user
+  uv run python manage.py test             Run Django tests
+  uv run ruff check .                      Check Python source code with Ruff
+  uv run ruff format .                     Format Python code with Ruff
+  uv run mypy .                            Run static type checking with mypy
+  uv run pre-commit run --all-files        Run pre-commit hooks on all files
+  docker build -t saleor_saleor .          Build Docker image
+  ./scripts/push_static.sh                 Push static to AWS S3

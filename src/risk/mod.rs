@@ -19,19 +19,20 @@ pub fn classify(command: &str, analysis: &Analysis) -> Risk {
 
 /// Pattern-based classification on the raw command text only.
 pub fn textual(command: &str) -> Risk {
-    let lower = command.to_ascii_lowercase();
-    // Split into segments so patterns don't accidentally span `&&`.
+    // Split into segments so patterns don't accidentally span `&&` or a line break.
     let mut risk = Risk::Safe;
-    for seg in lower
-        .split([';', '|', '&'])
+    for seg in command
+        .split([';', '|', '&', '\n', '\r'])
         .map(str::trim)
         .filter(|s| !s.is_empty())
     {
-        let toks: Vec<&str> = seg
+        let raw: Vec<&str> = seg
             .split_whitespace()
             .map(|t| t.trim_matches(|c| c == '\'' || c == '"'))
             .collect();
-        let r = segment_risk(&toks);
+        let lower: Vec<String> = raw.iter().map(|t| t.to_ascii_lowercase()).collect();
+        let toks: Vec<&str> = lower.iter().map(String::as_str).collect();
+        let r = segment_risk(&toks, &raw);
         if r > risk {
             risk = r;
         }
@@ -54,9 +55,34 @@ fn has_after(toks: &[&str], anchor: &str, flags: &[&str]) -> bool {
     }
 }
 
-fn segment_risk(toks: &[&str]) -> Risk {
+/// `--dry-run[=client]` anywhere in the segment, or `-n` on `git clean`: the command only
+/// reports what it would do, so neither destructive nor external patterns apply.
+fn is_dry_run(toks: &[&str]) -> bool {
+    if toks.iter().any(|t| t.starts_with("--dry-run")) {
+        return true;
+    }
+    toks[0] == "git"
+        && has(toks, "clean")
+        && toks.iter().any(|t| {
+            *t == "-n"
+                || (t.starts_with('-')
+                    && !t.starts_with("--")
+                    && t[1..].chars().all(|c| c.is_ascii_alphabetic())
+                    && t.contains('n'))
+        })
+}
+
+/// `toks` are lower-cased; `raw` keeps the original case for flags where it matters
+/// (`git branch -D` force-deletes, `-d` refuses to delete an unmerged branch).
+fn segment_risk(toks: &[&str], raw: &[&str]) -> Risk {
     if toks.is_empty() {
         return Risk::Safe;
+    }
+    if is_dry_run(toks) {
+        return Risk::Safe;
+    }
+    if raw[0] == "git" && seq(raw, &["branch", "-D"]) {
+        return Risk::Destructive;
     }
     // ---- destructive -------------------------------------------------------------------
     let destructive = [
@@ -80,6 +106,9 @@ fn segment_risk(toks: &[&str]) -> Risk {
         &["volume", "rm"],
         &["volume", "prune"],
         &["reset", "--hard"],
+        &["git", "checkout", "--", "."],
+        &["git", "checkout", "."],
+        &["git", "restore", "."],
         &["push", "--force"],
         &["push", "-f"],
         &["drop", "database"],
@@ -196,15 +225,10 @@ fn segment_risk(toks: &[&str]) -> Risk {
         &["skaffold", "dev"],
         &["argocd", "app", "sync"],
     ];
-    let dry_run = toks.iter().any(|t| t.starts_with("--dry-run"));
     for pat in external {
         if seq(toks, pat) {
             // `git push` inside a `-f` check already handled; tokens like "aws" must be the program.
             if pat.len() == 1 && toks[0] != pat[0] {
-                continue;
-            }
-            // `kubectl apply --dry-run=client`, `helm install --dry-run`: nothing leaves the machine.
-            if dry_run && (has(toks, "kubectl") || has(toks, "helm")) {
                 continue;
             }
             // `eas build --local` (also behind `npx`/`bunx`) builds on this machine.
@@ -246,6 +270,9 @@ mod tests {
             "kubectl delete -f k8s/",
             "git clean -fdx",
             "git reset --hard HEAD",
+            "git branch -D feature",
+            "git checkout -- .",
+            "git restore .",
             "git push --force origin main",
             "psql -c 'DROP DATABASE app'",
             "kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic events",
@@ -285,8 +312,51 @@ mod tests {
             "curl https://example.com",
             "terraform plan",
             "git status",
+            "git branch -d merged-feature",
+            "git checkout main",
+            "git restore --staged .",
         ] {
             assert_eq!(textual(c), Risk::Safe, "{c}");
         }
+    }
+
+    #[test]
+    fn dry_run_exempts_destructive_and_external_patterns() {
+        for c in [
+            "kubectl delete -f x --dry-run=client",
+            "kubectl delete -f x --dry-run",
+            "helm uninstall app --dry-run",
+            "terraform plan -destroy",
+            "git clean -n",
+            "git clean -fdxn",
+            "git clean -fdx --dry-run",
+            "git push --dry-run origin main",
+            "npm publish --dry-run",
+        ] {
+            assert_eq!(textual(c), Risk::Safe, "{c}");
+        }
+        // Near misses: the same commands without the dry-run flag keep their risk.
+        assert_eq!(textual("kubectl delete -f x"), Risk::Destructive);
+        assert_eq!(textual("helm uninstall app"), Risk::Destructive);
+        assert_eq!(textual("git clean -fdx"), Risk::Destructive);
+        assert_eq!(textual("git push origin main"), Risk::External);
+        assert_eq!(textual("terraform destroy"), Risk::Destructive);
+        // A dry run in one segment does not cover the next.
+        assert_eq!(
+            textual("kubectl apply --dry-run=client -f x && kubectl apply -f x"),
+            Risk::External
+        );
+    }
+
+    #[test]
+    fn newlines_separate_segments() {
+        assert_eq!(textual("echo build\nterraform destroy"), Risk::Destructive);
+        assert_eq!(textual("npm ci\r\nnpm publish\r\n"), Risk::External);
+        // The `--dry-run` on the first line must not leak onto the second.
+        assert_eq!(
+            textual("kubectl apply --dry-run=client -f x\nkubectl delete -f x"),
+            Risk::Destructive
+        );
+        assert_eq!(textual("npm ci\nnpm test\n"), Risk::Safe);
     }
 }

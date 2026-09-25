@@ -3,10 +3,10 @@ source: tests/fixtures.rs
 assertion_line: 27
 expression: table
 ---
-## . [docker-compose] Root tools=docker,compose
-image                    Build          inferred high   safe        .          docker build -t docker-compose . :: Build the Docker image
+## . [docker-compose] Root tools=docker,compose techs=Docker,PostgreSQL,Redis,Kafka,ZooKeeper
+image                    Build          inferred high   safe        .          docker build -t docker-compose . :: Build Docker image
 services                 Infrastructure inferred high   safe        .          docker compose up -d :: Start all Docker services
-api                      Infrastructure inferred high   safe        .          docker compose up -d api :: Start the api service (built from source)
+api                      Infrastructure inferred high   safe        .          docker compose up -d api :: Start api service (built from source)
 postgres                 Infrastructure inferred high   safe        .          docker compose up -d postgres :: Start PostgreSQL
 redis                    Infrastructure inferred high   safe        .          docker compose up -d redis :: Start Redis
 kafka                    Infrastructure inferred high   safe        .          docker compose up -d kafka :: Start local Kafka broker

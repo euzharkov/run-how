@@ -1,0 +1,271 @@
+TryGhost_Ghost  [Node.js, Nx, Docker, Vitest]
+
+  pnpm run archive                        Run archive target of ghost with Nx
+  pnpm run build:production               Run build target of @tryghost/admin with Nx (+2 more steps)
+  pnpm run build                          Run build across Nx projects
+  pnpm run build:clean                    Delete ghost/*/tsconfig.tsbuildinfo (+2 more steps)
+  pnpm run clean:hard                     Run scripts/clean.js
+  pnpm run dev                            Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:sqlite                     Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:mailgun                    Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:fake-mailgun               Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:lexical                    Run docker:dev:lexical target of ghost-monorepo with Nx
+  pnpm run dev:public                     Run docker:dev:public target of ghost-monorepo with Nx
+  pnpm run dev:full                       Run docker:dev:public target of ghost-monorepo with Nx
+  pnpm run dev:analytics                  Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:analytics:local            Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:storage                    Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:stripe                     Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:all                        Run docker:dev target of ghost-monorepo with Nx
+  pnpm run dev:daemon                     Run docker:dev target of ghost-monorepo with Nx
+  pnpm run fix                            Install dependencies with pnpm (+3 more steps)  ↓ download
+  pnpm run create-package                 Run scripts/create-package.js
+  pnpm run knex-migrator
+  pnpm run bootstrap                      Update Git submodules (+2 more steps)  [external]  ∆ git
+  pnpm run migrate:db                     Run command in /home/ghost/ghost/core container
+  pnpm run rollback:db                    Run command in /home/ghost/ghost/core container
+  pnpm run reset:db                       Run command in ghost-dev container
+  pnpm run reset:db:volume                Stop and remove Docker services, then delete Docker volumes  [destructive]
+  pnpm run reset:data                     Run command in ghost-dev container
+  pnpm run reset:data:empty               Run command in ghost-dev container
+  pnpm run reset:data:xxl                 Run command in ghost-dev container
+  pnpm run seed:multi-sub-scenarios       Run command in ghost-dev container
+  pnpm run docker:build                   Build images for Docker services
+  pnpm run docker:build:verbose           Build images for Docker services
+  pnpm run docker:clean                   Stop Docker services and delete their volumes  [destructive]
+  pnpm run docker:down                    Stop and remove Docker services
+  pnpm run docker:rebase                  Fetch changes from remote (+4 more steps)  [external]  ∆ git
+  pnpm run knip                           Find unused files and dependencies with Knip
+  pnpm run knip:fix                       Find unused files and dependencies with Knip
+  pnpm run lint                           Run lint and lint:boundaries across Nx projects (+5 more steps)
+  pnpm run lint:agent-guidance            Run scripts/check-agent-guidance.js
+  pnpm run lint:agent-skills              Run scripts/check-agent-skill-links.js
+  pnpm run lint:doc-links                 Inspect Git repository, then run xargs
+  pnpm run lint:markdown                  Inspect Git repository, then run xargs
+  pnpm run lint:boundaries
+  pnpm run lint:packages                  Run scripts/check-internal-packages.js
+  pnpm run lint:docs                      Run scripts/check-agent-guidance.js (+3 more steps)
+  pnpm run format                         Run scripts/format.js
+  pnpm run format:check
+  pnpm run check                          Run test across Nx projects (+7 more steps)
+  pnpm run test                           Run test across Nx projects
+  pnpm run test:types                     Run test:types across Nx projects
+  pnpm run test:unit                      Run test:unit across Nx projects
+  pnpm run test:watch                     Run Vitest tests
+  pnpm run test:e2e                       Run test in @tryghost/e2e
+  pnpm run test:e2e:analytics             Run test:analytics in @tryghost/e2e
+  pnpm run test:e2e:all                   Run test:all in @tryghost/e2e
+  pnpm run test:e2e:debug                 Run test in @tryghost/e2e
+  pnpm run main                           Manage Git submodules (+4 more steps)  [external]
+  pnpm run main:monorepo                  Fetch changes from remote (+2 more steps)  [external]  ∆ git
+  pnpm run main:submodules                Manage Git submodules, then update Git submodules  [external]  ∆ git
+  pnpm run preinstall                     Run scripts/enforce-package-manager.js
+  pnpm run prepare                        Install Git hooks with Husky  ∆ git
+  pnpm run query-parameter-policy:export
+  pnpm run tb                             Run tb, then run tb dev  ∞ long-running
+  pnpm run tb:install                     Fetch tinybird.co, then run sh  ↓ download
+  pnpm run data:analytics:generate        Run ghost/core/core/server/data/tinybird/scripts/docker-analytics-manager.js
+  pnpm run data:analytics:clear           Run ghost/core/core/server/data/tinybird/scripts/docker-analytics-manager.js
+  pnpm run release                        Run scripts/release.js
+  nx affected -t build test lint
+  nx graph                                Open Nx project graph
+  docker build -f … .                     Build Docker image from Dockerfile.production
+  pnpm -r run lint:code                   Check source code with ESLint in every workspace package
+  pnpm -r run lint:test                   Check source code with ESLint in every workspace package
+  pnpm -r run test:acceptance             Run Playwright end-to-end tests in every workspace package
+  pnpm -r run ship                        Run ../../scripts/release-apps.js in every workspace package
+  pnpm -r run prepublishOnly              Build app with Vite in every workspace package
+  pnpm -r run posttest                    Check source code with ESLint in every workspace package
+
+apps/activitypub  [Node.js, Vite, Vitest, Playwright]
+  pnpm run dev:start               Start Vite development server  ∞ long-running
+  pnpm run build                   Compile TypeScript sources, then build app with Vite
+  pnpm run test                    Run type checks and tests
+  pnpm run test:unit               Run type checks and tests
+  pnpm run test:acceptance:slowmo  Run Playwright end-to-end tests
+  pnpm run test:acceptance:full    Run Playwright end-to-end tests
+  pnpm run preview                 Preview production build with Vite  ∞ long-running
+
+apps/admin  [Node.js, Vite, Vitest]
+  pnpm run dev                    Start Vite development server  ∞ long-running
+  pnpm run build                  Build TypeScript project references, then build app with Vite
+  pnpm run preview                Preview production build with Vite  ∞ long-running
+  pnpm run test:acceptance        Run Vitest tests
+  pnpm run test:acceptance:watch  Run Vitest tests in vitest.acceptance.config.ts
+  pnpm run typecheck              Build TypeScript project references
+
+apps/admin-toolbar  [Node.js, Vite, Vitest]
+  pnpm run test       Build app with Vite, then run Vitest tests
+  pnpm run test:unit  Build app with Vite, then run Vitest tests
+  pnpm run preship    Check source code with ESLint
+
+apps/admin-x-framework  [Node.js, Vite]
+  pnpm run build  Compile TypeScript sources, then build app with Vite
+
+apps/announcement-bar  [Node.js, Vitest]
+  pnpm run test:ci  Run Vitest tests
+  pnpm run preship  Check source code with ESLint
+
+apps/comments-ui  [Node.js, Playwright, Vite]
+  pnpm run dev:test                Build app with Vite, then preview production build with Vite  ∞ long-running
+  pnpm run test
+  pnpm run test:types              Check TypeScript types and check TypeScript types
+  pnpm run test:acceptance:slowmo  Run Playwright end-to-end tests
+  pnpm run test:acceptance:full    Run Playwright end-to-end tests
+  pnpm run lint:types              Check TypeScript types and check TypeScript types
+  pnpm run preship
+
+apps/ember-admin  [Node.js]
+  pnpm run dev        Run ember serve  ∞ long-running
+  pnpm run build      Run ember build
+  pnpm run build:dev  Run ember build
+  pnpm run test
+  pnpm run lint:js    Check source code with ESLint
+  pnpm run lint:hbs
+
+apps/portal  [Node.js, Vitest]
+  pnpm run test:watch  Run Vitest tests
+  pnpm run test:ci     Run Vitest tests
+  pnpm run lint:types  Check TypeScript types
+  pnpm run preship
+
+apps/shade  [Node.js, Storybook, Vite, Vitest]
+  pnpm run build             Compile TypeScript sources, then run tsc-alias, then build app with Vite
+  pnpm run test              Run type checks and tests
+  pnpm run storybook         Start Storybook  ∞ long-running
+  pnpm run build-storybook   Build static Storybook
+  pnpm run adoption:extract  Run scripts/extract-adoption.ts
+
+apps/signup-form  [Node.js, Vite, Playwright, Storybook]
+  pnpm run dev:standalone          Run vite 6173
+  pnpm run dev:test                Build app with Vite, then preview production build with Vite  ∞ long-running
+  pnpm run build                   Compile TypeScript sources, then build app with Vite
+  pnpm run lint:js                 Check source code with ESLint
+  pnpm run test:acceptance:slowmo  Run Playwright end-to-end tests
+  pnpm run test:acceptance:full    Run Playwright end-to-end tests
+  pnpm run storybook               Start Storybook  ∞ long-running
+  pnpm run build-storybook         Build static Storybook
+  pnpm run preship                 Check source code with ESLint
+  pnpm run prepublishOnly          Compile TypeScript sources, then build app with Vite
+
+apps/sodo-search  [Node.js]
+  pnpm run preship  Check source code with ESLint
+
+e2e  [Node.js, Docker, Nx, Playwright]
+  pnpm run dev                             Check TypeScript types  ∞ long-running
+  pnpm run build                           Check TypeScript types, then compile TypeScript sources
+  pnpm run build:ts                        Check TypeScript types
+  pnpm run build:apps                      Run build across Nx projects
+  pnpm run build:docker                    Build Docker image
+  pnpm run pretest                         Check environment
+  pnpm run infra:up                        Run scripts/infra-up.sh
+  pnpm run infra:down                      Run scripts/infra-down.sh
+  pnpm run tinybird:sync                   Run scripts/sync-tinybird-state.mjs
+  pnpm run stripe:provision                Run scripts/provision-stripe-environment.ts
+  pnpm run stripe:fixtures                 Run scripts/capture-stripe-fixtures.ts
+  pnpm run stripe:fixtures:checkout        Run scripts/capture-completed-checkout.ts
+  pnpm run stripe:probe                    Run scripts/probe-stripe-constraints.ts
+  pnpm run preflight:build                 Run scripts/prepare-ci-e2e-build-mode.sh
+  pnpm run test                            Run scripts/run-playwright-host.sh
+  pnpm run test:analytics                  Run scripts/run-playwright-host.sh
+  pnpm run test:all                        Run scripts/run-playwright-host.sh
+  pnpm run test:single                     Run scripts/run-playwright-host.sh
+  pnpm run test:debug                      Run scripts/run-playwright-host.sh
+  pnpm run test:fixtures                   Run Playwright end-to-end tests
+  pnpm run test:types                      Check TypeScript types, then compile TypeScript sources
+  docker build -f Dockerfile.e2e -t e2e .  Build Docker image from Dockerfile.e2e
+  docker build -f … -t e2e .               Build Docker image from Dockerfile.runner
+
+ghost/core  [Node.js, Vitest]
+  pnpm run archive                        Run scripts/pack.mjs
+  pnpm run dev                            Run index.js with auto-restart  ∞ long-running
+  pnpm run build:assets                   Run /^build:assets:/ script
+  pnpm run build:assets:js                Run scripts/minify-assets.mjs
+  pnpm run build:assets:cards             Run scripts/build-card-assets.mjs
+  pnpm run generate-golden-email          Run bin/generate-golden-email.js
+  pnpm run query-parameter-policy:export  Run scripts/export-query-parameter-policy.ts
+  pnpm run migrate:create                 Run bin/create-migration.js
+  pnpm run build:assets:css
+  pnpm run build:tsc                      Compile TypeScript sources
+  pnpm run pretest                        Run /^build:assets:/ script
+  pnpm run test:watch                     Run Vitest tests
+  pnpm run test:single                    Run test/*), then run *), then run Vitest tests, then run f
+  pnpm run test:all                       Run Vitest tests (+2 more steps)
+  pnpm run test:debug                     Run Vitest tests
+  pnpm run test:integration               Run Vitest tests
+  pnpm run test:e2e                       Run Vitest tests
+  pnpm run test:legacy                    Run Vitest tests
+  pnpm run test:ci:e2e                    Run Vitest tests with coverage
+  pnpm run test:ci:integration            Run Vitest tests with coverage
+  pnpm run test:int:slow                  Run Vitest tests
+  pnpm run test:e2e:slow                  Run Vitest tests
+  pnpm run test:leg:slow                  Run Vitest tests
+  pnpm run test:types                     Check TypeScript types and check TypeScript types
+  pnpm run lint:server                    Check source code with ESLint
+  pnpm run lint:shared                    Check source code with ESLint
+  pnpm run lint:frontend                  Check source code with ESLint
+  pnpm run lint:code
+  pnpm run lint
+
+koenig/kg-default-nodes  [Node.js]
+  pnpm run clean  Delete build
+  pnpm run build  Delete build, then compile TypeScript sources
+
+koenig/kg-lexical-html-renderer  [Node.js]
+  pnpm run clean  Delete build and tsconfig.tsbuildinfo
+  pnpm run build  Delete build and tsconfig.tsbuildinfo, then compile TypeScript sources
+
+koenig/kg-unsplash-selector  [Node.js, Vite, Playwright, Nx, Vitest]
+  pnpm run dev                     Start Vite development server  ∞ long-running
+  pnpm run build                   Compile TypeScript sources, then build app with Vite
+  pnpm run preview                 Preview production build with Vite  ∞ long-running
+  pnpm run pretest                 Compile TypeScript sources
+  pnpm run test                    Run Playwright end-to-end tests (+2 more steps)
+  pnpm run test:unit               Build project with Nx, then run Vitest tests
+  pnpm run test:acceptance:slowmo  Run Playwright end-to-end tests
+  pnpm run test:acceptance:full    Run Playwright end-to-end tests
+
+koenig/koenig-lexical  [Node.js, Vite, Playwright, Vitest, Storybook]
+  pnpm run dev                     Run dev in @tryghost/kg-default-transforms (+4 more steps)  ∞ long-running
+  pnpm run dev:integrated          Run dev in @tryghost/kg-default-transforms (+3 more steps)  ∞ long-running
+  pnpm run dev:multiplayer         Start Vite development server, then run y-websocket-server  ∞ long-running
+  pnpm run dev:test                Run vite 5174, then run y-websocket-server
+  pnpm run multiplayer
+  pnpm run build:demo              Build app with Vite
+  pnpm run preview                 Preview production build with Vite  ∞ long-running
+  pnpm run pretest                 Build app with Vite
+  pnpm run test                    Run type checks, tests, and end-to-end tests
+  pnpm run test:unit               Run type checks and tests
+  pnpm run test:unit:watch         Run Vitest tests
+  pnpm run test:acceptance:headed  Run Playwright end-to-end tests
+  pnpm run test:acceptance:report  Run Playwright end-to-end tests
+  pnpm run test:acceptance:quiet   Run Playwright end-to-end tests
+  pnpm run test:slowmo             Run Playwright end-to-end tests
+  pnpm run pretest:watch           Build app with Vite
+  pnpm run posttest
+  pnpm run coverage                Run Vitest tests with coverage
+  pnpm run lint:css                Check stylesheets with Stylelint
+  pnpm run lint:js                 Check source code with ESLint
+  pnpm run typecheck               Check TypeScript types
+  pnpm run storybook
+  pnpm run build-storybook         Build static Storybook
+
+packages/api-framework  [Node.js, Vitest]
+  pnpm run test  Run Vitest tests with coverage
+
+packages/i18n  [Node.js]
+  pnpm run test                   Run /^test:/ script, then run i18next, then run generate-context.js
+  pnpm run lint:translations      Run test/i18n.lint.js
+  pnpm run translate              Run i18next, then run generate-context.js
+  pnpm run translate:ghost
+  pnpm run translate:portal
+  pnpm run translate:signup-form
+  pnpm run translate:comments
+  pnpm run translate:search
+
+packages/testing/test-data  [Node.js, Vitest]
+  pnpm run test       Run type checks and tests
+  pnpm run typecheck  Check TypeScript types
+
+scripts  [Node.js]
+  pnpm run test:unit  Run Node.js tests

@@ -83,6 +83,79 @@ enum Tok {
     Op(&'static str),
 }
 
+/// Drop the body of every here-document (`cat <<EOS … EOS`): it is text, not commands.
+fn strip_heredocs(cmd: &str) -> String {
+    if !cmd.contains("<<") {
+        return cmd.to_string();
+    }
+    let mut out = String::new();
+    let mut terminator: Option<String> = None;
+    for line in cmd.lines() {
+        if let Some(t) = &terminator {
+            if line.trim() == t {
+                terminator = None;
+            }
+            continue;
+        }
+        out.push_str(line);
+        out.push('\n');
+        if let Some(rest) = line.split("<<").nth(1) {
+            let word: String = rest
+                .trim_start_matches('-')
+                .trim_start_matches(['\'', '"'])
+                .chars()
+                .take_while(|c| c.is_ascii_alphanumeric() || *c == '_')
+                .collect();
+            if !word.is_empty() {
+                terminator = Some(word);
+            }
+        }
+    }
+    out
+}
+
+/// Index just past the `)` that closes the `$(` at `start`. Quotes inside the substitution
+/// are their own (`"$(printf '%s' "$x" | awk '{ print ")" }')"`), so a `"` or `)` in them
+/// neither ends the substitution nor the double-quoted string around it.
+fn substitution_end(chars: &[char], start: usize) -> usize {
+    let mut depth = 0;
+    let mut i = start;
+    while i < chars.len() {
+        match chars[i] {
+            '\\' => i += 1,
+            '\'' => {
+                i += 1;
+                while i < chars.len() && chars[i] != '\'' {
+                    i += 1;
+                }
+            }
+            '"' => {
+                i += 1;
+                while i < chars.len() && chars[i] != '"' {
+                    if chars[i] == '$' && chars.get(i + 1) == Some(&'(') {
+                        i = substitution_end(chars, i);
+                        continue;
+                    }
+                    if chars[i] == '\\' {
+                        i += 1;
+                    }
+                    i += 1;
+                }
+            }
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return i + 1;
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    chars.len()
+}
+
 fn tokenize(s: &str) -> Vec<Tok> {
     let chars: Vec<char> = s.chars().collect();
     let mut out = Vec::new();
@@ -111,6 +184,12 @@ fn tokenize(s: &str) -> Vec<Tok> {
                 in_word = true;
                 i += 1;
                 while i < chars.len() && chars[i] != '"' {
+                    if chars[i] == '$' && chars.get(i + 1) == Some(&'(') {
+                        let end = substitution_end(&chars, i);
+                        cur.extend(&chars[i..end]);
+                        i = end;
+                        continue;
+                    }
                     if chars[i] == '\\' && i + 1 < chars.len() && "\"\\$`".contains(chars[i + 1]) {
                         i += 1;
                     }
@@ -162,28 +241,20 @@ fn tokenize(s: &str) -> Vec<Tok> {
                 flush(&mut cur, &mut in_word, &mut out);
                 out.push(Tok::Op(";"));
             }
-            '#' if !in_word => break,
+            '#' if !in_word => {
+                // A comment (or a `#!` shebang) runs to the end of its line only; the line
+                // break itself is handled above so the next line is still analysed.
+                while i + 1 < chars.len() && chars[i + 1] != '\n' {
+                    i += 1;
+                }
+            }
             '(' | ')' if !in_word => {}
             '$' if next == Some('(') => {
                 // `$(...)` command substitution: keep it as one opaque word so the `|`, `;`
                 // or `&&` inside it do not split the surrounding command.
-                let mut depth = 0;
-                while i < chars.len() {
-                    match chars[i] {
-                        '(' => depth += 1,
-                        ')' => {
-                            depth -= 1;
-                            if depth == 0 {
-                                cur.push(')');
-                                i += 1;
-                                break;
-                            }
-                        }
-                        _ => {}
-                    }
-                    cur.push(chars[i]);
-                    i += 1;
-                }
+                let end = substitution_end(&chars, i);
+                cur.extend(&chars[i..end]);
+                i = end;
                 in_word = true;
                 continue;
             }
@@ -215,7 +286,7 @@ fn is_env_assignment(w: &str) -> bool {
 
 /// Split a command line into its invocations, dropping operators and redirections.
 pub fn parse(cmd: &str) -> Vec<Invocation> {
-    let toks = tokenize(cmd);
+    let toks = tokenize(&strip_heredocs(cmd));
     let mut groups: Vec<Vec<String>> = vec![vec![]];
     for t in toks {
         match t {
@@ -245,7 +316,15 @@ pub fn parse(cmd: &str) -> Vec<Invocation> {
         let mut env = Vec::new();
         let mut iter = words.into_iter().peekable();
         while let Some(w) = iter.peek() {
-            if w == "export" {
+            if w.is_empty() {
+                // `"" && vitest`: an empty word can be an argument but never the program.
+                iter.next();
+            } else if matches!(w.as_str(), "then" | "else" | "do" | "{" | "(") {
+                // Shell control flow leading into a command: `then FOO=1 cmd`, `do cmd`,
+                // `{ cmd`. Anything after it is read again from the start, so leading
+                // environment assignments are still recognised.
+                iter.next();
+            } else if w == "export" {
                 // `export FOO=bar` / `export $(cat .env)`: environment set-up, not a step.
                 env.push(iter.next().unwrap());
                 if let Some(v) = iter.next() {
@@ -257,24 +336,22 @@ pub fn parse(cmd: &str) -> Vec<Invocation> {
                 break;
             }
         }
-        let mut program = match iter.next() {
+        let program = match iter.next() {
             Some(p) => p,
             None => continue,
         };
-        // Shell control flow: `then cmd`, `do cmd`, `{ cmd` lead into a command; `if cond`,
-        // `for x in …`, `fi`, `done`, `set -e`, `cd dir` are not commands worth a step.
-        while matches!(program.as_str(), "then" | "else" | "do" | "{" | "(") {
-            match iter.next() {
-                Some(p) => program = p,
-                None => break,
-            }
+        // `if cond`, `for x in …`, `fi`, `done`, `set -e` are not commands worth a step, and
+        // neither is a function definition (`expected() {`, `function cleanup {`).
+        // `cd dir` is kept: the analysis needs it to know later script names belong to
+        // another package.
+        if program.ends_with("()") || program == "function" {
+            continue;
         }
         if matches!(
             program.as_str(),
             "exit"
                 | "true"
                 | "false"
-                | "cd"
                 | "set"
                 | "if"
                 | "elif"
@@ -292,6 +369,8 @@ pub fn parse(cmd: &str) -> Vec<Invocation> {
                 | "}"
                 | "("
                 | ")"
+                | "[["
+                | "]]"
                 | ":"
                 | "source"
                 | "."
@@ -520,7 +599,17 @@ fn peel(inv: &Invocation) -> Peeled {
     for _ in 0..6 {
         match prog.as_str() {
             "npx" => {
-                let vf = ["-p", "--package", "-c", "--call"];
+                // `npx -c "cmd"` runs a shell command with the package binaries on PATH.
+                if let Some(script) = args
+                    .iter()
+                    .position(|a| a == "-c" || a == "--call")
+                    .and_then(|i| args.get(i + 1))
+                    .map(String::as_str)
+                    .or_else(|| args.iter().find_map(|a| a.strip_prefix("--call=")))
+                {
+                    return Peeled::Many(vec![script.to_string()]);
+                }
+                let vf = ["-p", "--package"];
                 match split_at_first_positional(&args, &vf) {
                     Some((p, rest)) => {
                         prog = norm_program(&p);
@@ -549,11 +638,35 @@ fn peel(inv: &Invocation) -> Peeled {
                 }
             },
             "cross-env" | "env" | "dotenvx" => {
-                let rest: Vec<String> = args
-                    .iter()
-                    .skip_while(|a| is_env_assignment(a) || a.starts_with('-'))
-                    .cloned()
-                    .collect();
+                // `env -u NAME`, `env -C dir`: the flag's value is not the program;
+                // `env -S "cmd args"` runs the string as a command line.
+                let value_flags: &[&str] = if prog == "env" {
+                    &["-u", "--unset", "-C", "--chdir"]
+                } else {
+                    &[]
+                };
+                let mut rest: Vec<String> = Vec::new();
+                let mut i = 0;
+                while i < args.len() {
+                    let a = &args[i];
+                    if value_flags.contains(&a.as_str()) {
+                        i += 2;
+                    } else if prog == "env" && (a == "-S" || a == "--split-string") {
+                        if let Some(script) = args.get(i + 1) {
+                            let tail: Vec<&str> =
+                                args[i + 2..].iter().map(String::as_str).collect();
+                            return Peeled::Many(vec![format!("{script} {}", tail.join(" "))
+                                .trim_end()
+                                .to_string()]);
+                        }
+                        i += 1;
+                    } else if is_env_assignment(a) || a.starts_with('-') {
+                        i += 1;
+                    } else {
+                        rest = args[i..].to_vec();
+                        break;
+                    }
+                }
                 if rest.is_empty() {
                     return Peeled::Tool(Invocation {
                         env: vec![],
@@ -690,12 +803,12 @@ fn peel(inv: &Invocation) -> Peeled {
                 match split_at_first_positional(&args, &vf) {
                     Some((sub, rest)) => match sub.as_str() {
                         "run" | "run-script" | "rum" | "urn" => {
-                            if let Some((name, _)) = split_at_first_positional(&rest, &vf) {
+                            if let Some((name, extra)) = split_at_first_positional(&rest, &vf) {
                                 return Peeled::ScriptRef {
                                     family: "js",
                                     name,
                                     scope,
-                                    args: vec![],
+                                    args: script_args(extra),
                                 };
                             }
                             return Peeled::Tool(Invocation {
@@ -770,12 +883,12 @@ fn peel(inv: &Invocation) -> Peeled {
                 match split_at_first_positional(&args, &vf) {
                     Some((sub, rest)) => match sub.as_str() {
                         "run" | "run-script" => {
-                            if let Some((name, _)) = split_at_first_positional(&rest, &vf) {
+                            if let Some((name, extra)) = split_at_first_positional(&rest, &vf) {
                                 return Peeled::ScriptRef {
                                     family: "js",
                                     name,
                                     scope,
-                                    args: vec![],
+                                    args: script_args(extra),
                                 };
                             }
                             return Peeled::Tool(Invocation {
@@ -834,12 +947,12 @@ fn peel(inv: &Invocation) -> Peeled {
                 match split_at_first_positional(&args, &["--cwd"]) {
                     Some((sub, rest)) => match sub.as_str() {
                         "run" => {
-                            if let Some((name, _)) = split_at_first_positional(&rest, &[]) {
+                            if let Some((name, extra)) = split_at_first_positional(&rest, &[]) {
                                 return Peeled::ScriptRef {
                                     family: "js",
                                     name,
                                     scope: None,
-                                    args: vec![],
+                                    args: script_args(extra),
                                 };
                             }
                             return Peeled::Tool(Invocation {
@@ -1324,6 +1437,13 @@ fn peel(inv: &Invocation) -> Peeled {
                     args,
                 });
             }
+            // `./scripts/with-build-number.sh eas build -p ios`: a repository script whose
+            // arguments are themselves a known tool invocation is a wrapper (environment
+            // setup, version bump) like `cross-env`; describe what it wraps.
+            p if is_local_script(p) && wraps_known_tool(&args) => {
+                prog = norm_program(&args[0]);
+                args = args[1..].to_vec();
+            }
             _ => break,
         }
     }
@@ -1332,6 +1452,33 @@ fn peel(inv: &Invocation) -> Peeled {
         program: prog,
         args,
     })
+}
+
+/// A script that lives in the repository: a relative path or a shell file, never a tool
+/// on PATH.
+fn is_local_script(prog: &str) -> bool {
+    prog.contains('/') || prog.ends_with(".sh") || prog.ends_with(".bash")
+}
+
+/// The arguments form a command the knowledge table recognises (`eas build -p ios`), so the
+/// script in front of them is a wrapper. A lone word (`./deploy.sh docker`) is a mode, not
+/// a command, and never qualifies.
+fn wraps_known_tool(args: &[String]) -> bool {
+    match args {
+        [first, rest @ ..]
+            if !rest.is_empty() && !first.starts_with('-') && !is_env_assignment(first) =>
+        {
+            // The rest must mean something to the table too: `apk unsigned` after
+            // `./scripts/build.sh` is a build flavour, not Alpine's package manager.
+            let prog = norm_program(first);
+            match (tools::summarize(&prog, rest), tools::summarize(&prog, &[])) {
+                (Some(with), Some(bare)) => with.text != bare.text,
+                (Some(_), None) => true,
+                _ => false,
+            }
+        }
+        _ => false,
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1355,7 +1502,35 @@ fn analyze_into(
     if depth > MAX_DEPTH {
         return;
     }
+    // `cd bskyembed && pnpm build`: after the `cd`, `build` is bskyembed's script, which this
+    // package's table cannot resolve. Say where it runs instead of describing the wrong script.
+    // `cd ..` and `cd -` come back, so the directories form a stack.
+    let mut dirs: Vec<String> = Vec::new();
     for inv in parse(cmd) {
+        if inv.program == "cd" {
+            match inv
+                .args
+                .iter()
+                .find(|a| !a.starts_with('-') || *a == "-")
+                .map(String::as_str)
+            {
+                Some("..") | Some("-") => {
+                    dirs.pop();
+                }
+                Some(d) if !d.is_empty() && d != "." && !d.starts_with('$') => {
+                    dirs.push(
+                        d.trim_end_matches('/')
+                            .rsplit('/')
+                            .next()
+                            .unwrap_or(d)
+                            .to_string(),
+                    );
+                }
+                _ => dirs.clear(),
+            }
+            continue;
+        }
+        let moved_to = dirs.last().cloned();
         match peel(&inv) {
             Peeled::Tool(t) => out.steps.push(summarize_step(&t)),
             Peeled::Many(cmds) => {
@@ -1369,13 +1544,9 @@ fn analyze_into(
                 scope,
                 args,
             } => {
+                let moved = scope.is_none() && moved_to.is_some();
+                let scope = scope.or(moved_to);
                 let key = format!("{family}:{name}");
-                if scope.is_some() || seen.contains(&key) {
-                    out.steps
-                        .push(script_ref_step(family, &name, scope.as_deref()));
-                    continue;
-                }
-                let resolved = resolver(family, &name);
                 // `pnpm eslint .` runs a binary from node_modules; `npm test` with no script
                 // table in reach must stay "the test script", not the shell `test` builtin.
                 let generic_script = matches!(
@@ -1395,6 +1566,31 @@ fn analyze_into(
                         | "preview"
                         | "run"
                 );
+                // After a `cd`, `pnpm drizzle-kit generate` is still the drizzle-kit binary:
+                // a tool the table knows needs no script table at all.
+                if moved && family == "js" && !generic_script {
+                    if let Some(sum) = tools::summarize(&name, &args) {
+                        if !sum.text.starts_with("Run ")
+                            || tools::summarize(&name, &[]).map(|b| b.text)
+                                != Some(sum.text.clone())
+                        {
+                            out.steps.push(Step {
+                                text: sum.text,
+                                kind: sum.kind,
+                                risk: sum.risk,
+                                tool: Some(sum.tool),
+                                unknown: false,
+                            });
+                            continue;
+                        }
+                    }
+                }
+                if scope.is_some() || seen.contains(&key) {
+                    out.steps
+                        .push(script_ref_step(family, &name, scope.as_deref()));
+                    continue;
+                }
+                let resolved = resolver(family, &name);
                 if resolved.is_none() && family == "js" && !generic_script {
                     if let Some(sum) = tools::summarize(&name, &args) {
                         out.steps.push(Step {
@@ -1411,6 +1607,9 @@ fn analyze_into(
                     Some(body) if !body.trim().is_empty() => {
                         seen.push(key.clone());
                         let before = out.steps.len();
+                        // `yarn ng serve api` runs the `ng` script with `serve api` appended,
+                        // so analyse the body with the arguments the caller forwarded.
+                        let body = append_args(&body, &args);
                         analyze_into(&body, resolver, depth + 1, seen, out);
                         seen.pop();
                         if out.steps.len() == before {
@@ -1424,6 +1623,33 @@ fn analyze_into(
             }
         }
     }
+}
+
+/// Arguments forwarded to a script: `npm run x -- a b` and `yarn x a b` both pass `a b`.
+fn script_args(extra: Vec<String>) -> Vec<String> {
+    extra.into_iter().skip_while(|a| a == "--").collect()
+}
+
+/// Append forwarded arguments to a script body the way the runners do: at the end of the
+/// whole script text, quoted only where the shell would otherwise split them.
+fn append_args(body: &str, args: &[String]) -> String {
+    if args.is_empty() {
+        return body.to_string();
+    }
+    let quoted: Vec<String> = args
+        .iter()
+        .map(|a| {
+            if a.is_empty()
+                || a.chars()
+                    .any(|c| c.is_whitespace() || c == '\'' || c == '"')
+            {
+                format!("'{}'", a.replace('\'', "'\\''"))
+            } else {
+                a.clone()
+            }
+        })
+        .collect();
+    format!("{} {}", body.trim_end(), quoted.join(" "))
 }
 
 fn script_ref_step(family: &str, name: &str, scope: Option<&str>) -> Step {
@@ -1476,6 +1702,18 @@ fn summarize_step(inv: &Invocation) -> Step {
         },
         None => {
             let shown = display_program(&inv.program);
+            // `vp build`, `bob build`, `nest start`: the tool is unknown but its first
+            // argument is a plain action word, which is worth keeping and categorising.
+            // No library-level knowledge involved: the command says it itself.
+            if let Some((sub, hint)) = action_word(&inv.args) {
+                return Step {
+                    text: format!("Run {shown} {sub}"),
+                    kind: hint.kind,
+                    risk: Risk::Safe,
+                    tool: None,
+                    unknown: false,
+                };
+            }
             Step {
                 text: format!("Run {shown}"),
                 kind: Kind::Other,
@@ -1485,6 +1723,43 @@ fn summarize_step(inv: &Invocation) -> Step {
             }
         }
     }
+}
+
+/// The first argument when it is a plain verb (`build`, `dev`, `test`, `lint`, …): never a
+/// flag, a path or a noun such as `app`.
+fn action_word(args: &[String]) -> Option<(&str, crate::explain::NameHint)> {
+    const VERBS: &[&str] = &[
+        "build",
+        "compile",
+        "bundle",
+        "dev",
+        "serve",
+        "start",
+        "watch",
+        "preview",
+        "test",
+        "lint",
+        "check",
+        "validate",
+        "format",
+        "fmt",
+        "typecheck",
+        "clean",
+        "generate",
+        "gen",
+        "release",
+        "publish",
+        "deploy",
+        "sync",
+        "init",
+        "migrate",
+    ];
+    let sub = args.first()?;
+    if !VERBS.contains(&sub.as_str()) {
+        return None;
+    }
+    let hint = crate::explain::name_hint(sub)?;
+    Some((sub.as_str(), hint))
 }
 
 /// How an unknown program is shown to the user: `./scripts/foo.sh` → `scripts/foo.sh`.
@@ -1562,11 +1837,114 @@ mod tests {
     }
 
     #[test]
+    fn comments_end_at_the_line_break() {
+        assert_eq!(progs("# build first\nterraform destroy"), ["terraform"]);
+        assert_eq!(
+            progs("#!/bin/bash\nset -e\nnpm test # run them\nnpm run build"),
+            ["npm", "npm"]
+        );
+        let a = analyze("# build first\nterraform destroy", &no_resolver);
+        assert_eq!(a.steps.len(), 1);
+        assert_eq!(a.max_risk(), Risk::Destructive);
+        // Inside quotes and words `#` is literal.
+        let inv = parse("echo '#1' foo#bar");
+        assert_eq!(inv[0].args, ["#1", "foo#bar"]);
+        assert_eq!(progs("echo a # trailing"), ["echo"]);
+    }
+
+    #[test]
+    fn empty_words_never_become_the_program() {
+        assert_eq!(progs(r#""" && vitest"#), ["vitest"]);
+        assert_eq!(progs("'' vitest"), ["vitest"]);
+        let inv = parse(r#"tool --name "" run"#);
+        assert_eq!(inv[0].program, "tool");
+        assert_eq!(inv[0].args, ["--name", "", "run"]);
+        assert!(parse(r#""""#).is_empty());
+    }
+
+    #[test]
+    fn env_assignments_after_control_flow_words() {
+        assert!(parse("then DEPLOYMENT_TYPE=ota >> .env").is_empty());
+        let inv = parse("then FOO=1 vitest");
+        assert_eq!(inv[0].program, "vitest");
+        assert_eq!(inv[0].env, ["FOO=1"]);
+        assert!(parse("if [ -n \"$CI\" ]; then export FOO=1; fi").is_empty());
+        assert_eq!(progs("do BAR=2 cargo build; done"), ["cargo"]);
+        let a = analyze(
+            "bash -c 'if [ -f .env ]; then FOO=1 vitest run; fi'",
+            &no_resolver,
+        );
+        assert_eq!(a.steps.len(), 1);
+        assert!(a.has_tool("vitest"));
+    }
+
+    #[test]
+    fn env_and_npx_wrappers_peel_their_flags() {
+        let a = analyze("env -u FOO vitest run", &no_resolver);
+        assert_eq!(a.steps.len(), 1);
+        assert!(a.has_tool("vitest"));
+        let a = analyze("env -i -C packages/api FOO=1 cargo test", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run Rust tests");
+        let a = analyze("env -S 'NODE_ENV=test vitest' run", &no_resolver);
+        assert!(a.has_tool("vitest"));
+        let a = analyze("env", &no_resolver);
+        assert_eq!(a.steps.len(), 1);
+        let a = analyze(r#"npx -c "eslint . && vitest run""#, &no_resolver);
+        assert!(a.has_tool("eslint") && a.has_tool("vitest"));
+        assert_eq!(a.steps.len(), 2);
+        let a = analyze("npx -p typescript tsc --noEmit", &no_resolver);
+        assert!(a.has_tool("tsc"));
+    }
+
+    #[test]
+    fn multi_line_risk_is_the_maximum_over_lines() {
+        let a = analyze(
+            "npm ci\nnpm test\nterraform destroy -auto-approve",
+            &no_resolver,
+        );
+        assert_eq!(a.max_risk(), Risk::Destructive);
+        assert_eq!(
+            crate::risk::classify("npm ci\nkubectl apply -f k8s/", &a),
+            Risk::Destructive
+        );
+        let safe = analyze("npm ci\nnpm test", &no_resolver);
+        assert_eq!(crate::risk::classify("npm ci\nnpm test", &safe), Risk::Safe);
+    }
+
+    #[test]
     fn windows_paths_survive() {
         let inv = parse(r#"node .\scripts\build.js --out "C:\Program Files\out""#);
         assert_eq!(
             inv[0].args,
             [r".\scripts\build.js", "--out", r"C:\Program Files\out"]
+        );
+    }
+
+    #[test]
+    fn heredoc_bodies_are_not_commands() {
+        let cmd = "cat <<EOS\nAI usage scripts.\nThese are in groups:\n1. ccusage - reports\nEOS\necho done";
+        assert_eq!(progs(cmd), ["cat", "echo"]);
+        assert_eq!(
+            progs("cat <<-'EOF'\n\tnot a command\n\tEOF\nls"),
+            ["cat", "ls"]
+        );
+        assert_eq!(progs("cat file.txt"), ["cat"]);
+    }
+
+    #[test]
+    fn quotes_inside_a_quoted_substitution_are_its_own() {
+        // The `"` before `$r` and the `)` in the awk program belong to the substitution;
+        // reading either as the end of the outer string once split an awk body into commands.
+        let cmd = "x=\"$(printf '%s' \"$r\" | awk '\n  { if (n > 0) print \")\" }\n')\"\nnpm test";
+        assert_eq!(progs(cmd), ["npm"]);
+        assert_eq!(progs("echo $(awk '{ print \")\" }') && ls"), ["echo", "ls"]);
+    }
+
+    #[test]
+    fn function_definitions_are_not_steps() {
+        assert_eq!(
+            progs("cleanup() {\n  rm -rf dist\n}\nfunction lint {\n  eslint .\n}\nnpm test"),
+            ["rm", "eslint", "npm"]
         );
     }
 
@@ -1595,6 +1973,113 @@ mod tests {
         let a = analyze("npm run loop", &scripts);
         assert_eq!(a.steps.len(), 1);
         assert_eq!(a.steps[0].text, "Run the loop script");
+    }
+
+    /// `yarn ng serve api` runs the `ng` script with `serve api` appended; the analysis must
+    /// see the whole command, not the bare prefix script.
+    #[test]
+    fn forwards_arguments_to_referenced_scripts() {
+        let scripts = |_: &str, name: &str| -> Option<String> {
+            match name {
+                "ng" => Some("cross-env NODE_ENV=development yarn nx".into()),
+                _ => None,
+            }
+        };
+        for cmd in [
+            "yarn ng serve api",
+            "yarn run ng serve api",
+            "pnpm run ng serve api",
+            "npm run ng -- serve api",
+        ] {
+            let a = analyze(cmd, &scripts);
+            assert!(a.has_tool("nx"), "{cmd}: {:?}", a.steps);
+            assert!(
+                a.steps[0].text.contains("api"),
+                "{cmd}: {}",
+                a.steps[0].text
+            );
+            assert_ne!(a.steps[0].text, "Run Nx", "{cmd}");
+        }
+        assert_eq!(append_args("nx", &["a b".into(), "c".into()]), "nx 'a b' c");
+        assert_eq!(
+            script_args(vec!["--".into(), "x".into()]),
+            vec!["x".to_string()]
+        );
+    }
+
+    /// An unknown tool with a plain action word keeps that word; anything else stays `Run x`.
+    #[test]
+    fn unknown_tool_keeps_its_action_word() {
+        let a = analyze("vp build", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run vp build");
+        assert_eq!(a.steps[0].kind, Kind::Build);
+        assert!(!a.steps[0].unknown);
+        let a = analyze("vp", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run vp");
+        assert!(a.steps[0].unknown);
+        let a = analyze("esr src/seed.ts", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run esr");
+        let a = analyze("bob --verbose build", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run bob");
+        for cmd in [
+            "oxfmt --check",
+            "oxfmt app",
+            "server dist",
+            "vp run typecheck",
+        ] {
+            let prog = cmd.split(' ').next().unwrap();
+            assert_eq!(
+                analyze(cmd, &no_resolver).steps[0].text,
+                format!("Run {prog}"),
+                "{cmd}"
+            );
+        }
+    }
+
+    /// A repository script that only sets things up and runs its arguments is a wrapper.
+    #[test]
+    fn peels_local_wrapper_scripts_around_known_tools() {
+        let a = analyze(
+            "./scripts/with-build-number.sh eas build -p ios",
+            &no_resolver,
+        );
+        assert!(a.has_tool("eas"), "{:?}", a.steps);
+        // A single word after the script is a mode, not a command.
+        let a = analyze("./scripts/deploy.sh docker", &no_resolver);
+        assert!(!a.has_tool("docker"), "{:?}", a.steps);
+        // Words the table cannot place after the tool name are a flavour, not a command.
+        let a = analyze("./scripts/build.sh apk unsigned", &no_resolver);
+        assert!(!a.has_tool("apk"), "{:?}", a.steps);
+        assert!(
+            is_local_script("scripts/x.sh") && is_local_script("./x") && !is_local_script("eas")
+        );
+    }
+
+    /// After `cd dir`, a script name belongs to that directory's package, not to the one
+    /// whose table is in reach.
+    #[test]
+    fn script_refs_after_cd_are_not_resolved_here() {
+        let scripts = |_: &str, name: &str| -> Option<String> {
+            match name {
+                "build" => Some("eas build".into()),
+                _ => None,
+            }
+        };
+        let a = analyze("cd bskyembed && pnpm build", &scripts);
+        assert_eq!(a.steps.len(), 1, "{:?}", a.steps);
+        assert_eq!(a.steps[0].text, "Run build in bskyembed");
+        assert!(!a.has_tool("eas"));
+        // Without the cd the same reference resolves as before.
+        assert!(analyze("pnpm build", &scripts).has_tool("eas"));
+        // `cd ..` comes back to the package whose table is in reach.
+        let a = analyze("cd ios && pod install && cd .. && pnpm build", &scripts);
+        assert!(a.has_tool("eas"), "{:?}", a.steps);
+        // A binary the table knows is a tool wherever it runs.
+        let a = analyze("cd web/db && pnpm drizzle-kit generate", &no_resolver);
+        assert!(a.has_tool("drizzle-kit"), "{:?}", a.steps);
+        // …but `npm run test` there is that package's test script, never the shell builtin.
+        let a = analyze("cd ui && npm run test", &no_resolver);
+        assert_eq!(a.steps[0].text, "Run test in ui", "{:?}", a.steps);
     }
 
     #[test]

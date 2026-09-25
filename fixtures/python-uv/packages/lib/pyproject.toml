@@ -1,0 +1,7 @@
+[project]
+name = "svc-lib"
+version = "0.1.0"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8"]

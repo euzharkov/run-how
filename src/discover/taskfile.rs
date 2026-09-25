@@ -41,11 +41,8 @@ fn cmd_text(v: &Value) -> Option<String> {
     }
 }
 
-fn parse_tasks(text: &str, prefix: &str) -> Vec<Task> {
+fn parse_tasks(doc: &Value, prefix: &str) -> Vec<Task> {
     let mut out = Vec::new();
-    let Ok(doc) = serde_yaml::from_str::<Value>(text) else {
-        return out;
-    };
     let Some(tasks) = doc.get("tasks").and_then(|t| t.as_mapping()) else {
         return out;
     };
@@ -119,54 +116,68 @@ impl Discoverer for Taskfile {
     fn detect(&self, dir: &DirInfo) -> bool {
         dir.has_any(FILES)
     }
-    fn discover(&self, _ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
+    fn discover(&self, ctx: &Context, base: &DirInfo, _dirs: &[&DirInfo]) -> Discovery {
         let mut out = Discovery::default();
         let Some(file) = base.first_of(FILES) else {
             return out;
         };
-        let Some(text) = base.read(file) else {
+        let Some(doc) = ctx.yaml(base, file) else {
             return out;
         };
-        let root_doc = serde_yaml::from_str::<Value>(&text).ok();
-        if let Some(v) = root_doc.as_ref().and_then(|doc| {
-            doc.get("version").and_then(|v| {
-                v.as_str()
-                    .map(|s| s.to_string())
-                    .or_else(|| v.as_f64().map(|f| f.to_string()))
-            })
+        if let Some(v) = doc.get("version").and_then(|v| {
+            v.as_str()
+                .map(|s| s.to_string())
+                .or_else(|| v.as_f64().map(|f| f.to_string()))
         }) {
             out.version("taskfile", v, file);
         }
-        let mut tasks = parse_tasks(&text, "");
+        let mut tasks = parse_tasks(&doc, "");
         // One level of includes.
-        if let Some(doc) = &root_doc {
+        {
             if let Some(inc) = doc.get("includes").and_then(|i| i.as_mapping()) {
                 for (k, v) in inc {
                     let Some(ns) = k.as_str() else { continue };
-                    let (path, internal) = match v {
-                        Value::String(p) => (p.clone(), false),
+                    let (path, internal, flatten) = match v {
+                        Value::String(p) => (p.clone(), false, false),
                         Value::Mapping(m) => (
                             m.get("taskfile")
                                 .and_then(|t| t.as_str())
                                 .unwrap_or("")
                                 .to_string(),
                             m.get("internal").and_then(|b| b.as_bool()).unwrap_or(false),
+                            m.get("flatten").and_then(|b| b.as_bool()).unwrap_or(false),
                         ),
                         _ => continue,
                     };
+                    // `flatten: true` merges the included tasks into the root namespace.
+                    let ns = if flatten { "" } else { ns };
                     if path.is_empty() {
                         continue;
                     }
-                    let p = base.path.join(path.trim_start_matches("./"));
-                    let candidates = if p.is_dir() {
-                        FILES.iter().map(|f| p.join(f)).collect::<Vec<_>>()
+                    // `taskfile:` names a directory (holding a Taskfile) or a file.
+                    let p = path.trim_start_matches("./").trim_end_matches('/');
+                    let candidates: Vec<(&DirInfo, &str)> = if ctx.has_dir(base, p) {
+                        ctx.child(base, p)
+                            .into_iter()
+                            .flat_map(|d| FILES.iter().map(move |f| (d, *f)))
+                            .collect()
                     } else {
-                        vec![p]
+                        match p.rsplit_once('/') {
+                            Some((sub, f)) => {
+                                ctx.child(base, sub).map(|d| (d, f)).into_iter().collect()
+                            }
+                            None => vec![(base, p)],
+                        }
                     };
-                    for c in candidates {
-                        if let Some(t) = crate::repo::read_text(&c) {
-                            for mut task in parse_tasks(&t, ns) {
+                    for (d, f) in candidates {
+                        if let Some(inc_doc) = ctx.yaml(d, f) {
+                            for mut task in parse_tasks(&inc_doc, ns) {
                                 task.internal |= internal;
+                                // A flattened task with the name of a root task is the
+                                // root's (root wins at runtime).
+                                if tasks.iter().any(|t| t.name == task.name) {
+                                    continue;
+                                }
                                 tasks.push(task);
                             }
                             break;
@@ -183,8 +194,9 @@ impl Discoverer for Taskfile {
             if let Some(d) = &t.desc {
                 a = a.desc(d.clone());
             }
-            if t.internal || t.name.starts_with('_') || t.name.contains(":_") {
-                a = a.hidden();
+            // `task` refuses to run an internal task from the command line.
+            if t.internal {
+                a = a.redundant();
             }
             out.actions.push(a);
         }

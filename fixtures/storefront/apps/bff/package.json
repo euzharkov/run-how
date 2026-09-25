@@ -1,0 +1,16 @@
+{
+  "name": "bff",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main",
+    "test": "jest",
+    "test:e2e": "jest --config test/jest-e2e.json",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "prisma migrate deploy",
+    "db:reset": "prisma migrate reset --force"
+  },
+  "dependencies": { "@nestjs/core": "^10", "@prisma/client": "^5" },
+  "devDependencies": { "@nestjs/cli": "^10", "prisma": "^5", "jest": "^29" }
+}

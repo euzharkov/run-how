@@ -1,0 +1,5 @@
+{
+  "name": "@storefront/ui",
+  "scripts": { "build": "tsup src/index.ts", "test": "vitest run", "lint": "eslint src" },
+  "devDependencies": { "tsup": "^8", "vitest": "^2" }
+}

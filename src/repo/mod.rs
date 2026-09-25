@@ -17,6 +17,7 @@ pub const IGNORED_DIRS: &[&str] = &[
     "obj",
     "venv",
     "env",
+    "virtualenv",
     "__pycache__",
     "site-packages",
     "storybook-static",
@@ -86,6 +87,13 @@ pub fn is_mobile_app_dir(dir: &DirInfo) -> bool {
                 })))
 }
 
+/// An Expo local module or a React Native library (`expo-module.config.json`,
+/// `react-native.config.js` next to `package.json`): its `android/` and `ios/` hold the
+/// native build of the module, not something a developer runs on its own.
+pub fn is_native_module_dir(dir: &DirInfo) -> bool {
+    dir.has("expo-module.config.json")
+}
+
 const MAX_DEPTH: usize = 10;
 const MAX_DIRS: usize = 25_000;
 /// Files larger than this are never read during discovery.
@@ -102,6 +110,10 @@ pub struct DirInfo {
     pub files: Vec<String>,
     /// Sorted subdirectory names (including ignored ones, which are not descended into).
     pub dirs: Vec<String>,
+    /// A listed-but-not-descended directory (`bin/`, `build/`, `node_modules/`, `.config/`):
+    /// its files are known so adapters can ask for `bin/rails` without touching the
+    /// filesystem, but nothing in it is ever a project or a helper directory.
+    pub ignored: bool,
 }
 
 impl DirInfo {
@@ -193,14 +205,16 @@ pub fn find_root(start: &Path) -> PathBuf {
     start
 }
 
-/// Scan the tree below `root`. The root is always element 0; children follow their parents.
+/// Scan the tree below `root`. Depth-first, pre-order: the root is element 0 and a
+/// directory's whole subtree is the contiguous run after it whose depth is greater than its
+/// own. Ignored directories appear as leaves with `ignored` set.
 pub fn scan(root: &Path) -> Vec<DirInfo> {
     let mut out = Vec::new();
-    walk(root, root, 0, &mut out);
+    walk(root, root, 0, false, &mut out);
     out
 }
 
-fn walk(root: &Path, dir: &Path, depth: usize, out: &mut Vec<DirInfo>) {
+fn walk(root: &Path, dir: &Path, depth: usize, ignored: bool, out: &mut Vec<DirInfo>) {
     if out.len() >= MAX_DIRS {
         return;
     }
@@ -227,26 +241,35 @@ fn walk(root: &Path, dir: &Path, depth: usize, out: &mut Vec<DirInfo>) {
             .map(|p| p.to_string_lossy().replace('\\', "/"))
             .unwrap_or_default()
     };
+    // A Python virtual environment can be called anything (`env`, `.venv`, `virtualenv`);
+    // `pyvenv.cfg` is what marks it, so `env/` holding Terraform environments is scanned.
+    let venv = files.iter().any(|f| f == "pyvenv.cfg");
+    let ignored = ignored || venv;
     out.push(DirInfo {
         path: dir.to_path_buf(),
         rel,
         depth,
         files,
         dirs: dirs.clone(),
+        ignored,
     });
-    if depth >= MAX_DEPTH {
+    if ignored || depth >= MAX_DEPTH {
         return;
     }
     for d in dirs {
-        if is_ignored_dir(&d) {
+        if d == ".git" {
             continue;
         }
-        walk(root, &dir.join(&d), depth + 1, out);
+        walk(root, &dir.join(&d), depth + 1, is_ignored_dir(&d), out);
     }
 }
 
+/// Directories that are listed but never descended into: dot-directories (`.github`,
+/// `.config`, `.venv`) and [`IGNORED_DIRS`]. Their own listing is still recorded so adapters
+/// can ask whether `bin/rails` or `.config/dotnet-tools.json` exists without touching the
+/// filesystem. `env`/`venv` are only virtual environments when they hold `pyvenv.cfg`.
 pub fn is_ignored_dir(name: &str) -> bool {
-    name.starts_with('.') || IGNORED_DIRS.contains(&name)
+    name.starts_with('.') || (IGNORED_DIRS.contains(&name) && !matches!(name, "env" | "venv"))
 }
 
 /// Relative path → position in the scanned list, so ancestor walks are O(depth) instead of
@@ -256,6 +279,18 @@ pub fn index(dirs: &[DirInfo]) -> HashMap<String, usize> {
         .enumerate()
         .map(|(i, d)| (d.rel.clone(), i))
         .collect()
+}
+
+/// Positions of every scanned directory strictly below `idx`, in scan order. The walk is
+/// depth-first pre-order, so the subtree is the run after `idx` until depth drops back.
+pub fn subtree(dirs: &[DirInfo], idx: usize) -> std::ops::Range<usize> {
+    let depth = dirs[idx].depth;
+    let end = dirs[idx + 1..]
+        .iter()
+        .position(|d| d.depth <= depth)
+        .map(|p| idx + 1 + p)
+        .unwrap_or(dirs.len());
+    idx + 1..end
 }
 
 /// The parent of a relative path (`a/b` → `a`, `a` → `.`); `None` for the root.
@@ -326,6 +361,42 @@ pub fn glob_match(pattern: &str, path: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn d(rel: &str, depth: usize, ignored: bool) -> DirInfo {
+        DirInfo {
+            path: PathBuf::from(rel),
+            rel: rel.into(),
+            depth,
+            files: vec![],
+            dirs: vec![],
+            ignored,
+        }
+    }
+
+    #[test]
+    fn subtree_is_the_contiguous_run_below_a_directory() {
+        let dirs = vec![
+            d(".", 0, false),
+            d("a", 1, false),
+            d("a/x", 2, false),
+            d("a/x/node_modules", 3, true),
+            d("a/y", 2, false),
+            d("b", 1, false),
+        ];
+        assert_eq!(subtree(&dirs, 0), 1..6);
+        assert_eq!(subtree(&dirs, 1), 2..5);
+        assert_eq!(subtree(&dirs, 2), 3..4);
+        assert_eq!(subtree(&dirs, 5), 6..6);
+    }
+
+    #[test]
+    fn env_is_only_ignored_when_it_is_a_virtualenv() {
+        assert!(!is_ignored_dir("env"));
+        assert!(!is_ignored_dir("venv"));
+        assert!(is_ignored_dir("virtualenv"));
+        assert!(is_ignored_dir("node_modules"));
+        assert!(is_ignored_dir(".github"));
+    }
 
     #[test]
     fn globs() {

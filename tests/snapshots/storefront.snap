@@ -1,0 +1,66 @@
+---
+source: tests/fixtures.rs
+assertion_line: 27
+expression: table
+---
+## . [storefront] JavaScript tools=pnpm,compose techs=Node.js,Docker,Turborepo,Playwright,PostgreSQL
+dev                      Development    declared exact  safe        .          pnpm run dev :: Run dev across packages with Turborepo [long-running]
+build                    Build          declared exact  safe        .          pnpm run build :: Run build across packages with Turborepo
+test                     Testing        declared exact  safe        .          pnpm run test :: Run test across packages with Turborepo
+lint                     Quality        declared exact  safe        .          pnpm run lint :: Run lint across packages with Turborepo
+typecheck                Quality        declared exact  safe        .          pnpm run typecheck :: Run typecheck in all workspace packages
+services                 Infrastructure declared exact  safe        .          pnpm run services :: Start postgres and redis services in background
+e2e                      Testing        declared exact  safe        .          pnpm run e2e :: Run Playwright end-to-end tests
+compose:services         Infrastructure inferred high   safe        .          docker compose up -d :: Start all Docker services
+postgres                 Infrastructure inferred high   safe        .          docker compose up -d postgres :: Start PostgreSQL
+redis                    Infrastructure inferred high   safe        .          docker compose up -d redis :: Start Redis
+orders                   Infrastructure inferred high   safe        .          docker compose up -d orders :: Start orders service (built from source)
+payments                 Infrastructure inferred high   safe        .          docker compose up -d payments :: Start payments service (built from source)
+logs                     Infrastructure inferred high   safe        .          docker compose logs -f :: Follow Docker service logs [long-running]
+services:build           Infrastructure inferred high   safe        .          docker compose build :: Build Docker service images
+services:down            Infrastructure inferred high   safe        .          docker compose down :: Stop and remove Docker services
+services:reset           Infrastructure inferred low    destructive .          docker compose down -v :: Stop Docker services and delete their volumes
+## apps/bff [bff] JavaScript tools=pnpm techs=Node.js,NestJS,Jest,Prisma
+bff                      Development    declared exact  safe        apps/bff   pnpm run dev :: Start NestJS app in watch mode [long-running]
+bff:build                Build          declared exact  safe        apps/bff   pnpm run build :: Build NestJS app
+bff:start                Development    declared exact  safe        apps/bff   pnpm run start :: Run dist/main
+bff:test                 Testing        declared exact  safe        apps/bff   pnpm run test :: Run Jest tests
+bff:test:e2e             Testing        declared exact  safe        apps/bff   pnpm run test:e2e :: Run Jest tests
+bff:lint                 Quality        declared exact  safe        apps/bff   pnpm run lint :: Check source code with ESLint
+bff:typecheck            Quality        declared exact  safe        apps/bff   pnpm run typecheck :: Check TypeScript types
+bff:db:migrate           Database       declared exact  safe        apps/bff   pnpm run db:migrate :: Apply pending Prisma migrations
+bff:db:reset             Database       declared exact  destructive apps/bff   pnpm run db:reset :: Reset database and re-apply migrations
+## apps/mobile [mobile] JavaScript tools=expo,pnpm techs=Node.js,Expo,Jest
+mobile:prebuild          Build          inferred low    safe        apps/mobile pnpm exec expo prebuild :: Generate native iOS and Android projects
+mobile:doctor            Quality        inferred low    safe        apps/mobile pnpm exec expo-doctor :: Check Expo project for common issues
+mobile                   Development    declared exact  safe        apps/mobile pnpm run start :: Start Expo development server [long-running]
+mobile:ios               Development    declared exact  safe        apps/mobile pnpm run ios :: Build and run app on iOS [long-running,device]
+mobile:android           Development    declared exact  safe        apps/mobile pnpm run android :: Build and run app on Android [long-running,device]
+mobile:test              Testing        declared exact  safe        apps/mobile pnpm run test :: Run Jest tests
+mobile:lint              Quality        declared exact  safe        apps/mobile pnpm run lint :: Check source code with ESLint
+## apps/web [web] JavaScript tools=pnpm techs=Node.js,Next.js,Vitest,Playwright
+web                      Development    declared exact  safe        apps/web   pnpm run dev :: Start Next.js development server [long-running]
+web:build                Build          declared exact  safe        apps/web   pnpm run build :: Build Next.js app
+web:start                Development    declared exact  safe        apps/web   pnpm run start :: Start Next.js production server [long-running]
+web:test                 Testing        declared exact  safe        apps/web   pnpm run test :: Run Vitest tests
+web:test:e2e             Testing        declared exact  safe        apps/web   pnpm run test:e2e :: Run Playwright end-to-end tests
+web:lint                 Quality        declared exact  safe        apps/web   pnpm run lint :: Check source code with ESLint
+web:typecheck            Quality        declared exact  safe        apps/web   pnpm run typecheck :: Check TypeScript types
+## packages/ui [ui] JavaScript tools=pnpm techs=Node.js,Vitest
+ui:build                 Build          declared exact  safe        packages/ui pnpm run build :: Build package with tsup
+ui:test                  Testing        declared exact  safe        packages/ui pnpm run test :: Run Vitest tests
+ui:lint                  Quality        declared exact  safe        packages/ui pnpm run lint :: Check source code with ESLint
+## services/orders [orders] Go tools=go techs=Go
+orders:build             Build          inferred high   safe        services/orders go build ./... :: Build Go packages
+orders:test              Testing        inferred high   safe        services/orders go test ./... :: Run Go tests
+orders:vet               Quality        inferred high   safe        services/orders go vet ./... :: Check Go source with go vet
+orders:fmt               Quality        inferred high   safe        services/orders go fmt ./... :: Format Go source
+orders:tidy              Other          inferred low    safe        services/orders go mod tidy :: Tidy Go module dependencies [download]
+orders:run               Development    inferred high   safe        services/orders go run ./cmd/orders :: Run orders command
+## services/payments [payments] Go tools=go techs=Go
+payments:build           Build          inferred high   safe        services/payments go build ./... :: Build Go packages
+payments:test            Testing        inferred high   safe        services/payments go test ./... :: Run Go tests
+payments:vet             Quality        inferred high   safe        services/payments go vet ./... :: Check Go source with go vet
+payments:fmt             Quality        inferred high   safe        services/payments go fmt ./... :: Format Go source
+payments:tidy            Other          inferred low    safe        services/payments go mod tidy :: Tidy Go module dependencies [download]
+payments:run             Development    inferred high   safe        services/payments go run ./cmd/payments :: Run payments command
