@@ -1,0 +1,65 @@
+<!doctype html>
+<!-- Source of og.png and the GitHub social preview. Render with:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+       --window-size=1280,640 --screenshot=site/og.png "file://$PWD/site/og.html"
+     Colours and fonts follow styles.css. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>rhow social preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@400;700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0c0e; --bg-2: #101215; --line: #1a1c20; --grid: #141619;
+    --fg: #f2efe8; --fg-2: #b7b3aa; --fg-3: #7d7a73;
+    --accent: #ffb454; --cmd: #7fd3f7; --danger: #ff6b6b;
+    --sans: "Inter Tight", sans-serif; --mono: "JetBrains Mono", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 64px 64px;
+    color: var(--fg); font-family: var(--sans);
+    padding: 72px 84px 0;
+    position: relative;
+  }
+  body::before { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 0%, rgba(11,12,14,0) 0%, rgba(11,12,14,.55) 70%); }
+  .prompt { font-family: var(--mono); font-size: 40px; font-weight: 700; position: relative; }
+  .prompt span { color: var(--accent); }
+  h1 { font-size: 72px; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; margin-top: 28px; position: relative; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .term {
+    position: absolute; left: 84px; right: 84px; top: 352px;
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px 28px; font-family: var(--mono); font-size: 22px; line-height: 36px;
+  }
+  .proj { font-weight: 700; } .proj span { color: var(--fg-3); font-weight: 400; margin-left: 10px; }
+  table { border-collapse: collapse; margin-top: 4px; }
+  td { padding: 0 28px 0 0; white-space: nowrap; }
+  td.cmd { color: var(--cmd); padding-left: 24px; }
+  .tag { color: var(--fg-3); margin-left: 18px; } .tag.bad { color: var(--danger); }
+  .foot { position: absolute; right: 84px; bottom: 24px; font-family: var(--mono); font-size: 20px; color: var(--fg-3); }
+</style>
+</head>
+<body>
+  <div class="prompt"><span>$</span> rhow</div>
+  <h1>Understand how to run<br><em>any</em> repository.</h1>
+  <div class="term">
+    <div class="proj">my-app<span>[Node.js, Vite, Vitest, Prisma]</span></div>
+    <table>
+      <tr><td class="cmd">npm run dev</td><td>Start Vite development server<span class="tag">∞ long-running</span></td></tr>
+      <tr><td class="cmd">npm run test</td><td>Run Vitest tests</td></tr>
+      <tr><td class="cmd">npm run build</td><td>Compile TypeScript sources, then build app with Vite</td></tr>
+      <tr><td class="cmd">npm run db:reset</td><td>Reset database and re-apply migrations<span class="tag bad">● destructive</span></td></tr>
+    </table>
+  </div>
+  <div class="foot">runhow.line-19.com · github.com/euzharkov/run-how</div>
+</body>
+</html>

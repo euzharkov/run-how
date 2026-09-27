@@ -2,6 +2,8 @@
 
 **How do I run or operate this repository?**
 
+Website: [runhow.line-19.com](https://runhow.line-19.com). Built by [Line 19](https://line-19.com).
+
 Enter any unfamiliar repository and run:
 
 ```bash
@@ -407,3 +409,7 @@ favourites, history, configuration UI or full-screen dashboard. No `.rhow.yml` r
 ## License
 
 MIT
+
+---
+
+RunHow is built by [Line 19](https://line-19.com).
