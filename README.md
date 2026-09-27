@@ -409,7 +409,3 @@ favourites, history, configuration UI or full-screen dashboard. No `.rhow.yml` r
 ## License
 
 MIT
-
----
-
-RunHow is built by [Line 19](https://line-19.com).
