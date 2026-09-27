@@ -15,73 +15,36 @@ JavaScript, Python, Go, Rust, .NET, Make, Just, Taskfile, Docker, Kubernetes or 
 $ rhow
 
 storefront  [Node.js, Docker, Turborepo, Playwright, PostgreSQL]
-
-  pnpm run dev                   Run dev across packages with Turborepo  ∞ long-running
-  pnpm run build                 Run build across packages with Turborepo
-  pnpm run test                  Run test across packages with Turborepo
-  pnpm run lint                  Run lint across packages with Turborepo
-  pnpm run typecheck             Run typecheck in all workspace packages
-  pnpm run services              Start postgres and redis services in background
-  pnpm run e2e                   Run Playwright end-to-end tests
-  docker compose up -d           Start all Docker services
-  docker compose up -d postgres  Start PostgreSQL
-  docker compose up -d redis     Start Redis
-  docker compose up -d orders    Start orders service (built from source)
-  docker compose up -d payments  Start payments service (built from source)
-  docker compose logs -f         Follow Docker service logs  ∞ long-running
-  docker compose build           Build Docker service images
-  docker compose down            Stop and remove Docker services
-  docker compose down -v         Stop Docker services and delete their volumes  [destructive]
+  pnpm run dev            Run dev across packages with Turborepo  ∞ long-running
+  pnpm run test           Run test across packages with Turborepo
+  docker compose up -d    Start all Docker services
+  docker compose down -v  Stop Docker services and delete their volumes  [destructive]
 
 apps/bff  [Node.js, NestJS, Jest, Prisma]
   pnpm run dev         Start NestJS app in watch mode  ∞ long-running
-  pnpm run build       Build NestJS app
-  pnpm run start       Run dist/main
   pnpm run test        Run Jest tests
-  pnpm run test:e2e    Run Jest tests
-  pnpm run lint        Check source code with ESLint
-  pnpm run typecheck   Check TypeScript types
   pnpm run db:migrate  Apply pending Prisma migrations
   pnpm run db:reset    Reset database and re-apply migrations  [destructive]
 
 apps/mobile  [Node.js, Expo, Jest]
-  pnpm exec expo prebuild  Generate native iOS and Android projects
-  pnpm exec expo-doctor    Check Expo project for common issues
-  pnpm run start           Start Expo development server  ∞ long-running
-  pnpm run ios             Build and run app on iOS  ∞ long-running  ⊙ device
-  pnpm run android         Build and run app on Android  ∞ long-running  ⊙ device
-  pnpm run test            Run Jest tests
-  pnpm run lint            Check source code with ESLint
+  pnpm run start  Start Expo development server  ∞ long-running
+  pnpm run ios    Build and run app on iOS  ∞ long-running  ⊙ device
+  pnpm run test   Run Jest tests
 
 apps/web  [Node.js, Next.js, Vitest, Playwright]
-  pnpm run dev        Start Next.js development server  ∞ long-running
-  pnpm run build      Build Next.js app
-  pnpm run start      Start Next.js production server  ∞ long-running
-  pnpm run test       Run Vitest tests
-  pnpm run test:e2e   Run Playwright end-to-end tests
-  pnpm run lint       Check source code with ESLint
-  pnpm run typecheck  Check TypeScript types
+  pnpm run dev       Start Next.js development server  ∞ long-running
+  pnpm run build     Build Next.js app
+  pnpm run test      Run Vitest tests
+  pnpm run test:e2e  Run Playwright end-to-end tests
 
 packages/ui  [Node.js, Vitest]
   pnpm run build  Build package with tsup
   pnpm run test   Run Vitest tests
-  pnpm run lint   Check source code with ESLint
 
 services/orders  [Go]
-  go build ./...
-  go test ./...        Run Go tests
-  go vet ./...         Check Go source with go vet
-  go fmt ./...         Format Go source
-  go mod tidy          Tidy Go module dependencies  ↓ download
   go run ./cmd/orders  Run orders command
-
-services/payments  [Go]
-  go build ./...
-  go test ./...          Run Go tests
-  go vet ./...           Check Go source with go vet
-  go fmt ./...           Format Go source
-  go mod tidy            Tidy Go module dependencies  ↓ download
-  go run ./cmd/payments  Run payments command
+  go test ./...        Run Go tests
+  go mod tidy          Tidy Go module dependencies  ↓ download
 ```
 
 `rhow` is not another task runner. It:

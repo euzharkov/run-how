@@ -26,7 +26,7 @@ Each archive contains a `rhow-<version>-<target>/` directory with the binary, `R
 | Homebrew | Tap formula pointing at the release archives | `packaging/homebrew/rhow.rb` |
 | Scoop | Bucket manifest with `autoupdate` from `SHA256SUMS` | `packaging/scoop/rhow.json` |
 | WinGet | Manifest generated with `wingetcreate` at release time | `packaging/winget/` |
-| AUR | `rhow-bin` PKGBUILD from the musl archives | `packaging/aur/PKGBUILD` |
+| AUR | `rhow-bin` PKGBUILD from the musl archives. Not yet published: AUR account registration was closed in September 2026 because of automated sign-ups. Until it reopens, Arch users build from the file directly (see below) | `packaging/aur/PKGBUILD` |
 | Nix | `buildRustPackage` derivation | `packaging/nix/default.nix` |
 | npm | `@euzharkov/rhow`: `postinstall` downloads and verifies the native binary; `bin/rhow.js` execs it. Node is only a launcher | `packaging/npm/` |
 
@@ -62,12 +62,35 @@ emulation and the mirror also carries an x86_64 archive cross-linked with `rust-
 covered: the Windows channels (Scoop, WinGet), Nix, and `cargo binstall`. CI runs the whole set
 on every push through `.github/workflows/ci.yml`.
 
+## Installing on Arch before the AUR package exists
+
+The PKGBUILD works without the AUR. With the hashes for the current release filled in:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/euzharkov/run-how/main/packaging/aur/PKGBUILD
+makepkg -si
+```
+
+When aur.archlinux.org accepts new accounts again: register, add an SSH public key, then
+
+```bash
+git clone ssh://aur@aur.archlinux.org/rhow-bin.git
+cp packaging/aur/PKGBUILD rhow-bin/ && cd rhow-bin
+makepkg --printsrcinfo > .SRCINFO
+git add PKGBUILD .SRCINFO && git commit -m "rhow-bin 0.1.0" && git push
+```
+
 Release checklist:
 
 1. Bump `version` in `Cargo.toml` and `packaging/npm/package.json`; run `cargo test`.
 2. Tag `vX.Y.Z` and push. Wait for the release workflow.
 3. Copy hashes from `SHA256SUMS` into the Homebrew, Scoop, WinGet and AUR files.
-4. `npm publish` from `packaging/npm`.
+4. Push `packaging/homebrew/rhow.rb` to `Formula/rhow.rb` in
+   [euzharkov/homebrew-tap](https://github.com/euzharkov/homebrew-tap) and
+   `packaging/scoop/rhow.json` to `bucket/rhow.json` in
+   [euzharkov/scoop-bucket](https://github.com/euzharkov/scoop-bucket). Both repos hold only
+   those files and a README; this repository stays the source of truth.
+5. `npm publish` from `packaging/npm`.
 
 ## Website
 
