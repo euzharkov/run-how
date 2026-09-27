@@ -2,7 +2,7 @@
 
 **How do I run or operate this repository?**
 
-Website: [runhow.line-19.com](https://runhow.line-19.com). Built by [Line 19](https://line-19.com).
+Website: [runhow.line-19.com](https://runhow.line-19.com)
 
 Enter any unfamiliar repository and run:
 
@@ -409,3 +409,5 @@ favourites, history, configuration UI or full-screen dashboard. No `.rhow.yml` r
 ## License
 
 MIT
+
+Built by [Eugene Zharkov](https://github.com/euzharkov) as part of the open source work of [Line 19](https://line-19.com).
