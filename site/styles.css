@@ -318,6 +318,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .footer__in { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
 .wordmark--footer { margin: 0; }
 .footer__tag { margin: 6px 0 0; color: var(--fg-3); font-size: .95rem; }
+.footer__by { margin: 14px 0 0; color: var(--fg-3); font-size: .9rem; }
+.footer__by a { color: var(--fg-2); }
+.footer__by a:hover { color: var(--fg); }
 .footer__links { display: flex; gap: 22px; }
 .footer__links a { color: var(--fg-2); font-size: .95rem; }
 .footer__links a:hover { color: var(--fg); }
