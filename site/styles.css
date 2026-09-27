@@ -62,6 +62,9 @@ h3 { letter-spacing: .01em; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Icon sprite: hidden here rather than inline, because the CSP in _headers forbids style attributes. */
+.sprite { display: none; }
+
 .skip {
   position: absolute; left: 12px; top: -60px; z-index: 100;
   background: var(--accent); color: var(--accent-ink); padding: 8px 12px; border-radius: 6px; font-weight: 600;
