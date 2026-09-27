@@ -242,15 +242,15 @@ pub fn render(repo: &Repo, style: &Style, opts: &RenderOptions) -> String {
         let cmd_w = block_width(block);
         out.push('\n');
         // The root's actions sit directly under the repository name; nested projects get a
-        // title with their path. A single grouped project shows its types as blocks
-        // separated by a blank line instead.
+        // title with their path. With `--group` every project shows its types as blocks
+        // separated by a blank line, so the flag looks the same in a monorepo as alone.
         if !single && !p.is_root() {
             out.push_str(&title(p, style));
             out.push('\n');
         }
         let mut prev: Option<Category> = None;
         for a in block {
-            if single && opts.group && prev.is_some_and(|c| c != a.category) {
+            if opts.group && prev.is_some_and(|c| c != a.category) {
                 out.push('\n');
             }
             prev = Some(a.category);

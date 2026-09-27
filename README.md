@@ -4,6 +4,8 @@
 
 Website: [runhow.line-19.com](https://runhow.line-19.com)
 
+![rhow listing a monorepo, then rhow --group and rhow --ci](docs/demo.gif)
+
 Enter any unfamiliar repository and run:
 
 ```bash
