@@ -10,8 +10,8 @@ provides=('rhow')
 conflicts=('rhow')
 source_x86_64=("$url/releases/download/v$pkgver/rhow-$pkgver-x86_64-unknown-linux-musl.tar.gz")
 source_aarch64=("$url/releases/download/v$pkgver/rhow-$pkgver-aarch64-unknown-linux-musl.tar.gz")
-sha256sums_x86_64=('REPLACE_WITH_SHA256')
-sha256sums_aarch64=('REPLACE_WITH_SHA256')
+sha256sums_x86_64=('13dcbba369140faad44ec8dd59d2062ba592ccf0943fad1e4e600b56f89b7ff0')
+sha256sums_aarch64=('e8de36faf337997cdcb0325f40e6867b3f3ee4ebe213acf3c917b3a9e51b6131')
 
 package() {
   # Name the directory exactly: a glob would also match the downloaded tarball makepkg

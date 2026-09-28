@@ -10,7 +10,7 @@ Installers:
   - Architecture: x64
     InstallerType: zip
     InstallerUrl: https://github.com/euzharkov/run-how/releases/download/v0.1.0/rhow-0.1.0-x86_64-pc-windows-msvc.zip
-    InstallerSha256: REPLACE_WITH_SHA256
+    InstallerSha256: fc199c34b9656e5daa2258b4cfbddcbe7ae83352b2f24521ee1f5c48add2c107
     NestedInstallerType: portable
     NestedInstallerFiles:
       - RelativeFilePath: rhow-0.1.0-x86_64-pc-windows-msvc\rhow.exe
@@ -18,7 +18,7 @@ Installers:
   - Architecture: arm64
     InstallerType: zip
     InstallerUrl: https://github.com/euzharkov/run-how/releases/download/v0.1.0/rhow-0.1.0-aarch64-pc-windows-msvc.zip
-    InstallerSha256: REPLACE_WITH_SHA256
+    InstallerSha256: a38f15de6788aaaf689e63ece971437c3260f61d4ca791a8ebcd6301b19f719f
     NestedInstallerType: portable
     NestedInstallerFiles:
       - RelativeFilePath: rhow-0.1.0-aarch64-pc-windows-msvc\rhow.exe
