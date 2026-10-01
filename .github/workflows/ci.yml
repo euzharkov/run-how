@@ -56,7 +56,7 @@ jobs:
         run: tests/integration/run.sh
       - name: Keep the outputs and diffs of a failed run
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: real-products-logs
           path: tests/integration/logs/
